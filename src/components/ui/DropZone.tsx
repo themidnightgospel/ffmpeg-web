@@ -36,34 +36,38 @@ export function DropZone({ accept, file, onFile, prompt }: DropZoneProps) {
   };
 
   return (
-    <div
-      className={cx('drop', file && 'has-file', dragging && 'drag')}
-      role="button"
-      tabIndex={0}
-      aria-label="Drop a file here or press Enter to browse"
-      onClick={openPicker}
-      onKeyDown={onKeyDown}
-      onDragEnter={setDrag(true)}
-      onDragOver={setDrag(true)}
-      onDragLeave={setDrag(false)}
-      onDrop={onDrop}
-    >
-      <div className="prompt">
-        <div className="plus" aria-hidden="true">
-          +
+    <>
+      <div
+        className={cx('drop', file && 'has-file', dragging && 'drag')}
+        role="button"
+        tabIndex={0}
+        aria-label="Drop a file here or press Enter to browse"
+        onClick={openPicker}
+        onKeyDown={onKeyDown}
+        onDragEnter={setDrag(true)}
+        onDragOver={setDrag(true)}
+        onDragLeave={setDrag(false)}
+        onDrop={onDrop}
+      >
+        <div className="prompt">
+          <div className="plus" aria-hidden="true">
+            +
+          </div>
+          <p className="headline">{prompt ?? 'Drop a video or click to browse'}</p>
+          <p className="hint">Processed locally — nothing is uploaded</p>
         </div>
-        <p className="headline">{prompt ?? 'Drop a video or click to browse'}</p>
-        <p className="hint">Processed locally — nothing is uploaded</p>
+
+        {file && (
+          <div className="filemeta" aria-live="polite">
+            <div className="fname">{file.name}</div>
+            <div className="fsize">{humanSize(file.size)} · ready to convert</div>
+            <span className="change">Choose a different file</span>
+          </div>
+        )}
       </div>
 
-      {file && (
-        <div className="filemeta" aria-live="polite">
-          <div className="fname">{file.name}</div>
-          <div className="fsize">{humanSize(file.size)} · ready to convert</div>
-          <span className="change">Choose a different file</span>
-        </div>
-      )}
-
+      {/* Kept as a sibling (not inside the clickable div) so its programmatic
+          .click() can't bubble back and re-trigger openPicker. */}
       <input
         ref={inputRef}
         className="sr-only"
@@ -74,6 +78,6 @@ export function DropZone({ accept, file, onFile, prompt }: DropZoneProps) {
           if (picked) onFile(picked);
         }}
       />
-    </div>
+    </>
   );
 }
