@@ -37,7 +37,7 @@ export const TOOLS: readonly ToolMeta[] = [
   { slug: 'reverse-media', name: 'Reverse Media', category: 'Resize & transform', desc: 'Play video or audio backwards.', status: 'live' },
 
   // Audio tools
-  { slug: 'volume-normalizer', name: 'Volume Normalizer', category: 'Audio tools', desc: 'Even out loudness to a target level.', status: 'planned' },
+  { slug: 'volume-normalizer', name: 'Volume Normalizer', category: 'Audio tools', desc: 'Even out loudness to a target level.', status: 'live' },
   { slug: 'audio-fader', name: 'Audio Fader', category: 'Audio tools', desc: 'Add smooth fade-in and fade-out.', status: 'planned' },
   { slug: 'channel-tools', name: 'Channel Tools', category: 'Audio tools', desc: 'Mono, stereo, and channel mixing.', status: 'planned' },
   { slug: 'pitch-tempo-changer', name: 'Pitch / Tempo Changer', category: 'Audio tools', desc: 'Shift pitch or tempo independently.', status: 'planned' },

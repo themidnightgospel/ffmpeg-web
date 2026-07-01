@@ -9,6 +9,7 @@ import { rotateFlipMirror } from './rotate-flip-mirror';
 import { speedChanger } from './speed-changer';
 import { framerateConverter } from './framerate-converter';
 import { reverseMedia } from './reverse-media';
+import { volumeNormalizer } from './volume-normalizer';
 
 /* Registry of implemented ("live") tools. Add a tool's config here to wire it up.
    The catalogue metadata for all tools (including planned ones) lives in @/data/tools. */
@@ -23,6 +24,7 @@ const LIVE_TOOLS: Tool[] = [
   speedChanger,
   framerateConverter,
   reverseMedia,
+  volumeNormalizer,
 ];
 
 const bySlug = new Map<string, Tool>(LIVE_TOOLS.map((t) => [t.slug, t]));
