@@ -3,8 +3,10 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
 import Masthead from '@/components/Masthead.astro';
 import Footer from '@/components/Footer.astro';
 import Breadcrumbs from '@/components/Breadcrumbs.astro';
+import Converter from '@/components/Converter.tsx';
 import { TOOLS, getToolMeta, toolNumber } from '@/data/tools';
-import { breadcrumbLd } from '@/lib/seo/jsonld';
+import { getTool } from '@/lib/tools/registry';
+import { breadcrumbLd, webApplicationLd } from '@/lib/seo/jsonld';
 
 export function getStaticPaths() {
   // The video converter lives at /convert/; every other tool gets a /tools/ page.
@@ -17,26 +19,23 @@ const { slug } = Astro.params;
 const meta = slug ? getToolMeta(slug) : undefined;
 if (!slug || !meta) throw new Error(`Unknown tool: ${slug}`);
 
+const tool = getTool(slug);
+const isLive = Boolean(tool);
+
 const siteUrl = Astro.site?.href ?? 'https://khinkali.cc';
 const canonicalPath = `/tools/${slug}`;
 
 const title = `${meta.name} — Free, In-Browser | Khinkali Tool Chain`;
 const description = `${meta.desc} Free, private, and 100% in your browser — nothing uploaded.`;
 
-const jsonLd = [
-  breadcrumbLd([
-    { label: 'Home', url: new URL('/', siteUrl).href },
-    { label: meta.name, url: new URL(canonicalPath, siteUrl).href },
-  ]),
-];
+const crumb = breadcrumbLd([
+  { label: 'Home', url: new URL('/', siteUrl).href },
+  { label: meta.name, url: new URL(canonicalPath, siteUrl).href },
+]);
+const jsonLd = isLive ? [webApplicationLd(siteUrl), crumb] : [crumb];
 ---
 
-<BaseLayout
-  title={title}
-  description={description}
-  canonicalPath={canonicalPath}
-  jsonLd={jsonLd}
->
+<BaseLayout title={title} description={description} canonicalPath={canonicalPath} jsonLd={jsonLd}>
   <Masthead back />
 
   <section class="tool-head">
@@ -44,20 +43,26 @@ const jsonLd = [
       <Breadcrumbs crumbs={[{ label: 'Tools', href: '/' }, { label: meta.name }]} />
       <p class="idx">{toolNumber(slug)} / {meta.category}</p>
       <h1>{meta.name}</h1>
-      <p class="lead">{meta.desc}</p>
+      {!isLive && <p class="lead">{meta.desc}</p>}
     </div>
   </section>
 
-  <section class="wrap coming">
-    <p class="section-label">Coming soon</p>
-    <p class="lead">
-      This tool is specified and on the roadmap. Its spec lives in
-      <code>specs/features/{slug}.md</code>.
-    </p>
-    <p class="note">
-      When built, all processing will happen in your browser — nothing uploaded.
-    </p>
-  </section>
+  {
+    isLive ? (
+      <Converter slug={slug} client:visible />
+    ) : (
+      <section class="wrap coming">
+        <p class="section-label">Coming soon</p>
+        <p class="lead">
+          This tool is specified and on the roadmap. Its spec lives in
+          <code>specs/features/{slug}.md</code>.
+        </p>
+        <p class="note">
+          When built, all processing will happen in your browser — nothing uploaded.
+        </p>
+      </section>
+    )
+  }
 
   <Footer />
 </BaseLayout>
