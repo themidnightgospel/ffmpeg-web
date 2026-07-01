@@ -58,7 +58,7 @@ export const TOOLS: readonly ToolMeta[] = [
   { slug: 'contact-sheet', name: 'Contact Sheet', category: 'Extraction & capture', desc: 'Build a grid of preview frames.', status: 'planned' },
   { slug: 'poster-frame-picker', name: 'Poster Frame Picker', category: 'Extraction & capture', desc: 'Choose the perfect cover frame.', status: 'planned' },
   { slug: 'metadata-viewer', name: 'Metadata Viewer', category: 'Extraction & capture', desc: 'Inspect codecs, streams, and tags.', status: 'planned' },
-  { slug: 'metadata-stripper', name: 'Metadata Stripper', category: 'Extraction & capture', desc: 'Remove hidden metadata for privacy.', status: 'planned' },
+  { slug: 'metadata-stripper', name: 'Metadata Stripper', category: 'Extraction & capture', desc: 'Remove hidden metadata for privacy.', status: 'live' },
 
   // Social & platform
   { slug: 'social-media-presets', name: 'Social-Media Presets', category: 'Social & platform', desc: 'One-tap exports for every platform.', status: 'planned' },
