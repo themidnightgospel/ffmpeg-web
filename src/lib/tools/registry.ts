@@ -17,6 +17,7 @@ import { loopMaker } from './loop-maker';
 import { colorAdjuster } from './color-adjuster';
 import { deinterlacer } from './deinterlacer';
 import { aspectRatioChanger } from './aspect-ratio-changer';
+import { imageFormatConverter } from './image-format-converter';
 
 /* Registry of implemented ("live") tools. Add a tool's config here to wire it up.
    The catalogue metadata for all tools (including planned ones) lives in @/data/tools. */
@@ -39,6 +40,7 @@ const LIVE_TOOLS: Tool[] = [
   colorAdjuster,
   deinterlacer,
   aspectRatioChanger,
+  imageFormatConverter,
 ];
 
 const bySlug = new Map<string, Tool>(LIVE_TOOLS.map((t) => [t.slug, t]));

@@ -12,7 +12,7 @@ export const TOOLS: readonly ToolMeta[] = [
   { slug: 'gif-to-video', name: 'GIF → Video', category: 'Format conversion', desc: 'Convert animated GIFs to MP4 or WebM.', status: 'planned' },
   { slug: 'image-sequence-to-video', name: 'Image Sequence → Video', category: 'Format conversion', desc: 'Stitch frames into a video file.', status: 'planned' },
   { slug: 'video-to-image-sequence', name: 'Video → Image Sequence', category: 'Format conversion', desc: 'Export every frame as an image.', status: 'planned' },
-  { slug: 'image-format-converter', name: 'Image Format Converter', category: 'Format conversion', desc: 'PNG, JPG, WebP, AVIF, and back.', status: 'planned' },
+  { slug: 'image-format-converter', name: 'Image Format Converter', category: 'Format conversion', desc: 'PNG, JPG, WebP, AVIF, and back.', status: 'live' },
 
   // Compression
   { slug: 'video-compressor', name: 'Video Compressor', category: 'Compression', desc: 'Shrink file size, keep it watchable.', status: 'live' },
