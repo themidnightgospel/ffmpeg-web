@@ -1,0 +1,26 @@
+---
+import type { ConversionPair } from '@/lib/kb/pairs';
+
+interface Props {
+  pairs: ConversionPair[];
+}
+
+const { pairs } = Astro.props;
+---
+
+{
+  pairs.length > 0 && (
+    <section class="related">
+      <p class="section-label">Related conversions</p>
+      <ul class="related-list">
+        {pairs.map((p) => (
+          <li>
+            <a href={`/convert/${p.slug}`}>
+              {p.from.name} to {p.to.name}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </section>
+  )
+}

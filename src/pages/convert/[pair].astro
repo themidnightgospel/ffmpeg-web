@@ -1,0 +1,92 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Masthead from '@/components/Masthead.astro';
+import Footer from '@/components/Footer.astro';
+import Breadcrumbs from '@/components/Breadcrumbs.astro';
+import RelatedConversions from '@/components/RelatedConversions.astro';
+import Converter from '@/components/Converter.tsx';
+import { PAIRS, getPair, relatedPairs } from '@/lib/kb/pairs';
+import { buildPairContent } from '@/lib/kb/content';
+import { howToLd, faqPageLd, breadcrumbLd } from '@/lib/seo/jsonld';
+
+export function getStaticPaths() {
+  return PAIRS.map((pair) => ({ params: { pair: pair.slug } }));
+}
+
+const { pair: pairSlug } = Astro.params;
+const pair = pairSlug ? getPair(pairSlug) : undefined;
+if (!pair) throw new Error(`Unknown conversion pair: ${pairSlug}`);
+
+const content = buildPairContent(pair);
+const related = relatedPairs(pair);
+const siteUrl = Astro.site?.href ?? 'https://ffmpeg.web';
+const canonicalPath = `/convert/${pair.slug}`;
+
+const title = `Convert ${pair.from.name} to ${pair.to.name} — Free, In-Browser | ffmpeg.web`;
+const description = `Convert ${pair.from.name} to ${pair.to.name} free and privately in your browser. No uploads, no watermarks — powered by ffmpeg.wasm.`;
+const howToTitle = `How to convert ${pair.from.name} to ${pair.to.name}`;
+
+const jsonLd = [
+  howToLd(howToTitle, content.steps),
+  faqPageLd(content.faqs),
+  breadcrumbLd([
+    { label: 'Home', url: new URL('/', siteUrl).href },
+    { label: 'Convert', url: new URL('/convert/', siteUrl).href },
+    { label: `${pair.from.name} to ${pair.to.name}`, url: new URL(canonicalPath, siteUrl).href },
+  ]),
+];
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  canonicalPath={canonicalPath}
+  jsonLd={jsonLd}
+>
+  <Masthead back />
+
+  <section class="tool-head">
+    <div class="wrap">
+      <Breadcrumbs
+        crumbs={[
+          { label: 'Convert', href: '/convert/' },
+          { label: `${pair.from.name} to ${pair.to.name}` },
+        ]}
+      />
+      <h1>Convert {pair.from.name} to {pair.to.name}</h1>
+      <p class="lead">{content.intro}</p>
+    </div>
+  </section>
+
+  <Converter
+    slug={pair.toolSlug}
+    initialValues={{ format: pair.to.id }}
+    sourceHint={pair.from.id}
+    client:visible
+  />
+
+  <article class="wrap prose">
+    <h2>{pair.from.name} vs {pair.to.name}</h2>
+    <p>{content.comparison}</p>
+
+    <h2>When to convert {pair.from.name} to {pair.to.name}</h2>
+    <p>{content.whenToUse}</p>
+
+    <h2>{howToTitle}</h2>
+    <ol>{content.steps.map((step) => <li>{step}</li>)}</ol>
+
+    <h2>Frequently asked questions</h2>
+    <dl class="faq">
+      {content.faqs.map((f) => (
+        <Fragment>
+          <dt>{f.q}</dt>
+          <dd>{f.a}</dd>
+        </Fragment>
+      ))}
+    </dl>
+  </article>
+
+  <div class="wrap"><RelatedConversions pairs={related} /></div>
+
+  <Footer />
+</BaseLayout>

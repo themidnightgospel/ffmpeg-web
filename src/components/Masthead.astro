@@ -1,0 +1,33 @@
+---
+interface Props {
+  back?: boolean;
+  meta?: string;
+}
+
+const { back = false, meta = '54 Tools · 100% Client-Side' } = Astro.props;
+---
+
+<header class="masthead">
+  <div class="wrap masthead-inner">
+    {
+      back ? (
+        <a class="back" href="/">
+          <span class="arrow">←</span> All tools
+        </a>
+      ) : (
+        <a class="brand" href="/">
+          ffmpeg<span class="dot">.</span>web
+        </a>
+      )
+    }
+    {
+      back ? (
+        <a class="brand" href="/">
+          ffmpeg<span class="dot">.</span>web
+        </a>
+      ) : (
+        <div class="masthead-meta">{meta}</div>
+      )
+    }
+  </div>
+</header>

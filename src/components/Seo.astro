@@ -1,0 +1,35 @@
+---
+interface Props {
+  title: string;
+  description: string;
+  canonicalPath?: string;
+  jsonLd?: Record<string, unknown>[];
+}
+
+const { title, description, canonicalPath, jsonLd = [] } = Astro.props;
+
+const site = Astro.site;
+const path = canonicalPath ?? Astro.url.pathname;
+const canonical = site ? new URL(path, site).href : path;
+const ogImage = site ? new URL('/og-default.png', site).href : '/og-default.png';
+
+// Escape "<" so a "</script>" inside any string can't break out of the tag.
+const serialize = (obj: Record<string, unknown>) => JSON.stringify(obj).replace(/</g, '\\u003c');
+---
+
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>{title}</title>
+<meta name="description" content={description} />
+<link rel="canonical" href={canonical} />
+
+<meta property="og:type" content="website" />
+<meta property="og:title" content={title} />
+<meta property="og:description" content={description} />
+<meta property="og:url" content={canonical} />
+<meta property="og:image" content={ogImage} />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content={title} />
+<meta name="twitter:description" content={description} />
+
+{jsonLd.map((obj) => <script type="application/ld+json" set:html={serialize(obj)} />)}

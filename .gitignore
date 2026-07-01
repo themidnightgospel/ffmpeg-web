@@ -1,0 +1,15 @@
+node_modules/
+dist/
+*.local
+.DS_Store
+.astro/
+.vite/
+
+# Self-hosted ffmpeg core is copied from node_modules at build time
+public/ffmpeg/
+
+# Test artifacts
+tests/e2e/.fixtures/
+test-results/
+playwright-report/
+playwright/.cache/

@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>ffmpeg.web — Design System</title>
+<meta name="description" content="The design system for ffmpeg.web: tokens, typography, and components in the Swiss style." />
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
+<!-- The design system itself -->
+<link rel="stylesheet" href="ffmpeg-web.css" />
+
+<style>
+  /* --------- Styleguide-only chrome (prefixed .sg-, not part of the system) --------- */
+  .sg-shell { display: grid; grid-template-columns: 240px 1fr; align-items: start; }
+  .sg-nav {
+    position: sticky; top: 0; align-self: start; height: 100vh; overflow: auto;
+    border-right: 1px solid var(--ink); padding: 28px var(--gutter) 40px;
+  }
+  .sg-nav .brand { margin-bottom: 4px; }
+  .sg-nav .eyebrow { margin-bottom: 24px; }
+  .sg-nav a {
+    display: block; font-size: 13px; color: var(--grey); padding: 5px 0;
+    border-bottom: 1px solid transparent; width: max-content;
+  }
+  .sg-nav a:hover { color: var(--red); }
+  .sg-nav .navhead { font-size: 10px; text-transform: uppercase; letter-spacing: 0.14em; color: var(--grey-light); margin: 20px 0 6px; }
+
+  .sg-main { padding: 0 var(--gutter) 120px; min-width: 0; }
+  .sg-hero { padding: clamp(40px,7vw,80px) 0 clamp(28px,4vw,48px); border-bottom: 1px solid var(--ink); }
+
+  .sg-section { padding: clamp(40px,6vw,72px) 0; border-bottom: 1px solid var(--hairline); }
+  .sg-section > .eyebrow { color: var(--red); margin-bottom: 10px; }
+  .sg-section > h2 { font-size: clamp(24px,3.5vw,36px); font-weight: 800; letter-spacing: -0.03em; margin: 0 0 8px; }
+  .sg-section > .lead { margin-bottom: 32px; }
+
+  .sg-demo {
+    border: 1px solid var(--hairline); padding: clamp(20px,4vw,40px);
+    margin: 18px 0 10px; background: var(--paper);
+  }
+  .sg-demo.tight { padding: 22px; }
+  .sg-cap { font-size: 12px; color: var(--grey); margin: 0 0 22px; max-width: 60ch; }
+  .sg-cap code, code.sg-code {
+    font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    font-size: 12px; background: #f4f4f4; padding: 2px 6px; color: var(--ink);
+  }
+  .sg-grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; }
+  .sg-row { display: flex; flex-wrap: wrap; gap: 16px; align-items: center; }
+
+  /* Color swatches */
+  .sg-swatches { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px,1fr)); gap: 2px; border: 1px solid var(--hairline); }
+  .sg-swatch { padding: 16px; border: 1px solid var(--hairline); }
+  .sg-chip { height: 64px; margin: -16px -16px 14px; border-bottom: 1px solid var(--hairline); }
+  .sg-swatch .nm { font-size: 13px; font-weight: 600; }
+  .sg-swatch .tk, .sg-swatch .hx { font-size: 11px; color: var(--grey); font-family: ui-monospace, Menlo, Consolas, monospace; margin-top: 3px; }
+
+  /* Type specimen rows */
+  .sg-spec { display: grid; grid-template-columns: 150px 1fr; gap: 24px; padding: 16px 0; border-top: 1px solid var(--hairline); align-items: baseline; }
+  .sg-spec:first-child { border-top: 0; }
+  .sg-spec .meta { font-size: 11px; color: var(--grey); font-family: ui-monospace, Menlo, Consolas, monospace; }
+
+  /* Spacing scale */
+  .sg-space-row { display: flex; align-items: center; gap: 16px; padding: 6px 0; }
+  .sg-space-bar { background: var(--red); height: 14px; }
+  .sg-space-row .lab { font-size: 12px; color: var(--grey); font-family: ui-monospace, Menlo, Consolas, monospace; width: 130px; }
+
+  @media (max-width: 900px) {
+    .sg-shell { grid-template-columns: 1fr; }
+    .sg-nav { position: static; height: auto; border-right: 0; border-bottom: 1px solid var(--ink); }
+    .sg-grid2 { grid-template-columns: 1fr; }
+    .sg-spec { grid-template-columns: 1fr; gap: 6px; }
+  }
+</style>
+</head>
+<body>
+<a class="skip" href="#buttons">Skip to components</a>
+
+<div class="sg-shell">
+  <!-- Side navigation -->
+  <nav class="sg-nav" aria-label="Design system contents">
+    <div class="brand">ffmpeg<span class="dot">.</span>web</div>
+    <p class="eyebrow">Design System</p>
+
+    <div class="navhead">Foundations</div>
+    <a href="#principles">Principles</a>
+    <a href="#color">Color</a>
+    <a href="#type">Typography</a>
+    <a href="#spacing">Spacing</a>
+    <a href="#layout">Layout</a>
+
+    <div class="navhead">Components</div>
+    <a href="#buttons">Buttons</a>
+    <a href="#segmented">Segmented control</a>
+    <a href="#inputs">Inputs &amp; fields</a>
+    <a href="#time">Time field</a>
+    <a href="#checkbox">Checkbox</a>
+    <a href="#disclosure">Disclosure</a>
+    <a href="#slider">Slider</a>
+    <a href="#drop">Drop zone</a>
+    <a href="#filters">Filter chips</a>
+    <a href="#catalogue">Catalogue item</a>
+    <a href="#tags">Tags &amp; badges</a>
+    <a href="#progress">Progress</a>
+    <a href="#result">Result &amp; note</a>
+    <a href="#footer">Footer</a>
+  </nav>
+
+  <!-- Content -->
+  <main class="sg-main">
+    <header class="sg-hero">
+      <p class="eyebrow" style="color:var(--red)">The system behind every tool</p>
+      <h1 class="title" style="margin-top:14px">Design System<em>.</em></h1>
+      <p class="lead" style="margin-top:16px">
+        One Swiss-typographic language — white paper, near-black ink, a single signal-red accent,
+        hairline rules, sharp corners. Every token and component below lives in
+        <code class="sg-code">ffmpeg-web.css</code> and is shared across the hub and all 54 tool pages.
+      </p>
+    </header>
+
+    <!-- PRINCIPLES -->
+    <section class="sg-section" id="principles">
+      <p class="eyebrow">Foundations</p>
+      <h2>Principles</h2>
+      <div class="sg-grid2">
+        <div>
+          <p class="lead"><strong>Restraint over decoration.</strong> Flat surfaces, no shadows, no gradients, no rounded corners. Structure comes from hairline rules and a strict grid.</p>
+          <p class="lead" style="margin-top:16px"><strong>One accent, used deliberately.</strong> Signal red marks only what matters: links, the active state, focus, and progress. Never as decoration.</p>
+        </div>
+        <div>
+          <p class="lead"><strong>Type does the work.</strong> A single grotesque (Inter) at a tight display scale, with uppercase tracked-out labels for hierarchy.</p>
+          <p class="lead" style="margin-top:16px"><strong>Accessible by default.</strong> Real semantics, visible focus rings, keyboard support, and reduced-motion respect are built into the components.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- COLOR -->
+    <section class="sg-section" id="color">
+      <p class="eyebrow">Foundations</p>
+      <h2>Color</h2>
+      <p class="lead">The entire interface is built from six values. Red is the only chromatic color and is rationed.</p>
+      <div class="sg-swatches" style="margin-top:24px">
+        <div class="sg-swatch"><div class="sg-chip" style="background:#fff"></div><div class="nm">Paper</div><div class="tk">--paper</div><div class="hx">#ffffff</div></div>
+        <div class="sg-swatch"><div class="sg-chip" style="background:#111"></div><div class="nm">Ink</div><div class="tk">--ink</div><div class="hx">#111111</div></div>
+        <div class="sg-swatch"><div class="sg-chip" style="background:#6b6b6b"></div><div class="nm">Grey</div><div class="tk">--grey</div><div class="hx">#6b6b6b</div></div>
+        <div class="sg-swatch"><div class="sg-chip" style="background:#9a9a9a"></div><div class="nm">Grey light</div><div class="tk">--grey-light</div><div class="hx">#9a9a9a</div></div>
+        <div class="sg-swatch"><div class="sg-chip" style="background:#e2e2e2"></div><div class="nm">Hairline</div><div class="tk">--hairline</div><div class="hx">#e2e2e2</div></div>
+        <div class="sg-swatch"><div class="sg-chip" style="background:#e30613"></div><div class="nm">Signal red</div><div class="tk">--red</div><div class="hx">#e30613</div></div>
+      </div>
+    </section>
+
+    <!-- TYPOGRAPHY -->
+    <section class="sg-section" id="type">
+      <p class="eyebrow">Foundations</p>
+      <h2>Typography</h2>
+      <p class="lead">Inter, 400–800. Tight negative tracking on display sizes; wide positive tracking on uppercase labels.</p>
+      <div class="sg-demo">
+        <div class="sg-spec"><div class="meta">.display<br>clamp 40–96px / 800</div><div class="display">Convert media.</div></div>
+        <div class="sg-spec"><div class="meta">.title<br>clamp 34–72px / 800</div><h1 class="title" style="margin:0">Video Converter</h1></div>
+        <div class="sg-spec"><div class="meta">.subtitle<br>clamp 28–40px / 800</div><div class="subtitle">Output settings</div></div>
+        <div class="sg-spec"><div class="meta">.lead<br>16px / grey</div><p class="lead" style="margin:0">Change a video's container and codec, right in your browser.</p></div>
+        <div class="sg-spec"><div class="meta">body<br>16px / 1.5</div><p style="margin:0">The quick brown fox jumps over the lazy dog. Files never leave your device.</p></div>
+        <div class="sg-spec"><div class="meta">.eyebrow<br>11px / .16em</div><p class="eyebrow" style="margin:0">A suite of in-browser media tools</p></div>
+        <div class="sg-spec"><div class="meta">.section-label<br>11px / red tick</div><p class="section-label" style="margin:0">Source file</p></div>
+        <div class="sg-spec"><div class="meta">.tabular<br>numerals</div><span class="tabular" style="font-size:22px;font-weight:700">00:12:48 · 1920×1080 · 24.7 MB</span></div>
+      </div>
+    </section>
+
+    <!-- SPACING -->
+    <section class="sg-section" id="spacing">
+      <p class="eyebrow">Foundations</p>
+      <h2>Spacing</h2>
+      <p class="lead">A step scale in pixels, exposed as <code class="sg-code">--space-*</code> tokens. Use it for margins, padding, and gaps.</p>
+      <div class="sg-demo tight" id="spaceScale"></div>
+    </section>
+
+    <!-- LAYOUT -->
+    <section class="sg-section" id="layout">
+      <p class="eyebrow">Foundations</p>
+      <h2>Layout</h2>
+      <p class="lead">Content is capped at <code class="sg-code">--measure 1180px</code> and inset by a fluid <code class="sg-code">--gutter</code>. Tool pages use a two-column <code class="sg-code">.work</code> grid (source · settings) that collapses on mobile. Structure is drawn with hairlines, never boxes with shadows.</p>
+      <div class="sg-demo">
+        <div class="work" style="border:1px solid var(--hairline)">
+          <div class="col-a"><p class="section-label">Source file</p><p class="hint">Left column · <code class="sg-code">.col-a</code></p></div>
+          <div class="col-b"><p class="section-label">Output settings</p><p class="hint">Right column · <code class="sg-code">.col-b</code></p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- BUTTONS -->
+    <section class="sg-section" id="buttons">
+      <p class="eyebrow">Components</p>
+      <h2>Buttons</h2>
+      <p class="sg-cap">Primary is ink-filled and turns red on hover. Secondary/download is paper with an ink border. Disabled greys out. The trailing arrow flips to white on hover.</p>
+      <div class="sg-demo sg-row">
+        <button class="btn" type="button">Convert <span class="arrow" aria-hidden="true">→</span></button>
+        <a class="btn btn--secondary" href="#" onclick="return false">Download <span class="arrow" aria-hidden="true">↓</span></a>
+        <button class="btn btn--sm" type="button">Small action</button>
+        <button class="btn" type="button" disabled>Convert <span class="arrow" aria-hidden="true">→</span></button>
+      </div>
+    </section>
+
+    <!-- SEGMENTED -->
+    <section class="sg-section" id="segmented">
+      <p class="eyebrow">Components</p>
+      <h2>Segmented control</h2>
+      <p class="sg-cap">The house style for single-choice options — <strong>preferred over native dropdowns</strong>. Accessible radio inputs styled as outlined buttons; selected fills ink, hover/focus is red. Markup: <code class="sg-code">label.seg &gt; input[type=radio] + span</code> inside <code class="sg-code">.segmented[role=radiogroup]</code>.</p>
+      <div class="sg-demo">
+        <div class="field">
+          <span class="flabel" id="dsFmt">Target format</span>
+          <div class="segmented" role="radiogroup" aria-labelledby="dsFmt">
+            <label class="seg"><input type="radio" name="dsfmt" value="mp4" checked><span>MP4</span></label>
+            <label class="seg"><input type="radio" name="dsfmt" value="webm"><span>WebM</span></label>
+            <label class="seg"><input type="radio" name="dsfmt" value="mkv"><span>MKV</span></label>
+            <label class="seg"><input type="radio" name="dsfmt" value="mov"><span>MOV</span></label>
+            <label class="seg"><input type="radio" name="dsfmt" value="avi"><span>AVI</span></label>
+            <label class="seg"><input type="radio" name="dsfmt" value="flv"><span>FLV</span></label>
+          </div>
+        </div>
+        <div class="field" style="margin-bottom:0">
+          <span class="flabel" id="dsVc">Video codec</span>
+          <div class="segmented" role="radiogroup" aria-labelledby="dsVc">
+            <label class="seg"><input type="radio" name="dsvc" value="h264" checked><span>H.264</span></label>
+            <label class="seg"><input type="radio" name="dsvc" value="vp9"><span>VP9</span></label>
+            <label class="seg"><input type="radio" name="dsvc" value="copy"><span>Keep original</span></label>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- INPUTS -->
+    <section class="sg-section" id="inputs">
+      <p class="eyebrow">Components</p>
+      <h2>Inputs &amp; fields</h2>
+      <p class="sg-cap">Text / number / textarea inputs for values a button set can't express — timestamps, dimensions, filenames. Each sits in a <code class="sg-code">.field</code> with an uppercase <code class="sg-code">.flabel</code>.</p>
+      <div class="sg-demo sg-grid2">
+        <div class="field"><label for="dsw">Width (px)</label><input class="input" id="dsw" type="number" value="1920" /></div>
+        <div class="field"><label for="dso">Output name</label><input class="input" id="dso" type="text" placeholder="clip.mp4" /></div>
+        <div class="field" style="grid-column:1/-1;margin:0"><label for="dsn">Notes</label><textarea class="input" id="dsn" placeholder="Optional…"></textarea></div>
+      </div>
+    </section>
+
+    <!-- TIME FIELD -->
+    <section class="sg-section" id="time">
+      <p class="eyebrow">Components</p>
+      <h2>Time field</h2>
+      <p class="sg-cap">Structured <code class="sg-code">HH : MM : SS . mmm</code> entry for trim in/out points, timestamps, and seeks — used by the Trimmer, Splitter, Thumbnail, and any tool that needs a precise moment. Each segment accepts digits only, clamps to range, zero-pads on blur, and auto-advances; arrow keys and Tab move between segments. Wrap in a <code class="sg-code">.field</code> with a <code class="sg-code">.flabel</code> like any other control.</p>
+      <div class="sg-demo sg-row" style="gap:32px;align-items:flex-end">
+        <div class="field" style="margin:0">
+          <span class="flabel" id="dsStartLbl">Start time</span>
+          <div class="timefield" role="group" aria-labelledby="dsStartLbl" data-timefield>
+            <input class="tf-seg" inputmode="numeric" maxlength="2" value="00" aria-label="Hours" data-max="99" />
+            <span class="tf-colon" aria-hidden="true">:</span>
+            <input class="tf-seg" inputmode="numeric" maxlength="2" value="00" aria-label="Minutes" data-max="59" />
+            <span class="tf-colon" aria-hidden="true">:</span>
+            <input class="tf-seg" inputmode="numeric" maxlength="2" value="12" aria-label="Seconds" data-max="59" />
+            <span class="tf-dot" aria-hidden="true">.</span>
+            <input class="tf-seg tf-ms" inputmode="numeric" maxlength="3" value="480" aria-label="Milliseconds" data-max="999" data-pad="3" />
+          </div>
+        </div>
+        <div class="field" style="margin:0">
+          <span class="flabel" id="dsEndLbl">End time</span>
+          <div class="timefield" role="group" aria-labelledby="dsEndLbl" data-timefield>
+            <input class="tf-seg" inputmode="numeric" maxlength="2" value="00" aria-label="Hours" data-max="99" />
+            <span class="tf-colon" aria-hidden="true">:</span>
+            <input class="tf-seg" inputmode="numeric" maxlength="2" value="01" aria-label="Minutes" data-max="59" />
+            <span class="tf-colon" aria-hidden="true">:</span>
+            <input class="tf-seg" inputmode="numeric" maxlength="2" value="37" aria-label="Seconds" data-max="59" />
+            <span class="tf-dot" aria-hidden="true">.</span>
+            <input class="tf-seg tf-ms" inputmode="numeric" maxlength="3" value="000" aria-label="Milliseconds" data-max="999" data-pad="3" />
+          </div>
+        </div>
+      </div>
+      <p class="sg-cap" style="margin-top:16px">Milliseconds are optional — drop the <code class="sg-code">.tf-dot</code> + <code class="sg-code">.tf-ms</code> segment for whole-second tools. A disabled field adds <code class="sg-code">.is-disabled</code>.</p>
+    </section>
+
+    <!-- CHECKBOX -->
+    <section class="sg-section" id="checkbox">
+      <p class="eyebrow">Components</p>
+      <h2>Checkbox</h2>
+      <p class="sg-cap">A bordered, generously-hit row with a custom red check. Used for booleans like “remux (no re-encode)”.</p>
+      <div class="sg-demo">
+        <label class="check" for="dsremux">
+          <input type="checkbox" id="dsremux" checked />
+          <span class="ctext"><strong>Remux — no re-encode</strong><span>Repackage streams without quality loss. Much faster; codecs must be compatible.</span></span>
+        </label>
+      </div>
+    </section>
+
+    <!-- DISCLOSURE -->
+    <section class="sg-section" id="disclosure">
+      <p class="eyebrow">Components</p>
+      <h2>Disclosure</h2>
+      <p class="sg-cap">Progressive disclosure for advanced settings. A ruled <code class="sg-code">&lt;details.adv&gt;</code> whose “+” rotates to “×” when open.</p>
+      <div class="sg-demo tight">
+        <details class="adv">
+          <summary>Advanced options <span class="chev" aria-hidden="true">+</span></summary>
+          <div class="adv-body"><p class="hint" style="margin:0">Extra controls live here — kept out of the way until needed.</p></div>
+        </details>
+      </div>
+    </section>
+
+    <!-- SLIDER -->
+    <section class="sg-section" id="slider">
+      <p class="eyebrow">Components</p>
+      <h2>Slider</h2>
+      <p class="sg-cap">A hairline track with a square red thumb, a live value readout, and end labels. Used for CRF/quality, volume, speed.</p>
+      <div class="sg-demo">
+        <div class="slider-row">
+          <span class="flabel" id="dsCrf" style="margin:0">CRF quality</span>
+          <span class="val"><span id="dsCrfVal">23</span><small>lower = better</small></span>
+        </div>
+        <input type="range" class="slider" id="dsCrfRange" min="18" max="28" step="1" value="23" aria-labelledby="dsCrf" />
+        <div class="scale"><span>18 · High quality</span><span>28 · Small file</span></div>
+      </div>
+    </section>
+
+    <!-- DROP ZONE -->
+    <section class="sg-section" id="drop">
+      <p class="eyebrow">Components</p>
+      <h2>Drop zone</h2>
+      <p class="sg-cap">The universal file input. States: idle · <code class="sg-code">.drag</code> (red, while dragging) · <code class="sg-code">.has-file</code> (shows name + size). Click, keyboard, and drag-drop all supported. Try dropping a file, or click to load a sample state.</p>
+      <div class="sg-demo">
+        <div class="drop" id="dsDrop" role="button" tabindex="0" aria-label="Drop a file or press Enter to browse">
+          <div class="prompt">
+            <div class="plus" aria-hidden="true">+</div>
+            <p class="headline">Drop a video or click to browse</p>
+            <p class="hint">MP4, MOV, MKV, WebM, AVI, FLV · processed locally</p>
+          </div>
+          <div class="filemeta" aria-live="polite">
+            <div class="fname">interview-final.mov</div>
+            <div class="fsize">248 MB · ready to convert</div>
+            <span class="change" role="button">Choose a different file</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FILTERS -->
+    <section class="sg-section" id="filters">
+      <p class="eyebrow">Components</p>
+      <h2>Filter chips</h2>
+      <p class="sg-cap">Category toggles on the hub. <code class="sg-code">aria-pressed</code> drives the ink-filled active state; a trailing count sits in <code class="sg-code">.n</code>.</p>
+      <div class="sg-demo tight">
+        <div class="filters" id="dsFilters" role="group" aria-label="Category filters">
+          <button class="filter" type="button" aria-pressed="true">All<span class="n">54</span></button>
+          <button class="filter" type="button" aria-pressed="false">Format conversion<span class="n">8</span></button>
+          <button class="filter" type="button" aria-pressed="false">Compression<span class="n">4</span></button>
+          <button class="filter" type="button" aria-pressed="false">Audio tools<span class="n">8</span></button>
+          <button class="filter" type="button" aria-pressed="false">Advanced<span class="n">6</span></button>
+        </div>
+      </div>
+    </section>
+
+    <!-- CATALOGUE -->
+    <section class="sg-section" id="catalogue">
+      <p class="eyebrow">Components</p>
+      <h2>Catalogue item</h2>
+      <p class="sg-cap">Each tool on the hub is a numbered editorial entry: running number, name (red underline draws in on hover), description, category tag, and a “Live →” marker when the tool exists. The whole card is a link.</p>
+      <div class="sg-demo tight">
+        <div class="cat-heading"><h2>Format conversion</h2><span class="rule"></span><span class="cat-count">02</span></div>
+        <div class="grid">
+          <article class="item">
+            <div class="num">01</div>
+            <div class="body">
+              <a class="stretch" href="#" onclick="return false" aria-label="Video Converter"></a>
+              <span class="name">Video Converter</span>
+              <p class="desc">Change container and codec of any video.</p>
+              <div class="tag">Format conversion</div>
+            </div>
+            <span class="live">Live →</span>
+          </article>
+          <article class="item">
+            <div class="num">02</div>
+            <div class="body">
+              <a class="stretch" href="#" onclick="return false" aria-label="Audio Converter (coming soon)"></a>
+              <span class="name">Audio Converter</span>
+              <p class="desc">Convert between MP3, WAV, FLAC, Opus.</p>
+              <div class="tag">Format conversion</div>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAGS -->
+    <section class="sg-section" id="tags">
+      <p class="eyebrow">Components</p>
+      <h2>Tags &amp; badges</h2>
+      <p class="sg-cap"><code class="sg-code">.tag</code> is a quiet uppercase category label. <code class="sg-code">.badge</code> is a red-outlined marker for status.</p>
+      <div class="sg-demo sg-row">
+        <span class="tag">Format conversion</span>
+        <span class="tag">Audio tools</span>
+        <span class="badge">Live</span>
+        <span class="badge">New</span>
+      </div>
+    </section>
+
+    <!-- PROGRESS -->
+    <section class="sg-section" id="progress">
+      <p class="eyebrow">Components</p>
+      <h2>Progress</h2>
+      <p class="sg-cap">A stage label, a big tabular percentage, and a hairline track with a red fill. Hidden until active via <code class="sg-code">.on</code>. Press to run a mock encode.</p>
+      <div class="sg-demo">
+        <button class="btn btn--sm" type="button" id="dsRun" style="margin-bottom:20px">Run mock encode</button>
+        <div class="progress on" id="dsProgress">
+          <div class="ptop"><span class="pstage" id="dsStage">Transcoding</span><span class="ppct"><span id="dsPct">0</span>%</span></div>
+          <div class="track"><div class="bar" id="dsBar" style="width:0%"></div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- RESULT -->
+    <section class="sg-section" id="result">
+      <p class="eyebrow">Components</p>
+      <h2>Result &amp; note</h2>
+      <p class="sg-cap">The completion panel (ink-bordered) with output name, estimated meta, and a download button. Below it, the inline privacy <code class="sg-code">.note</code> with its red square marker.</p>
+      <div class="sg-demo">
+        <div class="result on">
+          <span class="done-label">✓ Conversion complete</span>
+          <div class="outname">interview-final.mp4</div>
+          <div class="outmeta">Estimated 154 MB · MP4 · CRF 23</div>
+          <a class="btn btn--secondary" href="#" onclick="return false">Download <span class="arrow" aria-hidden="true">↓</span></a>
+        </div>
+        <p class="note">All processing happens in your browser — nothing is uploaded.</p>
+      </div>
+    </section>
+
+    <!-- FOOTER -->
+    <section class="sg-section" id="footer" style="border-bottom:0">
+      <p class="eyebrow">Components</p>
+      <h2>Footer</h2>
+      <p class="sg-cap">The site footer: brand, blurb, and two link columns under <code class="sg-code">.eyebrow</code> headings.</p>
+      <div class="sg-demo tight" style="padding:0">
+        <footer class="site" style="border-top:1px solid var(--ink)">
+          <div class="wrap foot-grid" style="padding-left:24px;padding-right:24px">
+            <div>
+              <div class="foot-brand">ffmpeg<span class="dot">.</span>web</div>
+              <p>Free, open, 100% client-side media tools powered by ffmpeg.wasm. No accounts, no uploads, no tracking.</p>
+            </div>
+            <div><p class="eyebrow">Project</p><ul><li><a href="#">Source on GitHub</a></li><li><a href="#">How it works</a></li><li><a href="#">Privacy</a></li></ul></div>
+            <div><p class="eyebrow">Colophon</p><ul><li>Set in Inter</li><li>ffmpeg.wasm</li><li>© 2026</li></ul></div>
+          </div>
+        </footer>
+      </div>
+    </section>
+  </main>
+</div>
+
+<script>
+  /* Styleguide demo wiring only — the components themselves are CSS-driven. */
+
+  // Spacing scale visualization
+  (function () {
+    const steps = [
+      ["--space-1", 4], ["--space-2", 8], ["--space-3", 12], ["--space-4", 16],
+      ["--space-5", 20], ["--space-6", 24], ["--space-8", 32], ["--space-10", 40],
+      ["--space-12", 48], ["--space-16", 64],
+    ];
+    const host = document.getElementById("spaceScale");
+    steps.forEach(([tok, px]) => {
+      const row = document.createElement("div");
+      row.className = "sg-space-row";
+      row.innerHTML = '<span class="lab">' + tok + " · " + px + 'px</span>' +
+        '<span class="sg-space-bar" style="width:' + px + 'px"></span>';
+      host.appendChild(row);
+    });
+  })();
+
+  // Time field: digit-only, clamp to range, zero-pad on blur, auto-advance + arrows.
+  // Reusable initializer — the same behavior ships with the component on tool pages.
+  function initTimeField(root) {
+    const segs = [...root.querySelectorAll(".tf-seg")];
+    segs.forEach((seg, i) => {
+      const max = parseInt(seg.dataset.max || "59", 10);
+      const width = parseInt(seg.dataset.pad || "2", 10);
+
+      seg.addEventListener("input", () => {
+        seg.value = seg.value.replace(/\D/g, "").slice(0, width);
+        if (seg.value !== "" && parseInt(seg.value, 10) > max) seg.value = String(max);
+        // Auto-advance once this segment is full.
+        if (seg.value.length >= width && i < segs.length - 1) segs[i + 1].focus();
+      });
+
+      seg.addEventListener("blur", () => {
+        seg.value = String(Math.min(parseInt(seg.value || "0", 10), max)).padStart(width, "0");
+      });
+
+      seg.addEventListener("focus", () => seg.select());
+
+      seg.addEventListener("keydown", (e) => {
+        if (e.key === "ArrowRight" && i < segs.length - 1) { e.preventDefault(); segs[i + 1].focus(); }
+        else if (e.key === "ArrowLeft" && i > 0) { e.preventDefault(); segs[i - 1].focus(); }
+        else if (e.key === "Backspace" && seg.value === "" && i > 0) { e.preventDefault(); segs[i - 1].focus(); }
+        else if (e.key === "ArrowUp" || e.key === "ArrowDown") {
+          e.preventDefault();
+          let n = parseInt(seg.value || "0", 10) + (e.key === "ArrowUp" ? 1 : -1);
+          if (n < 0) n = max; if (n > max) n = 0;
+          seg.value = String(n).padStart(width, "0");
+        }
+      });
+    });
+  }
+  document.querySelectorAll("[data-timefield]").forEach(initTimeField);
+
+  // Slider live value
+  (function () {
+    const r = document.getElementById("dsCrfRange");
+    const v = document.getElementById("dsCrfVal");
+    r.addEventListener("input", () => { v.textContent = r.value; });
+  })();
+
+  // Drop zone demo: click toggles a sample has-file state; drag shows .drag
+  (function () {
+    const d = document.getElementById("dsDrop");
+    d.addEventListener("click", () => d.classList.toggle("has-file"));
+    d.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); d.classList.toggle("has-file"); } });
+    ["dragenter", "dragover"].forEach(ev => d.addEventListener(ev, (e) => { e.preventDefault(); d.classList.add("drag"); }));
+    ["dragleave", "drop"].forEach(ev => d.addEventListener(ev, (e) => { e.preventDefault(); d.classList.remove("drag"); }));
+  })();
+
+  // Filter chips demo: single active
+  (function () {
+    const wrap = document.getElementById("dsFilters");
+    wrap.addEventListener("click", (e) => {
+      const b = e.target.closest(".filter"); if (!b) return;
+      wrap.querySelectorAll(".filter").forEach(x => x.setAttribute("aria-pressed", "false"));
+      b.setAttribute("aria-pressed", "true");
+    });
+  })();
+
+  // Progress demo
+  (function () {
+    const btn = document.getElementById("dsRun");
+    const bar = document.getElementById("dsBar");
+    const pct = document.getElementById("dsPct");
+    const stage = document.getElementById("dsStage");
+    btn.addEventListener("click", () => {
+      btn.disabled = true; stage.textContent = "Transcoding";
+      const start = performance.now(), DUR = 1800;
+      (function tick(now) {
+        const t = Math.min((now - start) / DUR, 1);
+        const p = Math.round((1 - Math.pow(1 - t, 2)) * 100);
+        bar.style.width = p + "%"; pct.textContent = p;
+        if (t < 1) requestAnimationFrame(tick);
+        else { stage.textContent = "Complete"; btn.disabled = false; }
+      })(start);
+    });
+  })();
+</script>
+</body>
+</html>

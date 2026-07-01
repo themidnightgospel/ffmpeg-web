@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Video Converter — ffmpeg.web</title>
+<meta name="description" content="Convert video containers and codecs entirely in your browser. Nothing is uploaded." />
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
+<style>
+  :root {
+    --paper: #ffffff;
+    --ink: #111111;
+    --grey: #6b6b6b;
+    --grey-light: #9a9a9a;
+    --hairline: #e2e2e2;
+    --red: #e30613;
+    --measure: 1180px;
+    --gutter: clamp(20px, 5vw, 64px);
+  }
+
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: "Inter", "Helvetica Neue", Helvetica, Arial, system-ui, sans-serif;
+    font-size: 16px;
+    line-height: 1.5;
+    font-feature-settings: "cv05" 1, "ss01" 1;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  a { color: inherit; text-decoration: none; }
+
+  .eyebrow {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    color: var(--grey);
+    margin: 0;
+  }
+
+  .wrap {
+    max-width: var(--measure);
+    margin: 0 auto;
+    padding: 0 var(--gutter);
+  }
+
+  .skip {
+    position: absolute; left: -9999px; top: 0;
+    background: var(--ink); color: #fff; padding: 10px 16px; z-index: 100; font-size: 13px;
+  }
+  .skip:focus { left: 12px; top: 12px; }
+
+  /* ---------- Masthead ---------- */
+  header.masthead { border-bottom: 1px solid var(--ink); }
+  .masthead-inner {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 24px;
+    padding: 22px 0 20px;
+    flex-wrap: wrap;
+  }
+  .brand { font-size: clamp(20px, 3vw, 26px); font-weight: 800; letter-spacing: -0.02em; }
+  .brand .dot { color: var(--red); }
+
+  .back {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--grey);
+    display: inline-flex;
+    gap: 8px;
+    align-items: center;
+  }
+  .back:hover { color: var(--red); }
+  .back:focus-visible { outline: 2px solid var(--red); outline-offset: 3px; }
+  .back .arrow { color: var(--red); }
+
+  /* ---------- Tool header ---------- */
+  .tool-head { border-bottom: 1px solid var(--hairline); padding: clamp(36px, 6vw, 64px) 0 clamp(28px, 4vw, 44px); }
+  .tool-head .idx { font-size: 12px; font-weight: 600; color: var(--red); letter-spacing: 0.14em; text-transform: uppercase; }
+  .tool-head h1 {
+    margin: 14px 0 0;
+    font-size: clamp(34px, 6.5vw, 72px);
+    line-height: 0.98;
+    font-weight: 800;
+    letter-spacing: -0.035em;
+  }
+  .tool-head p.lead { margin: 16px 0 0; font-size: 16px; color: var(--grey); max-width: 52ch; }
+
+  /* ---------- Work area: two columns ---------- */
+  .work {
+    display: grid;
+    grid-template-columns: 1.15fr 1fr;
+    gap: 0;
+    border-bottom: 1px solid var(--ink);
+  }
+  .col-drop { border-right: 1px solid var(--hairline); padding: clamp(28px, 4vw, 48px) clamp(28px, 4vw, 48px) clamp(28px, 4vw, 48px) 0; }
+  .col-controls { padding: clamp(28px, 4vw, 48px) 0 clamp(28px, 4vw, 48px) clamp(28px, 4vw, 48px); }
+
+  .section-label {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--grey);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 0 0 18px;
+  }
+  .section-label::before {
+    content: "";
+    width: 22px; height: 1px; background: var(--red);
+  }
+
+  /* ---------- Drop zone ---------- */
+  .drop {
+    border: 1px solid var(--ink);
+    background: var(--paper);
+    padding: clamp(32px, 6vw, 56px) 24px;
+    text-align: center;
+    cursor: pointer;
+    transition: background .12s, border-color .12s;
+    position: relative;
+  }
+  .drop:hover { background: #fafafa; }
+  .drop.drag { border-color: var(--red); background: #fff5f5; }
+  .drop:focus-visible { outline: 2px solid var(--red); outline-offset: 3px; }
+
+  .drop .plus { font-size: 34px; line-height: 1; color: var(--red); font-weight: 300; }
+  .drop .headline { margin: 16px 0 0; font-size: 17px; font-weight: 600; letter-spacing: -0.01em; }
+  .drop .hint { margin: 6px 0 0; font-size: 12.5px; color: var(--grey); }
+
+  .drop.has-file { text-align: left; padding: 22px 24px; border-color: var(--ink); }
+  .filemeta { display: none; }
+  .drop.has-file .filemeta { display: block; }
+  .drop.has-file .prompt { display: none; }
+  .filemeta .fname {
+    font-size: 16px; font-weight: 600; letter-spacing: -0.01em;
+    word-break: break-all;
+  }
+  .filemeta .fsize { font-size: 12.5px; color: var(--grey); margin-top: 4px; font-variant-numeric: tabular-nums; }
+  .filemeta .change { display: inline-block; margin-top: 12px; font-size: 12px; text-transform: uppercase; letter-spacing: 0.12em; color: var(--red); }
+  .filemeta .change:hover { text-decoration: underline; }
+
+  .sr-only {
+    position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+    overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0;
+  }
+
+  /* ---------- Form controls ---------- */
+  .field { margin: 0 0 20px; }
+  .field > label, .field > .flabel {
+    display: block;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--ink);
+    margin: 0 0 7px;
+  }
+  /* Segmented button group (replaces dropdowns) */
+  .segmented { display: flex; flex-wrap: wrap; gap: 8px; }
+  .seg { display: block; }
+  /* Hide the native radio dot but keep it focusable for keyboard/AT. */
+  .seg input {
+    position: absolute;
+    opacity: 0;
+    width: 1px; height: 1px;
+    margin: 0;
+    pointer-events: none;
+  }
+  .seg > span {
+    display: block;
+    border: 1px solid var(--ink);
+    padding: 10px 16px;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: background .12s, color .12s, border-color .12s;
+  }
+  .seg > span:hover { border-color: var(--red); color: var(--red); }
+  .seg input:checked + span { background: var(--ink); color: #fff; border-color: var(--ink); }
+  .seg input:checked + span:hover { background: var(--red); border-color: var(--red); color: #fff; }
+  .seg input:focus-visible + span { outline: 2px solid var(--red); outline-offset: 2px; }
+  .seg input:disabled + span,
+  .seg input:disabled + span:hover {
+    color: var(--grey-light); border-color: var(--hairline);
+    background: var(--paper); cursor: not-allowed;
+  }
+
+  /* checkbox */
+  .check {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    border: 1px solid var(--hairline);
+    padding: 14px;
+    cursor: pointer;
+    transition: border-color .12s;
+  }
+  .check:hover { border-color: var(--ink); }
+  .check input {
+    appearance: none;
+    width: 18px; height: 18px;
+    border: 1px solid var(--ink);
+    border-radius: 0;
+    flex: none;
+    margin: 1px 0 0;
+    cursor: pointer;
+    position: relative;
+  }
+  .check input:checked { background: var(--red); border-color: var(--red); }
+  .check input:checked::after {
+    content: "";
+    position: absolute; left: 5px; top: 1px;
+    width: 5px; height: 10px;
+    border: solid #fff; border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+  }
+  .check input:focus-visible { outline: 2px solid var(--red); outline-offset: 2px; }
+  .check .ctext strong { display: block; font-size: 14px; font-weight: 600; }
+  .check .ctext span { display: block; font-size: 12.5px; color: var(--grey); margin-top: 2px; }
+
+  /* Advanced disclosure */
+  details.adv { border-top: 1px solid var(--hairline); border-bottom: 1px solid var(--hairline); margin: 22px 0; }
+  details.adv summary {
+    list-style: none;
+    cursor: pointer;
+    padding: 16px 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+  }
+  details.adv summary::-webkit-details-marker { display: none; }
+  details.adv summary:focus-visible { outline: 2px solid var(--red); outline-offset: 3px; }
+  details.adv summary .chev { color: var(--red); transition: transform .18s; }
+  details.adv[open] summary .chev { transform: rotate(45deg); }
+  .adv-body { padding: 0 0 20px; }
+
+  /* Slider */
+  .slider-row { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 10px; }
+  .slider-row .flabel { margin: 0; }
+  .slider-row .val { font-size: 15px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .slider-row .val small { font-weight: 500; color: var(--grey); text-transform: uppercase; letter-spacing: 0.1em; font-size: 10px; margin-left: 6px; }
+
+  input[type="range"] { -webkit-appearance: none; appearance: none; width: 100%; height: 1px; background: var(--ink); margin: 14px 0 6px; }
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none; appearance: none;
+    width: 18px; height: 18px; border-radius: 0; background: var(--red); cursor: pointer; margin-top: -9px;
+  }
+  input[type="range"]::-moz-range-thumb { width: 18px; height: 18px; border-radius: 0; background: var(--red); border: none; cursor: pointer; }
+  input[type="range"]:focus-visible { outline: 2px solid var(--red); outline-offset: 6px; }
+  .scale { display: flex; justify-content: space-between; font-size: 10.5px; color: var(--grey-light); text-transform: uppercase; letter-spacing: 0.1em; }
+
+  /* ---------- Action / progress ---------- */
+  .action { padding: clamp(28px, 4vw, 44px) 0 clamp(40px, 6vw, 72px); }
+
+  .btn {
+    appearance: none;
+    font: inherit;
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    border: 1px solid var(--ink);
+    background: var(--ink);
+    color: #fff;
+    padding: 16px 32px;
+    cursor: pointer;
+    border-radius: 0;
+    transition: background .12s, color .12s;
+    display: inline-flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .btn:hover { background: var(--red); border-color: var(--red); }
+  .btn:focus-visible { outline: 2px solid var(--red); outline-offset: 3px; }
+  .btn[disabled] { background: #fff; color: var(--grey-light); border-color: var(--hairline); cursor: not-allowed; }
+  .btn .arrow { color: var(--red); }
+  .btn:hover .arrow { color: #fff; }
+
+  .btn.download { background: var(--paper); color: var(--ink); border-color: var(--ink); }
+  .btn.download:hover { background: var(--red); color: #fff; border-color: var(--red); }
+  .btn.download .arrow { color: var(--red); }
+  .btn.download:hover .arrow { color: #fff; }
+
+  .note { margin: 16px 0 0; font-size: 12.5px; color: var(--grey); display: flex; gap: 8px; align-items: center; }
+  .note::before { content: ""; width: 7px; height: 7px; background: var(--red); flex: none; }
+
+  /* Progress */
+  .progress { display: none; margin-top: 8px; }
+  .progress.on { display: block; }
+  .progress .ptop { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 10px; }
+  .progress .pstage { font-size: 11px; text-transform: uppercase; letter-spacing: 0.14em; color: var(--grey); }
+  .progress .ppct { font-size: 22px; font-weight: 700; font-variant-numeric: tabular-nums; letter-spacing: -0.02em; }
+  .track { height: 3px; background: var(--hairline); position: relative; overflow: hidden; }
+  .bar { position: absolute; left: 0; top: 0; bottom: 0; width: 0%; background: var(--red); transition: width .12s linear; }
+
+  /* Result */
+  .result { display: none; margin-top: 8px; border: 1px solid var(--ink); padding: 22px 24px; }
+  .result.on { display: block; }
+  .result .done-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.14em; color: var(--red); font-weight: 600; }
+  .result .outname { margin: 8px 0 4px; font-size: 18px; font-weight: 600; letter-spacing: -0.01em; word-break: break-all; }
+  .result .outmeta { font-size: 12.5px; color: var(--grey); font-variant-numeric: tabular-nums; }
+  .result .btn { margin-top: 18px; }
+
+  /* ---------- Footer ---------- */
+  footer { border-top: 1px solid var(--ink); padding: 32px 0 56px; }
+  footer .fi { display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 16px; }
+  footer .foot-brand { font-size: 16px; font-weight: 800; letter-spacing: -0.02em; }
+  footer .foot-brand .dot { color: var(--red); }
+  footer .fcopy { font-size: 12px; color: var(--grey); text-transform: uppercase; letter-spacing: 0.12em; }
+
+  /* ---------- Responsive ---------- */
+  @media (max-width: 820px) {
+    .work { grid-template-columns: 1fr; }
+    .col-drop { border-right: none; border-bottom: 1px solid var(--hairline); padding: clamp(24px,6vw,40px) 0; }
+    .col-controls { padding: clamp(24px,6vw,40px) 0; }
+  }
+  @media (max-width: 480px) {
+    .two-up { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+  <a class="skip" href="#converter">Skip to converter</a>
+
+  <!-- Masthead -->
+  <header class="masthead">
+    <div class="wrap masthead-inner">
+      <a class="back" href="index.html"><span class="arrow">←</span> All tools</a>
+      <a class="brand" href="index.html">ffmpeg<span class="dot">.</span>web</a>
+    </div>
+  </header>
+
+  <!-- Tool header -->
+  <section class="tool-head">
+    <div class="wrap">
+      <p class="idx">01 / Format conversion</p>
+      <h1>Video Converter</h1>
+      <p class="lead">Change a video's container and codec — MP4, WebM, MKV and more — right in your browser. Fast, free, and completely private.</p>
+    </div>
+  </section>
+
+  <!-- Work area -->
+  <section id="converter">
+    <form class="wrap work" id="convForm" novalidate>
+      <!-- LEFT: file drop -->
+      <div class="col-drop">
+        <p class="section-label">Source file</p>
+
+        <div class="drop" id="dropzone" role="button" tabindex="0"
+             aria-label="Drop a video here or press Enter to browse for a file">
+          <div class="prompt">
+            <div class="plus" aria-hidden="true">+</div>
+            <p class="headline">Drop a video or click to browse</p>
+            <p class="hint">MP4, MOV, MKV, WebM, AVI, FLV · processed locally</p>
+          </div>
+          <div class="filemeta" aria-live="polite">
+            <div class="fname" id="fname">—</div>
+            <div class="fsize" id="fsize"></div>
+            <span class="change" role="button">Choose a different file</span>
+          </div>
+        </div>
+
+        <input class="sr-only" type="file" id="fileInput" accept="video/*"
+               aria-label="Video file to convert" />
+      </div>
+
+      <!-- RIGHT: controls -->
+      <div class="col-controls">
+        <p class="section-label">Output settings</p>
+
+        <div class="field">
+          <span class="flabel" id="fmtLabel">Target format</span>
+          <div class="segmented" role="radiogroup" aria-labelledby="fmtLabel">
+            <label class="seg"><input type="radio" name="fmt" value="mp4" checked /><span>MP4</span></label>
+            <label class="seg"><input type="radio" name="fmt" value="webm" /><span>WebM</span></label>
+            <label class="seg"><input type="radio" name="fmt" value="mkv" /><span>MKV</span></label>
+            <label class="seg"><input type="radio" name="fmt" value="mov" /><span>MOV</span></label>
+            <label class="seg"><input type="radio" name="fmt" value="avi" /><span>AVI</span></label>
+            <label class="seg"><input type="radio" name="fmt" value="flv" /><span>FLV</span></label>
+          </div>
+        </div>
+
+        <div class="field">
+          <span class="flabel" id="vcodecLabel">Video codec</span>
+          <div class="segmented" role="radiogroup" aria-labelledby="vcodecLabel">
+            <label class="seg"><input type="radio" name="vcodec" value="h264" checked /><span>H.264</span></label>
+            <label class="seg"><input type="radio" name="vcodec" value="vp9" /><span>VP9</span></label>
+            <label class="seg"><input type="radio" name="vcodec" value="copy" /><span>Keep original</span></label>
+          </div>
+        </div>
+
+        <div class="field">
+          <span class="flabel" id="acodecLabel">Audio codec</span>
+          <div class="segmented" role="radiogroup" aria-labelledby="acodecLabel">
+            <label class="seg"><input type="radio" name="acodec" value="aac" checked /><span>AAC</span></label>
+            <label class="seg"><input type="radio" name="acodec" value="opus" /><span>Opus</span></label>
+            <label class="seg"><input type="radio" name="acodec" value="mp3" /><span>MP3</span></label>
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="check" for="remux">
+            <input type="checkbox" id="remux" />
+            <span class="ctext">
+              <strong>Remux — no re-encode</strong>
+              <span>Repackage streams without quality loss. Much faster; codecs must be compatible.</span>
+            </span>
+          </label>
+        </div>
+
+        <!-- Advanced -->
+        <details class="adv" id="adv">
+          <summary>
+            Advanced options
+            <span class="chev" aria-hidden="true">+</span>
+          </summary>
+          <div class="adv-body">
+            <div class="slider-row">
+              <span class="flabel" id="crfLabel">CRF quality</span>
+              <span class="val"><span id="crfVal">23</span><small>lower = better</small></span>
+            </div>
+            <input type="range" id="crf" min="18" max="28" step="1" value="23"
+                   aria-labelledby="crfLabel" aria-valuetext="CRF 23" />
+            <div class="scale">
+              <span>18 · High quality</span>
+              <span>28 · Small file</span>
+            </div>
+          </div>
+        </details>
+      </div>
+    </form>
+  </section>
+
+  <!-- Action / progress / result -->
+  <section class="wrap action">
+    <button class="btn" type="button" id="convertBtn" disabled>
+      Convert <span class="arrow" aria-hidden="true">→</span>
+    </button>
+
+    <div class="progress" id="progress" aria-live="polite">
+      <div class="ptop">
+        <span class="pstage" id="pstage">Transcoding</span>
+        <span class="ppct"><span id="ppct">0</span>%</span>
+      </div>
+      <div class="track"><div class="bar" id="bar"></div></div>
+    </div>
+
+    <div class="result" id="result" aria-live="polite">
+      <span class="done-label">✓ Conversion complete</span>
+      <div class="outname" id="outname">output.mp4</div>
+      <div class="outmeta" id="outmeta"></div>
+      <a class="btn download" href="#" id="downloadBtn" download>
+        Download <span class="arrow" aria-hidden="true">↓</span>
+      </a>
+    </div>
+
+    <p class="note">All processing happens in your browser — nothing is uploaded.</p>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="wrap fi">
+      <a class="foot-brand" href="index.html">ffmpeg<span class="dot">.</span>web</a>
+      <span class="fcopy">Free · Private · Client-side · © 2026</span>
+    </div>
+  </footer>
+
+  <script>
+    /* ------------------------------------------------------------------
+       Video Converter — DESIGN PROTOTYPE.
+       All conversion is mocked: fake progress + a fake download blob.
+    ------------------------------------------------------------------ */
+    const dropzone   = document.getElementById("dropzone");
+    const fileInput  = document.getElementById("fileInput");
+    const fnameEl    = document.getElementById("fname");
+    const fsizeEl    = document.getElementById("fsize");
+    const convertBtn = document.getElementById("convertBtn");
+    const remuxChk   = document.getElementById("remux");
+    const adv        = document.getElementById("adv");
+    const crf        = document.getElementById("crf");
+    const crfVal     = document.getElementById("crfVal");
+
+    const progress = document.getElementById("progress");
+    const bar      = document.getElementById("bar");
+    const ppct     = document.getElementById("ppct");
+    const pstage   = document.getElementById("pstage");
+    const result   = document.getElementById("result");
+    const outname  = document.getElementById("outname");
+    const outmeta  = document.getElementById("outmeta");
+    const downloadBtn = document.getElementById("downloadBtn");
+
+    let chosenFile = null;
+
+    /* ---- Segmented button groups (replace the old <select>s) ---- */
+    const groupVal = (name) => {
+      const el = document.querySelector('input[name="' + name + '"]:checked');
+      return el ? el.value : null;
+    };
+    const setGroupDisabled = (name, disabled) => {
+      document.querySelectorAll('input[name="' + name + '"]')
+        .forEach(r => { r.disabled = disabled; });
+    };
+
+    /* ---- File handling ---- */
+    function humanSize(bytes) {
+      if (!bytes && bytes !== 0) return "";
+      const u = ["B", "KB", "MB", "GB"];
+      let i = 0, n = bytes;
+      while (n >= 1024 && i < u.length - 1) { n /= 1024; i++; }
+      return n.toFixed(n >= 10 || i === 0 ? 0 : 1) + " " + u[i];
+    }
+
+    function setFile(file) {
+      chosenFile = file;
+      dropzone.classList.add("has-file");
+      fnameEl.textContent = file.name;
+      fsizeEl.textContent = humanSize(file.size) + " · ready to convert";
+      convertBtn.disabled = false;
+      // Reset any prior run.
+      progress.classList.remove("on");
+      result.classList.remove("on");
+    }
+
+    // Clicking the zone opens the picker (but not when using the inner "change" link,
+    // which itself is inside the zone and should also open it — so all clicks open it).
+    dropzone.addEventListener("click", () => fileInput.click());
+    dropzone.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === " ") { e.preventDefault(); fileInput.click(); }
+    });
+
+    fileInput.addEventListener("change", () => {
+      if (fileInput.files && fileInput.files[0]) setFile(fileInput.files[0]);
+    });
+
+    // Drag & drop
+    ["dragenter", "dragover"].forEach(ev =>
+      dropzone.addEventListener(ev, (e) => { e.preventDefault(); dropzone.classList.add("drag"); })
+    );
+    ["dragleave", "drop"].forEach(ev =>
+      dropzone.addEventListener(ev, (e) => { e.preventDefault(); dropzone.classList.remove("drag"); })
+    );
+    dropzone.addEventListener("drop", (e) => {
+      const f = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
+      if (f) { fileInput.files = e.dataTransfer.files; setFile(f); }
+    });
+
+    /* ---- CRF slider ---- */
+    crf.addEventListener("input", () => {
+      crfVal.textContent = crf.value;
+      crf.setAttribute("aria-valuetext", "CRF " + crf.value);
+    });
+
+    // Remux disables re-encode-only controls to communicate intent.
+    remuxChk.addEventListener("change", () => {
+      const on = remuxChk.checked;
+      setGroupDisabled("vcodec", on);
+      setGroupDisabled("acodec", on);
+      crf.disabled = on;
+      if (on) adv.removeAttribute("open");
+    });
+
+    /* ---- Mocked conversion ---- */
+    function outputName() {
+      const base = chosenFile ? chosenFile.name.replace(/\.[^.]+$/, "") : "output";
+      return base + "." + groupVal("fmt");
+    }
+
+    convertBtn.addEventListener("click", () => {
+      if (!chosenFile) return;
+
+      // Reset UI into "working" state.
+      convertBtn.disabled = true;
+      result.classList.remove("on");
+      progress.classList.add("on");
+      pstage.textContent = remuxChk.checked ? "Remuxing" : "Transcoding";
+      bar.style.width = "0%";
+      ppct.textContent = "0";
+
+      const start = performance.now();
+      const DURATION = 2000; // ~2s mocked run
+
+      function tick(now) {
+        const t = Math.min((now - start) / DURATION, 1);
+        // ease-out so it feels like real encoding (fast then settling)
+        const eased = 1 - Math.pow(1 - t, 2);
+        const pct = Math.round(eased * 100);
+        bar.style.width = pct + "%";
+        ppct.textContent = pct;
+        if (t >= 1) {
+          pstage.textContent = "Finalizing";
+          setTimeout(finish, 180);
+        } else {
+          requestAnimationFrame(tick);
+        }
+      }
+      requestAnimationFrame(tick);
+    });
+
+    function finish() {
+      progress.classList.remove("on");
+      const name = outputName();
+
+      // Fake, but real, downloadable file so the button actually works.
+      const blob = new Blob(
+        ["ffmpeg.web prototype — mock output for " + name +
+         "\nThis is a design prototype; no real conversion was performed."],
+        { type: "text/plain" }
+      );
+      const url = URL.createObjectURL(blob);
+      downloadBtn.href = url;
+      downloadBtn.setAttribute("download", name);
+
+      outname.textContent = name;
+      const est = chosenFile ? humanSize(Math.round(chosenFile.size * 0.62)) : "";
+      outmeta.textContent = "Estimated " + est + " · " + groupVal("fmt").toUpperCase() +
+        (remuxChk.checked ? " · remuxed" : " · CRF " + crf.value);
+
+      result.classList.add("on");
+      convertBtn.disabled = false;
+      downloadBtn.focus();
+    }
+  </script>
+</body>
+</html>

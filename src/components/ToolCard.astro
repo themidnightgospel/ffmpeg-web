@@ -1,0 +1,27 @@
+---
+import type { ToolMeta } from '@/lib/tools/types';
+import { toolHref } from '@/data/tools';
+
+interface Props {
+  tool: ToolMeta;
+  num: string;
+}
+
+const { tool, num } = Astro.props;
+const href = toolHref(tool);
+const isLive = tool.status === 'live';
+---
+
+<article class="item">
+  <div class="num">{num}</div>
+  <div class="body">
+    <a
+      class="stretch"
+      href={href}
+      aria-label={isLive ? tool.name : `${tool.name} (coming soon)`}></a>
+    <span class="name">{tool.name}</span>
+    <p class="desc">{tool.desc}</p>
+    <div class="tag">{tool.category}</div>
+  </div>
+  {isLive && <span class="live">Live →</span>}
+</article>

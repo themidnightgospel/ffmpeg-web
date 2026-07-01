@@ -1,0 +1,71 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Masthead from '@/components/Masthead.astro';
+import Footer from '@/components/Footer.astro';
+import ToolCard from '@/components/ToolCard.astro';
+import { TOOLS } from '@/data/tools';
+import { CATEGORIES } from '@/lib/tools/types';
+import { slugify } from '@/lib/format';
+import { webApplicationLd } from '@/lib/seo/jsonld';
+
+const numbered = TOOLS.map((tool, i) => ({ tool, num: String(i + 1).padStart(2, '0') }));
+const siteUrl = Astro.site?.href ?? 'https://ffmpeg.web';
+
+const title = 'ffmpeg.web — Free, Private, In-Browser Media Tools';
+const description =
+  'Convert, compress, and edit audio and video entirely in your browser. Free, open source, and 100% private — nothing is uploaded.';
+const jsonLd = [webApplicationLd(siteUrl)];
+---
+
+<BaseLayout title={title} description={description} jsonLd={jsonLd}>
+  <Masthead />
+
+  <section class="hero">
+    <div class="wrap hero-grid">
+      <div>
+        <p class="eyebrow">A suite of in-browser media tools</p>
+        <h1>Convert media.<br /><em>Nothing uploaded.</em></h1>
+      </div>
+      <aside class="hero-aside">
+        <span class="count">Free &amp; private</span>
+        <p>
+          Every conversion runs locally in your browser with ffmpeg.wasm. Your files never leave
+          your device.
+        </p>
+      </aside>
+    </div>
+  </section>
+
+  <nav class="filterbar" aria-label="Jump to category">
+    <div class="wrap">
+      <div class="filters">
+        {CATEGORIES.map((category) => <a class="filter" href={`#${slugify(category)}`}>{category}</a>)}
+      </div>
+    </div>
+  </nav>
+
+  <main class="wrap catalogue">
+    {
+      CATEGORIES.map((category) => {
+        const items = numbered.filter((entry) => entry.tool.category === category);
+        if (items.length === 0) return null;
+        return (
+          <section id={slugify(category)}>
+            <div class="cat-heading">
+              <h2>{category}</h2>
+              <span class="rule" />
+              <span class="cat-count">{String(items.length).padStart(2, '0')}</span>
+            </div>
+            <div class="grid">
+              {items.map(({ tool, num }) => (
+                <ToolCard tool={tool} num={num} />
+              ))}
+            </div>
+          </section>
+        );
+      })
+    }
+  </main>
+
+  <Footer />
+</BaseLayout>

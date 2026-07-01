@@ -1,0 +1,99 @@
+name: Deploy
+
+# Release = deploy to GitHub Pages. No deploy ships unless the FULL conversion
+# matrix is green (docs/testing.md § Layer 5). Triggered on push to main and
+# manually; the `conversion-matrix` job gates the `deploy` job.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - name: Upload dist (for the matrix job)
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist
+          retention-days: 1
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  conversion-matrix:
+    name: Conversion matrix (release gate)
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install ffmpeg (fixtures + ffprobe validation)
+        run: sudo apt-get update && sudo apt-get install -y ffmpeg
+
+      - run: npm ci
+
+      - name: Restore built site
+        uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist
+
+      - name: Install Playwright (chromium)
+        run: npx playwright install --with-deps chromium
+
+      # Copies self-hosted core into the already-built dist so the served site
+      # can load ffmpeg same-origin during the matrix.
+      - name: Ensure self-hosted ffmpeg core in dist
+        run: |
+          node scripts/copy-ffmpeg-core.mjs
+          mkdir -p dist/ffmpeg
+          cp -r public/ffmpeg/* dist/ffmpeg/
+
+      - name: Run FULL conversion matrix
+        run: npm run test:matrix
+
+      - name: Upload conversion health report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: conversion-health-report
+          path: |
+            test-results/
+            playwright-report/
+          retention-days: 30
+
+  deploy:
+    name: Deploy to GitHub Pages
+    needs: conversion-matrix
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy
+        id: deployment
+        uses: actions/deploy-pages@v4

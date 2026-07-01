@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>ffmpeg.web — Free, private, in-browser media tools</title>
+<meta name="description" content="A suite of free, 100% client-side, in-browser media tools. Nothing is uploaded." />
+
+<!-- Inter: a clean grotesque for the Swiss typographic feel -->
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
+<style>
+  /* ---------- Design tokens ---------- */
+  :root {
+    --paper: #ffffff;
+    --ink: #111111;
+    --grey: #6b6b6b;
+    --grey-light: #9a9a9a;
+    --hairline: #e2e2e2;
+    --red: #e30613;
+    --measure: 1180px;
+    --gutter: clamp(20px, 5vw, 64px);
+  }
+
+  * { box-sizing: border-box; }
+
+  html { -webkit-text-size-adjust: 100%; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: "Inter", "Helvetica Neue", Helvetica, Arial, system-ui, sans-serif;
+    font-size: 16px;
+    line-height: 1.5;
+    font-feature-settings: "cv05" 1, "ss01" 1;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  a { color: inherit; text-decoration: none; }
+
+  /* Uppercase, tracked-out eyebrow/label */
+  .eyebrow {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    color: var(--grey);
+  }
+
+  .wrap {
+    max-width: var(--measure);
+    margin: 0 auto;
+    padding: 0 var(--gutter);
+  }
+
+  /* Skip link for keyboard users */
+  .skip {
+    position: absolute;
+    left: -9999px;
+    top: 0;
+    background: var(--ink);
+    color: #fff;
+    padding: 10px 16px;
+    z-index: 100;
+    font-size: 13px;
+  }
+  .skip:focus { left: 12px; top: 12px; }
+
+  /* ---------- Masthead ---------- */
+  header.masthead {
+    border-bottom: 1px solid var(--ink);
+  }
+  .masthead-inner {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 24px;
+    padding: 22px 0 20px;
+    flex-wrap: wrap;
+  }
+  .brand {
+    font-size: clamp(20px, 3vw, 26px);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+  }
+  .brand .dot { color: var(--red); }
+  .masthead-meta {
+    font-size: 12px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--grey);
+    text-align: right;
+  }
+
+  /* ---------- Hero ---------- */
+  .hero {
+    border-bottom: 1px solid var(--hairline);
+    padding: clamp(48px, 9vw, 104px) 0 clamp(40px, 7vw, 72px);
+  }
+  .hero-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: clamp(24px, 6vw, 72px);
+    align-items: end;
+  }
+  .hero h1 {
+    margin: 18px 0 0;
+    font-size: clamp(40px, 8.5vw, 96px);
+    line-height: 0.96;
+    font-weight: 800;
+    letter-spacing: -0.035em;
+  }
+  .hero h1 em {
+    font-style: normal;
+    color: var(--red);
+  }
+  .hero-aside {
+    padding-bottom: 8px;
+  }
+  .hero-aside p {
+    margin: 12px 0 0;
+    font-size: 15px;
+    color: var(--grey);
+    max-width: 34ch;
+  }
+  .hero-aside .count {
+    display: block;
+    font-size: clamp(28px, 5vw, 40px);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+  }
+
+  /* ---------- Filter bar ---------- */
+  .filterbar {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    background: var(--paper);
+    border-bottom: 1px solid var(--ink);
+    padding: 14px 0;
+  }
+  .filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 6px;
+    align-items: center;
+  }
+  .filter {
+    appearance: none;
+    border: 1px solid var(--hairline);
+    background: transparent;
+    color: var(--ink);
+    font: inherit;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    padding: 7px 13px;
+    cursor: pointer;
+    border-radius: 0;
+    transition: border-color .12s, color .12s, background .12s;
+  }
+  .filter:hover { border-color: var(--ink); }
+  .filter[aria-pressed="true"] {
+    background: var(--ink);
+    color: #fff;
+    border-color: var(--ink);
+  }
+  .filter:focus-visible {
+    outline: 2px solid var(--red);
+    outline-offset: 2px;
+  }
+  .filter .n {
+    color: var(--grey-light);
+    margin-left: 6px;
+    font-variant-numeric: tabular-nums;
+  }
+  .filter[aria-pressed="true"] .n { color: rgba(255,255,255,.65); }
+
+  /* ---------- Catalogue list ---------- */
+  main { padding: 0 0 96px; }
+
+  .cat-heading {
+    display: flex;
+    align-items: baseline;
+    gap: 16px;
+    padding: 40px 0 8px;
+  }
+  .cat-heading h2 {
+    margin: 0;
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+  }
+  .cat-heading .rule {
+    flex: 1;
+    height: 1px;
+    background: var(--hairline);
+  }
+  .cat-heading .cat-count {
+    font-size: 12px;
+    color: var(--grey-light);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    border-top: 1px solid var(--ink);
+  }
+
+  /* Each converter = an editorial catalogue entry */
+  .item {
+    display: grid;
+    grid-template-columns: 46px 1fr;
+    gap: 16px;
+    padding: 18px 20px 18px 0;
+    border-bottom: 1px solid var(--hairline);
+    align-items: start;
+    cursor: pointer;
+    position: relative;
+  }
+  /* left column of the 2-col grid gets an inner right rule */
+  .grid .item:nth-child(odd) {
+    padding-right: 32px;
+    border-right: 1px solid var(--hairline);
+  }
+  .grid .item:nth-child(even) {
+    padding-left: 32px;
+  }
+
+  .item .num {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--grey-light);
+    font-variant-numeric: tabular-nums;
+    padding-top: 3px;
+    letter-spacing: 0.02em;
+  }
+  .item .name {
+    font-size: 18px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    line-height: 1.2;
+    display: inline;
+    background-image: linear-gradient(var(--red), var(--red));
+    background-size: 0% 1px;
+    background-repeat: no-repeat;
+    background-position: 0 100%;
+    transition: background-size .18s ease;
+  }
+  .item .desc {
+    margin: 5px 0 0;
+    font-size: 13.5px;
+    color: var(--grey);
+    line-height: 1.4;
+    max-width: 42ch;
+  }
+  .item .tag {
+    margin-top: 9px;
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--grey-light);
+  }
+
+  .item:hover .name,
+  .item:focus-within .name {
+    color: var(--red);
+    background-size: 100% 1px;
+  }
+  .item:hover .num { color: var(--red); }
+
+  .item a.stretch {
+    position: absolute;
+    inset: 0;
+  }
+  .item a.stretch:focus-visible {
+    outline: 2px solid var(--red);
+    outline-offset: -3px;
+  }
+
+  /* Availability marker */
+  .item .live {
+    position: absolute;
+    top: 18px;
+    right: 20px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--red);
+  }
+  .grid .item:nth-child(odd) .live { right: 32px; }
+
+  .empty {
+    padding: 60px 0;
+    text-align: center;
+    color: var(--grey);
+    font-size: 14px;
+    border-bottom: 1px solid var(--hairline);
+    display: none;
+  }
+
+  /* ---------- Footer ---------- */
+  footer {
+    border-top: 1px solid var(--ink);
+    padding: 40px 0 64px;
+  }
+  .foot-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: 32px;
+  }
+  footer p { margin: 8px 0 0; font-size: 13px; color: var(--grey); max-width: 40ch; }
+  footer .foot-brand { font-size: 18px; font-weight: 800; letter-spacing: -0.02em; }
+  footer .foot-brand .dot { color: var(--red); }
+  footer ul { list-style: none; margin: 8px 0 0; padding: 0; }
+  footer li { font-size: 13px; margin: 4px 0; color: var(--grey); }
+
+  /* ---------- Responsive ---------- */
+  @media (max-width: 760px) {
+    .hero-grid { grid-template-columns: 1fr; align-items: start; }
+    .hero-aside { padding-bottom: 0; }
+    .grid { grid-template-columns: 1fr; }
+    .grid .item:nth-child(odd) {
+      padding-right: 20px;
+      border-right: none;
+    }
+    .grid .item:nth-child(even) { padding-left: 0; }
+    .grid .item:nth-child(odd) .live,
+    .grid .item .live { right: 0; }
+    .foot-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+  <a class="skip" href="#catalogue">Skip to catalogue</a>
+
+  <!-- Masthead -->
+  <header class="masthead">
+    <div class="wrap masthead-inner">
+      <div class="brand">ffmpeg<span class="dot">.</span>web</div>
+      <div class="masthead-meta">54 Tools · 100% Client-Side</div>
+    </div>
+  </header>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="wrap hero-grid">
+      <div>
+        <p class="eyebrow">A suite of in-browser media tools</p>
+        <h1>Convert media.<br /><em>Nothing uploaded.</em></h1>
+      </div>
+      <aside class="hero-aside">
+        <span class="count">Free &amp; private</span>
+        <p>Every conversion runs locally in your browser with ffmpeg.wasm. Your files never leave your device.</p>
+      </aside>
+    </div>
+  </section>
+
+  <!-- Filter bar -->
+  <nav class="filterbar" aria-label="Filter converters by category">
+    <div class="wrap">
+      <div class="filters" id="filters" role="group" aria-label="Category filters"></div>
+    </div>
+  </nav>
+
+  <!-- Catalogue -->
+  <main class="wrap" id="catalogue">
+    <div id="sections"></div>
+    <p class="empty" id="empty">No tools in this category.</p>
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <div class="wrap foot-grid">
+      <div>
+        <div class="foot-brand">ffmpeg<span class="dot">.</span>web</div>
+        <p>Free, open, 100% client-side media tools powered by ffmpeg.wasm. Hosted on GitHub Pages. No accounts, no uploads, no tracking.</p>
+      </div>
+      <div>
+        <p class="eyebrow">Project</p>
+        <ul>
+          <li><a href="#">Source on GitHub</a></li>
+          <li><a href="#">How it works</a></li>
+          <li><a href="#">Privacy</a></li>
+        </ul>
+      </div>
+      <div>
+        <p class="eyebrow">Colophon</p>
+        <ul>
+          <li>Set in Inter</li>
+          <li>ffmpeg.wasm</li>
+          <li>© 2026</li>
+        </ul>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    /* ------------------------------------------------------------------
+       Catalogue data. Order defines the running number (01, 02, …).
+       `href` points to a real page only for tools that exist.
+    ------------------------------------------------------------------ */
+    const CATEGORIES = [
+      "Format conversion",
+      "Compression",
+      "Trimming & cutting",
+      "Resize & transform",
+      "Audio tools",
+      "Subtitles & overlays",
+      "Extraction & capture",
+      "Social & platform",
+      "GIF & meme",
+      "Advanced",
+    ];
+
+    const TOOLS = [
+      // Format conversion
+      { name: "Video Converter", cat: "Format conversion", desc: "Change container and codec of any video.", href: "video-converter.html" },
+      { name: "Audio Converter", cat: "Format conversion", desc: "Convert between MP3, WAV, FLAC, Opus." },
+      { name: "Video → Audio Extractor", cat: "Format conversion", desc: "Pull the audio track out of a video." },
+      { name: "Video → GIF", cat: "Format conversion", desc: "Turn a clip into an animated GIF." },
+      { name: "GIF → Video", cat: "Format conversion", desc: "Convert animated GIFs to MP4 or WebM." },
+      { name: "Image Sequence → Video", cat: "Format conversion", desc: "Stitch frames into a video file." },
+      { name: "Video → Image Sequence", cat: "Format conversion", desc: "Export every frame as an image." },
+      { name: "Image Format Converter", cat: "Format conversion", desc: "PNG, JPG, WebP, AVIF, and back." },
+
+      // Compression
+      { name: "Video Compressor", cat: "Compression", desc: "Shrink file size, keep it watchable." },
+      { name: "Audio Compressor", cat: "Compression", desc: "Reduce bitrate for smaller audio files." },
+      { name: "GIF Optimizer", cat: "Compression", desc: "Cut GIF weight with smart palettes." },
+      { name: "Fit Under Target Size", cat: "Compression", desc: "Hit an exact megabyte budget." },
+
+      // Trimming & cutting
+      { name: "Video/Audio Trimmer", cat: "Trimming & cutting", desc: "Cut a clean start and end." },
+      { name: "Media Splitter", cat: "Trimming & cutting", desc: "Slice one file into many parts." },
+      { name: "Media Merger", cat: "Trimming & cutting", desc: "Join multiple clips end to end." },
+      { name: "Silence Remover", cat: "Trimming & cutting", desc: "Strip out dead air automatically." },
+      { name: "Loop Maker", cat: "Trimming & cutting", desc: "Repeat a clip a set number of times." },
+
+      // Resize & transform
+      { name: "Video Resizer", cat: "Resize & transform", desc: "Scale to any width and height." },
+      { name: "Aspect-Ratio Changer", cat: "Resize & transform", desc: "Reframe to 16:9, 9:16, 1:1." },
+      { name: "Rotate / Flip / Mirror", cat: "Resize & transform", desc: "Fix orientation in one click." },
+      { name: "Crop Tool", cat: "Resize & transform", desc: "Trim the frame to any region." },
+      { name: "Speed Changer", cat: "Resize & transform", desc: "Speed up or slow down playback." },
+      { name: "Framerate Converter", cat: "Resize & transform", desc: "Retime between 24, 30, 60 fps." },
+      { name: "Reverse Media", cat: "Resize & transform", desc: "Play video or audio backwards." },
+
+      // Audio tools
+      { name: "Volume Normalizer", cat: "Audio tools", desc: "Even out loudness to a target level." },
+      { name: "Audio Fader", cat: "Audio tools", desc: "Add smooth fade-in and fade-out." },
+      { name: "Channel Tools", cat: "Audio tools", desc: "Mono, stereo, and channel mixing." },
+      { name: "Pitch / Tempo Changer", cat: "Audio tools", desc: "Shift pitch or tempo independently." },
+      { name: "Audio Joiner", cat: "Audio tools", desc: "Concatenate tracks into one file." },
+      { name: "Ringtone Maker", cat: "Audio tools", desc: "Cut a short loop for your phone." },
+      { name: "Waveform Generator", cat: "Audio tools", desc: "Render audio as a waveform image." },
+      { name: "Replace Audio Track", cat: "Audio tools", desc: "Swap a video's soundtrack." },
+
+      // Subtitles & overlays
+      { name: "Burn Subtitles", cat: "Subtitles & overlays", desc: "Hard-code captions into the video." },
+      { name: "Extract Subtitles", cat: "Subtitles & overlays", desc: "Pull embedded subtitle tracks out." },
+      { name: "Add Watermark", cat: "Subtitles & overlays", desc: "Overlay a logo or image mark." },
+      { name: "Add Text Overlay", cat: "Subtitles & overlays", desc: "Place titles and captions on video." },
+      { name: "Picture-in-Picture", cat: "Subtitles & overlays", desc: "Composite one video over another." },
+
+      // Extraction & capture
+      { name: "Thumbnail Generator", cat: "Extraction & capture", desc: "Grab a still from any timestamp." },
+      { name: "Contact Sheet", cat: "Extraction & capture", desc: "Build a grid of preview frames." },
+      { name: "Poster Frame Picker", cat: "Extraction & capture", desc: "Choose the perfect cover frame." },
+      { name: "Metadata Viewer", cat: "Extraction & capture", desc: "Inspect codecs, streams, and tags." },
+      { name: "Metadata Stripper", cat: "Extraction & capture", desc: "Remove hidden metadata for privacy." },
+
+      // Social & platform
+      { name: "Social-Media Presets", cat: "Social & platform", desc: "One-tap exports for every platform." },
+      { name: "Messaging Optimizer", cat: "Social & platform", desc: "Right size for chat apps and DMs." },
+      { name: "Podcast Prep", cat: "Social & platform", desc: "Clean, level, and export episodes." },
+
+      // GIF & meme
+      { name: "GIF Maker", cat: "GIF & meme", desc: "Craft a GIF with fine control." },
+      { name: "Meme Caption", cat: "GIF & meme", desc: "Add top and bottom meme text." },
+      { name: "Boomerang Maker", cat: "GIF & meme", desc: "Loop forward then reverse." },
+
+      // Advanced
+      { name: "Color Adjuster", cat: "Advanced", desc: "Tune brightness, contrast, saturation." },
+      { name: "Deinterlacer", cat: "Advanced", desc: "Remove combing from interlaced video." },
+      { name: "Video Stabilization", cat: "Advanced", desc: "Smooth out shaky handheld footage." },
+      { name: "Chroma Key", cat: "Advanced", desc: "Remove a green or blue background." },
+      { name: "Video Comparison", cat: "Advanced", desc: "Side-by-side before/after view." },
+      { name: "Audio Spectrogram", cat: "Advanced", desc: "Visualize frequency over time." },
+    ];
+
+    // Assign running numbers 01..NN in source order.
+    TOOLS.forEach((t, i) => { t.num = String(i + 1).padStart(2, "0"); });
+
+    const filtersEl = document.getElementById("filters");
+    const sectionsEl = document.getElementById("sections");
+    const emptyEl = document.getElementById("empty");
+
+    let active = "All";
+
+    /* ---- Build filter buttons ---- */
+    function countFor(cat) {
+      return cat === "All" ? TOOLS.length : TOOLS.filter(t => t.cat === cat).length;
+    }
+    function makeFilter(label) {
+      const b = document.createElement("button");
+      b.className = "filter";
+      b.type = "button";
+      b.setAttribute("aria-pressed", label === active ? "true" : "false");
+      b.dataset.cat = label;
+      b.innerHTML = label + '<span class="n">' + countFor(label) + "</span>";
+      b.addEventListener("click", () => { active = label; render(); });
+      return b;
+    }
+    function buildFilters() {
+      filtersEl.appendChild(makeFilter("All"));
+      CATEGORIES.forEach(c => filtersEl.appendChild(makeFilter(c)));
+    }
+
+    /* ---- Render the catalogue for the active filter ---- */
+    function render() {
+      // update pressed state
+      filtersEl.querySelectorAll(".filter").forEach(b => {
+        b.setAttribute("aria-pressed", b.dataset.cat === active ? "true" : "false");
+      });
+
+      sectionsEl.innerHTML = "";
+      const cats = active === "All" ? CATEGORIES : [active];
+      let shown = 0;
+
+      cats.forEach(cat => {
+        const items = TOOLS.filter(t => t.cat === cat);
+        if (!items.length) return;
+        shown += items.length;
+
+        const heading = document.createElement("div");
+        heading.className = "cat-heading";
+        heading.innerHTML =
+          '<h2>' + cat + '</h2>' +
+          '<span class="rule"></span>' +
+          '<span class="cat-count">' + String(items.length).padStart(2, "0") + '</span>';
+        sectionsEl.appendChild(heading);
+
+        const grid = document.createElement("div");
+        grid.className = "grid";
+        items.forEach(t => grid.appendChild(makeItem(t)));
+        sectionsEl.appendChild(grid);
+      });
+
+      emptyEl.style.display = shown === 0 ? "block" : "none";
+    }
+
+    function makeItem(t) {
+      const href = t.href || "#";
+      const el = document.createElement("article");
+      el.className = "item";
+      el.innerHTML =
+        '<div class="num">' + t.num + '</div>' +
+        '<div class="body">' +
+          '<a class="stretch" href="' + href + '" aria-label="' + t.name +
+            (t.href ? '' : ' (coming soon)') + '"></a>' +
+          '<span class="name">' + t.name + '</span>' +
+          '<p class="desc">' + t.desc + '</p>' +
+          '<div class="tag">' + t.cat + '</div>' +
+        '</div>' +
+        (t.href ? '<span class="live">Live →</span>' : '');
+      // Make the whole card clickable (mouse), keyboard handled by the link.
+      el.addEventListener("click", (e) => {
+        if (e.target.closest("a")) return;
+        window.location.href = href;
+      });
+      return el;
+    }
+
+    buildFilters();
+    render();
+  </script>
+</body>
+</html>

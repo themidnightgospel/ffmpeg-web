@@ -1,0 +1,215 @@
+/* App-only layout that is not part of the reusable design system.
+   Reusable component styles live in design-system/ffmpeg-web.css. */
+
+/* Hero (hub) */
+.hero {
+  border-bottom: 1px solid var(--hairline);
+  padding: clamp(48px, 9vw, 104px) 0 clamp(40px, 7vw, 72px);
+}
+.hero-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: clamp(24px, 6vw, 72px);
+  align-items: end;
+}
+.hero h1 {
+  margin: 18px 0 0;
+  font-size: clamp(40px, 8.5vw, 96px);
+  line-height: 0.96;
+  font-weight: 800;
+  letter-spacing: -0.035em;
+}
+.hero h1 em {
+  font-style: normal;
+  color: var(--red);
+}
+.hero-aside {
+  padding-bottom: 8px;
+}
+.hero-aside p {
+  margin: 12px 0 0;
+  font-size: 15px;
+  color: var(--grey);
+  max-width: 34ch;
+}
+.hero-aside .count {
+  display: block;
+  font-size: clamp(28px, 5vw, 40px);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+}
+
+/* Catalogue main spacing */
+main.catalogue {
+  padding: 0 0 96px;
+}
+
+/* Tool page header */
+.tool-head {
+  border-bottom: 1px solid var(--hairline);
+  padding: clamp(36px, 6vw, 64px) 0 clamp(28px, 4vw, 44px);
+}
+.tool-head .idx {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--red);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  margin: 0;
+}
+.tool-head h1 {
+  margin: 14px 0 0;
+  font-size: clamp(34px, 6.5vw, 72px);
+  line-height: 0.98;
+  font-weight: 800;
+  letter-spacing: -0.035em;
+}
+.tool-head .lead {
+  margin-top: 16px;
+}
+
+/* Action area below the work grid on tool pages */
+.action {
+  padding: clamp(28px, 4vw, 44px) 0 clamp(40px, 6vw, 72px);
+}
+.action__panel {
+  margin-top: 8px;
+}
+.action__error {
+  margin: 8px 0 0;
+  font-size: 13px;
+  color: var(--red);
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.action__error::before {
+  content: '';
+  width: 7px;
+  height: 7px;
+  background: var(--red);
+  flex: none;
+}
+
+/* Coming-soon placeholder */
+.coming {
+  padding: clamp(40px, 6vw, 72px) 0 clamp(56px, 8vw, 96px);
+}
+.coming code {
+  font-family: ui-monospace, Menlo, Consolas, monospace;
+  font-size: 13px;
+  background: #f4f4f4;
+  padding: 2px 6px;
+}
+
+/* Category anchor links reuse the .filter chip styling */
+.filterbar .filter {
+  text-decoration: none;
+  display: inline-block;
+}
+
+/* Breadcrumbs */
+.breadcrumbs {
+  margin: 0 0 12px;
+}
+.breadcrumbs ol {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 0;
+  margin: 0;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--grey);
+}
+.breadcrumbs li + li::before {
+  content: '›';
+  margin-right: 8px;
+  color: var(--grey-light);
+}
+.breadcrumbs a {
+  color: var(--grey);
+}
+.breadcrumbs a:hover {
+  color: var(--red);
+}
+.breadcrumbs [aria-current='page'] {
+  color: var(--ink);
+}
+
+/* Prose (conversion page copy + FAQ) */
+.prose {
+  padding: clamp(28px, 4vw, 48px) 0;
+  max-width: 72ch;
+}
+.prose h2 {
+  font-size: clamp(20px, 3vw, 28px);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  margin: 32px 0 10px;
+}
+.prose p {
+  margin: 0;
+}
+.prose ol {
+  padding-left: 1.2em;
+  margin: 8px 0 0;
+}
+.prose ol li {
+  margin: 6px 0;
+}
+.faq {
+  margin: 8px 0 0;
+}
+.faq dt {
+  font-weight: 600;
+  margin-top: 18px;
+}
+.faq dd {
+  margin: 4px 0 0;
+  color: var(--grey);
+}
+
+/* Related conversions + all-conversions index */
+.related {
+  padding: clamp(24px, 4vw, 40px) 0;
+  border-top: 1px solid var(--hairline);
+}
+.convert-index {
+  padding: clamp(28px, 4vw, 48px) 0 clamp(40px, 6vw, 72px);
+  border-top: 1px solid var(--ink);
+}
+.related-list,
+.pairs-grid {
+  list-style: none;
+  padding: 0;
+  margin: 12px 0 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 6px 20px;
+}
+.related-list a,
+.pairs-grid a {
+  font-size: 14px;
+  color: var(--ink);
+  display: inline-block;
+  padding: 4px 0;
+}
+.related-list a:hover,
+.pairs-grid a:hover {
+  color: var(--red);
+}
+
+@media (max-width: 760px) {
+  .hero-grid {
+    grid-template-columns: 1fr;
+    align-items: start;
+  }
+  .hero-aside {
+    padding-bottom: 0;
+  }
+}
