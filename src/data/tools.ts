@@ -7,7 +7,7 @@ export const TOOLS: readonly ToolMeta[] = [
   // Format conversion
   { slug: 'video-converter', name: 'Video Converter', category: 'Format conversion', desc: 'Change container and codec of any video.', status: 'live' },
   { slug: 'audio-converter', name: 'Audio Converter', category: 'Format conversion', desc: 'Convert between MP3, WAV, FLAC, Opus.', status: 'live' },
-  { slug: 'video-to-audio-extractor', name: 'Video → Audio Extractor', category: 'Format conversion', desc: 'Pull the audio track out of a video.', status: 'planned' },
+  { slug: 'video-to-audio-extractor', name: 'Video → Audio Extractor', category: 'Format conversion', desc: 'Pull the audio track out of a video.', status: 'live' },
   { slug: 'video-to-gif', name: 'Video → GIF', category: 'Format conversion', desc: 'Turn a clip into an animated GIF.', status: 'planned' },
   { slug: 'gif-to-video', name: 'GIF → Video', category: 'Format conversion', desc: 'Convert animated GIFs to MP4 or WebM.', status: 'planned' },
   { slug: 'image-sequence-to-video', name: 'Image Sequence → Video', category: 'Format conversion', desc: 'Stitch frames into a video file.', status: 'planned' },
