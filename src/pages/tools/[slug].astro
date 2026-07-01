@@ -17,10 +17,10 @@ const { slug } = Astro.params;
 const meta = slug ? getToolMeta(slug) : undefined;
 if (!slug || !meta) throw new Error(`Unknown tool: ${slug}`);
 
-const siteUrl = Astro.site?.href ?? 'https://ffmpeg.web';
+const siteUrl = Astro.site?.href ?? 'https://khinkali.cc';
 const canonicalPath = `/tools/${slug}`;
 
-const title = `${meta.name} — Free, In-Browser | ffmpeg.web`;
+const title = `${meta.name} — Free, In-Browser | Khinkali Tool Chain`;
 const description = `${meta.desc} Free, private, and 100% in your browser — nothing uploaded.`;
 
 const jsonLd = [

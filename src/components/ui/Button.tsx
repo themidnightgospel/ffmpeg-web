@@ -3,7 +3,9 @@ import { cx } from '@/lib/cx';
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: 'primary' | 'secondary';
-  size?: 'md' | 'sm';
+  size?: 'md' | 'sm' | 'lg';
+  /** Full-width — use with size="lg" for a prominent primary CTA. */
+  block?: boolean;
   /** Trailing arrow glyph, e.g. "→" or "↓". */
   arrow?: string;
   children: ReactNode;
@@ -12,6 +14,7 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 export function Button({
   variant = 'primary',
   size = 'md',
+  block = false,
   arrow,
   children,
   className,
@@ -25,6 +28,8 @@ export function Button({
         'btn',
         variant === 'secondary' && 'btn--secondary',
         size === 'sm' && 'btn--sm',
+        size === 'lg' && 'btn--lg',
+        block && 'btn--block',
         className,
       )}
       {...rest}

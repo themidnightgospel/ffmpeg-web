@@ -9,9 +9,9 @@ import { slugify } from '@/lib/format';
 import { webApplicationLd } from '@/lib/seo/jsonld';
 
 const numbered = TOOLS.map((tool, i) => ({ tool, num: String(i + 1).padStart(2, '0') }));
-const siteUrl = Astro.site?.href ?? 'https://ffmpeg.web';
+const siteUrl = Astro.site?.href ?? 'https://khinkali.cc';
 
-const title = 'ffmpeg.web — Free, Private, In-Browser Media Tools';
+const title = 'Khinkali Tool Chain — Free, Private, In-Browser Media Tools';
 const description =
   'Convert, compress, and edit audio and video entirely in your browser. Free, open source, and 100% private — nothing is uploaded.';
 const jsonLd = [webApplicationLd(siteUrl)];
@@ -21,18 +21,9 @@ const jsonLd = [webApplicationLd(siteUrl)];
   <Masthead />
 
   <section class="hero">
-    <div class="wrap hero-grid">
-      <div>
-        <p class="eyebrow">A suite of in-browser media tools</p>
-        <h1>Convert media.<br /><em>Nothing uploaded.</em></h1>
-      </div>
-      <aside class="hero-aside">
-        <span class="count">Free &amp; private</span>
-        <p>
-          Every conversion runs locally in your browser with ffmpeg.wasm. Your files never leave
-          your device.
-        </p>
-      </aside>
+    <div class="wrap">
+      <p class="eyebrow">A suite of in-browser media tools</p>
+      <h1>Convert, compress, edit.<br /><em>Right in your browser.</em></h1>
     </div>
   </section>
 

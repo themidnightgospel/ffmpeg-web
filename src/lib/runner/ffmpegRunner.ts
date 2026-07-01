@@ -30,6 +30,9 @@ interface FFmpegLike {
 }
 
 let instance: FFmpegLike | null = null;
+// Routed to the current run's callback. The listener is registered once for the
+// lifetime of the (cached) instance, so repeated conversions don't stack listeners.
+let currentProgress: ((ratio: number) => void) | null = null;
 
 async function getFFmpeg(): Promise<FFmpegLike> {
   if (instance?.loaded) return instance;
@@ -42,6 +45,10 @@ async function getFFmpeg(): Promise<FFmpegLike> {
   const ffmpeg = new FFmpeg() as unknown as FFmpegLike;
   const multithread = isolated();
   const base = coreBase(multithread);
+
+  ffmpeg.on('progress', ({ progress }) => {
+    currentProgress?.(Math.min(Math.max(progress, 0), 1));
+  });
 
   await ffmpeg.load({
     coreURL: await toBlobURL(`${base}/ffmpeg-core.js`, 'text/javascript'),
@@ -63,11 +70,7 @@ export const ffmpegRunner: ConversionRunner = {
     onProgress?.({ ratio: 0, stage: 'Loading ffmpeg' });
     const ffmpeg = await getFFmpeg();
 
-    if (onProgress) {
-      ffmpeg.on('progress', ({ progress }) => {
-        onProgress({ ratio: Math.min(Math.max(progress, 0), 1), stage: 'Transcoding' });
-      });
-    }
+    currentProgress = onProgress ? (ratio) => onProgress({ ratio, stage: 'Transcoding' }) : null;
 
     const { fetchFile } = await import('@ffmpeg/util');
     await ffmpeg.writeFile(input.name, await fetchFile(input));

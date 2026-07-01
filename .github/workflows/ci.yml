@@ -60,6 +60,12 @@ jobs:
 
       - run: npm ci
 
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+
       - name: Install Playwright (chromium)
         run: npx playwright install --with-deps chromium
 
@@ -68,7 +74,9 @@ jobs:
 
       # Sample: one representative pair per source format keeps PRs fast.
       - name: Run sampled conversion matrix
-        run: npx playwright test conversion-matrix --grep "mp4-to-webm|webm-to-mp4|mkv-to-mp4|mov-to-mp4|avi-to-mp4|flv-to-mp4"
+        run: npm run test:matrix
+        env:
+          MATRIX_SAMPLE: '1'
 
       - name: Upload report
         if: always()

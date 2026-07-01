@@ -76,7 +76,7 @@ export const videoConverter: Tool = {
     },
     {
       id: 'crf',
-      type: 'slider',
+      type: 'stepper',
       label: 'CRF quality',
       advanced: true,
       disabledWhen: isRemux,
@@ -84,9 +84,7 @@ export const videoConverter: Tool = {
       max: 28,
       step: 1,
       default: 23,
-      hint: 'lower = better',
-      minLabel: '18 · High quality',
-      maxLabel: '28 · Small file',
+      hint: '18 = best quality · 28 = smallest',
     },
   ],
 

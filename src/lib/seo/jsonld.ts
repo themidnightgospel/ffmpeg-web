@@ -9,7 +9,7 @@ export function webApplicationLd(siteUrl: string): Json {
   return {
     '@context': 'https://schema.org',
     '@type': 'WebApplication',
-    name: 'ffmpeg.web',
+    name: 'Khinkali Tool Chain',
     url: siteUrl,
     applicationCategory: 'MultimediaApplication',
     operatingSystem: 'Any (runs in the browser)',

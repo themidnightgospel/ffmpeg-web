@@ -7,9 +7,9 @@ import Converter from '@/components/Converter.tsx';
 import { PAIRS } from '@/lib/kb/pairs';
 import { webApplicationLd, breadcrumbLd } from '@/lib/seo/jsonld';
 
-const siteUrl = Astro.site?.href ?? 'https://ffmpeg.web';
+const siteUrl = Astro.site?.href ?? 'https://khinkali.cc';
 
-const title = 'Video Converter — Convert Video Free & In-Browser | ffmpeg.web';
+const title = 'Video Converter — Convert Video Free & In-Browser | Khinkali Tool Chain';
 const description =
   'Free online video converter. Convert MP4, WebM, MKV, MOV, AVI, and FLV right in your browser — no uploads, no watermarks, completely private.';
 
@@ -29,10 +29,6 @@ const jsonLd = [
     <div class="wrap">
       <Breadcrumbs crumbs={[{ label: 'Convert' }]} />
       <h1>Video Converter</h1>
-      <p class="lead">
-        Change a video's container and codec — MP4, WebM, MKV, MOV, AVI, FLV — right in your
-        browser. Free, private, and completely client-side.
-      </p>
     </div>
   </section>
 

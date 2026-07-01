@@ -112,8 +112,9 @@ Real browser, real routing, real islands. Keep these **few and high-value**; use
 
 - **Self-host `@ffmpeg/core(-mt)`** (pinned version) in `public/` — removes the unpkg network dependency and makes the matrix offline-deterministic (also required for reliable prod under COEP).
 - **Commit tiny deterministic fixtures** — one valid sample per source format, generated once with native ffmpeg.
-- **Parallelize** across Playwright workers; per-conversion timeout; one retry on failure.
-- **Full matrix on release; sampled subset per PR** (e.g. one pair per source format) to keep PRs fast while still catching gross breakage early.
+- **Reuse the core (biggest speedup):** don't run one test per pair (that reloads the ~30 MB core every time). Drive many conversions on a **single page** so the core loads **once per worker**, and **shard** pairs across workers (`MATRIX_SHARDS`). Cache the Playwright browser download in CI.
+- **Parallelize** across workers (one per shard); per-conversion timeout (first run absorbs the one-time core load); one retry on failure.
+- **Full matrix on release; sampled subset per PR** (`MATRIX_SAMPLE=1` → one pair per source format) to keep PRs fast while still catching gross breakage early.
 
 ### CI
 

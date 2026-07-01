@@ -25,6 +25,9 @@
   --hover-bg: #fafafa;
   --accent-wash: #fff5f5;
 
+  /* Inline code / keyboard background */
+  --code-bg: #f4f4f4;
+
   /* Type */
   --font: "Inter", "Helvetica Neue", Helvetica, Arial, system-ui, sans-serif;
   --fs-eyebrow: 11px;      /* uppercase tracked labels */
@@ -220,6 +223,12 @@ img, svg, video { max-width: 100%; display: block; }
 /* Small button */
 .btn--sm { padding: 10px 18px; font-size: 13px; }
 
+/* Large button — for the primary action on a page (CTA prominence) */
+.btn--lg { padding: 20px 36px; font-size: 17px; font-weight: 700; }
+
+/* Full-width button (pairs with --lg for an unmissable primary CTA) */
+.btn--block { display: flex; width: 100%; justify-content: center; }
+
 /* ----------------------------------------------------------------------------
    7. SEGMENTED CONTROL  (preferred over native <select>)
    Markup: label.seg > input[type=radio] + span
@@ -352,6 +361,37 @@ input[type="range"].slider:focus-visible { outline: var(--focus); outline-offset
   display: flex; justify-content: space-between;
   font-size: 10.5px; color: var(--grey-light); text-transform: uppercase; letter-spacing: 0.1em;
 }
+
+/* ----------------------------------------------------------------------------
+   10b. STEPPER  (numeric value with −/+ buttons and direct typing)
+   Markup: .stepper > button.stepper__btn + input.stepper__input + button.stepper__btn
+---------------------------------------------------------------------------- */
+.stepper-head { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 7px; gap: 12px; }
+.stepper-head .flabel { margin: 0; }
+.stepper__hint {
+  font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--grey);
+  text-align: right;
+}
+.stepper { display: inline-flex; align-items: stretch; border: var(--border); }
+.stepper__btn {
+  appearance: none; font: inherit; font-size: 20px; line-height: 1; font-weight: 500;
+  width: 46px; background: var(--paper); color: var(--ink); border: 0; cursor: pointer;
+  transition: background var(--dur), color var(--dur);
+}
+.stepper__btn:first-child { border-right: var(--border); }
+.stepper__btn:last-child { border-left: var(--border); }
+.stepper__btn:hover:not(:disabled) { background: var(--ink); color: #fff; }
+.stepper__btn:focus-visible { outline: var(--focus); outline-offset: 2px; }
+.stepper__btn:disabled { color: var(--grey-light); cursor: not-allowed; }
+.stepper__input {
+  appearance: textfield; -moz-appearance: textfield; width: 76px; text-align: center;
+  font: inherit; font-size: 16px; font-weight: 600; border: 0; background: var(--paper);
+  color: var(--ink); font-variant-numeric: tabular-nums; padding: 10px 4px;
+}
+.stepper__input::-webkit-outer-spin-button,
+.stepper__input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+.stepper__input:focus { outline: none; background: var(--accent-wash); }
+.stepper__input:disabled { color: var(--grey-light); }
 
 /* ----------------------------------------------------------------------------
    11. DROP ZONE

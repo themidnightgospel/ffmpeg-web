@@ -76,9 +76,18 @@ export function ToolRunner({
       </div>
 
       <section className="wrap action">
-        <Button onClick={conversion.start} disabled={!conversion.canStart} arrow="→">
-          {phase === 'running' ? 'Converting…' : 'Convert'}
-        </Button>
+        <div className="action__cta">
+          <Button
+            size="lg"
+            block
+            onClick={conversion.start}
+            disabled={!conversion.canStart}
+            arrow="→"
+          >
+            {phase === 'running' ? 'Converting…' : 'Convert'}
+          </Button>
+          {!file && <p className="action__hint">Add a file to get started</p>}
+        </div>
 
         {phase === 'running' && (
           <div className="action__panel">
@@ -97,7 +106,11 @@ export function ToolRunner({
             <span className="done-label">✓ Conversion complete</span>
             <div className="outname">{output.name}</div>
             <div className="outmeta">{output.meta}</div>
-            <a className="btn btn--secondary" href={output.url} download={output.name}>
+            <a
+              className="btn btn--secondary btn--lg btn--block"
+              href={output.url}
+              download={output.name}
+            >
               Download{' '}
               <span className="arrow" aria-hidden="true">
                 ↓

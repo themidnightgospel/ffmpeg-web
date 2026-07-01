@@ -1,11 +1,13 @@
 ---
+import Brand from '@/components/Brand.astro';
+
 const REPO_URL = 'https://github.com/';
 ---
 
 <footer class="site">
   <div class="wrap foot-grid">
     <div>
-      <div class="foot-brand">ffmpeg<span class="dot">.</span>web</div>
+      <div class="foot-brand"><Brand /></div>
       <p>
         Free, open, 100% client-side media tools powered by ffmpeg.wasm. Hosted on GitHub Pages. No
         accounts, no uploads, no tracking.
@@ -19,12 +21,8 @@ const REPO_URL = 'https://github.com/';
       </ul>
     </div>
     <div>
-      <p class="eyebrow">Colophon</p>
-      <ul>
-        <li>Set in Inter</li>
-        <li>ffmpeg.wasm</li>
-        <li>© 2026</li>
-      </ul>
+      <p class="eyebrow">Made in</p>
+      <p>Kutaisi, Georgia</p>
     </div>
   </div>
 </footer>

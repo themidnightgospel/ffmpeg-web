@@ -62,6 +62,12 @@ jobs:
           name: dist
           path: dist
 
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+
       - name: Install Playwright (chromium)
         run: npx playwright install --with-deps chromium
 
@@ -75,6 +81,9 @@ jobs:
 
       - name: Run FULL conversion matrix
         run: npm run test:matrix
+        env:
+          # More shards = more parallelism; each shard loads the ffmpeg core once.
+          MATRIX_SHARDS: '4'
 
       - name: Upload conversion health report
         if: always()

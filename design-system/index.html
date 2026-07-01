@@ -45,7 +45,7 @@
   .sg-cap { font-size: 12px; color: var(--grey); margin: 0 0 22px; max-width: 60ch; }
   .sg-cap code, code.sg-code {
     font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
-    font-size: 12px; background: #f4f4f4; padding: 2px 6px; color: var(--ink);
+    font-size: 12px; background: var(--code-bg); padding: 2px 6px; color: var(--ink);
   }
   .sg-grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; }
   .sg-row { display: flex; flex-wrap: wrap; gap: 16px; align-items: center; }
@@ -99,6 +99,7 @@
     <a href="#checkbox">Checkbox</a>
     <a href="#disclosure">Disclosure</a>
     <a href="#slider">Slider</a>
+    <a href="#stepper">Stepper</a>
     <a href="#drop">Drop zone</a>
     <a href="#filters">Filter chips</a>
     <a href="#catalogue">Catalogue item</a>
@@ -193,12 +194,18 @@
     <section class="sg-section" id="buttons">
       <p class="eyebrow">Components</p>
       <h2>Buttons</h2>
-      <p class="sg-cap">Primary is ink-filled and turns red on hover. Secondary/download is paper with an ink border. Disabled greys out. The trailing arrow flips to white on hover.</p>
+      <p class="sg-cap">Primary is ink-filled and turns red on hover. Secondary/download is paper with an ink border. Disabled greys out. The trailing arrow flips to white on hover. For a page's <strong>primary action (CTA)</strong>, use <code class="sg-code">btn--lg</code> + <code class="sg-code">btn--block</code> so it's large and unmissable.</p>
       <div class="sg-demo sg-row">
         <button class="btn" type="button">Convert <span class="arrow" aria-hidden="true">→</span></button>
         <a class="btn btn--secondary" href="#" onclick="return false">Download <span class="arrow" aria-hidden="true">↓</span></a>
         <button class="btn btn--sm" type="button">Small action</button>
         <button class="btn" type="button" disabled>Convert <span class="arrow" aria-hidden="true">→</span></button>
+      </div>
+      <p class="sg-cap" style="margin-top:22px">Primary CTA — <code class="sg-code">btn--lg btn--block</code> (shown in a 560px column, as on tool pages):</p>
+      <div class="sg-demo">
+        <div style="max-width:560px">
+          <button class="btn btn--lg btn--block" type="button">Convert <span class="arrow" aria-hidden="true">→</span></button>
+        </div>
       </div>
     </section>
 
@@ -314,6 +321,26 @@
         </div>
         <input type="range" class="slider" id="dsCrfRange" min="18" max="28" step="1" value="23" aria-labelledby="dsCrf" />
         <div class="scale"><span>18 · High quality</span><span>28 · Small file</span></div>
+      </div>
+    </section>
+
+    <!-- STEPPER -->
+    <section class="sg-section" id="stepper">
+      <p class="eyebrow">Components</p>
+      <h2>Stepper</h2>
+      <p class="sg-cap">The preferred control for a precise numeric value (CRF, volume, count) — <strong>replaces the slider</strong> where exactness matters. −/+ buttons plus direct typing; clamps to range; buttons disable at the bounds.</p>
+      <div class="sg-demo">
+        <div class="field" style="margin:0">
+          <div class="stepper-head">
+            <span class="flabel" id="dsStepLbl">CRF quality</span>
+            <span class="stepper__hint">18 = best quality · 28 = smallest</span>
+          </div>
+          <div class="stepper" role="group" aria-labelledby="dsStepLbl" id="dsStepper" data-min="18" data-max="28">
+            <button type="button" class="stepper__btn" data-step="-1" aria-label="Decrease CRF quality">−</button>
+            <input class="stepper__input" type="number" inputmode="numeric" value="23" min="18" max="28" step="1" aria-labelledby="dsStepLbl" />
+            <button type="button" class="stepper__btn" data-step="1" aria-label="Increase CRF quality">+</button>
+          </div>
+        </div>
       </div>
     </section>
 
@@ -510,6 +537,29 @@
     const r = document.getElementById("dsCrfRange");
     const v = document.getElementById("dsCrfVal");
     r.addEventListener("input", () => { v.textContent = r.value; });
+  })();
+
+  // Stepper demo (−/+ buttons + typing, clamped)
+  (function () {
+    const root = document.getElementById("dsStepper");
+    if (!root) return;
+    const input = root.querySelector(".stepper__input");
+    const min = Number(root.dataset.min), max = Number(root.dataset.max);
+    const clamp = (n) => Math.min(max, Math.max(min, n));
+    const sync = () => {
+      const n = clamp(Number(input.value) || min);
+      root.querySelector('[data-step="-1"]').disabled = n <= min;
+      root.querySelector('[data-step="1"]').disabled = n >= max;
+    };
+    root.querySelectorAll(".stepper__btn").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        input.value = String(clamp((Number(input.value) || min) + Number(btn.dataset.step)));
+        sync();
+      });
+    });
+    input.addEventListener("blur", () => { input.value = String(clamp(Number(input.value) || min)); sync(); });
+    input.addEventListener("input", sync);
+    sync();
   })();
 
   // Drop zone demo: click toggles a sample has-file state; drag shows .drag

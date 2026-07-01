@@ -6,38 +6,18 @@
   border-bottom: 1px solid var(--hairline);
   padding: clamp(48px, 9vw, 104px) 0 clamp(40px, 7vw, 72px);
 }
-.hero-grid {
-  display: grid;
-  grid-template-columns: 2fr 1fr;
-  gap: clamp(24px, 6vw, 72px);
-  align-items: end;
-}
 .hero h1 {
   margin: 18px 0 0;
-  font-size: clamp(40px, 8.5vw, 96px);
-  line-height: 0.96;
+  /* Sized so the ~22-char lines stay on one line from mobile to desktop. */
+  font-size: clamp(23px, 6.2vw, 78px);
+  line-height: 1;
   font-weight: 800;
   letter-spacing: -0.035em;
+  white-space: nowrap;
 }
 .hero h1 em {
   font-style: normal;
   color: var(--red);
-}
-.hero-aside {
-  padding-bottom: 8px;
-}
-.hero-aside p {
-  margin: 12px 0 0;
-  font-size: 15px;
-  color: var(--grey);
-  max-width: 34ch;
-}
-.hero-aside .count {
-  display: block;
-  font-size: clamp(28px, 5vw, 40px);
-  font-weight: 700;
-  letter-spacing: -0.02em;
-  color: var(--ink);
 }
 
 /* Catalogue main spacing */
@@ -45,10 +25,10 @@ main.catalogue {
   padding: 0 0 96px;
 }
 
-/* Tool page header */
+/* Tool page header — deliberately compact: the tool is the hero, not the title. */
 .tool-head {
   border-bottom: 1px solid var(--hairline);
-  padding: clamp(36px, 6vw, 64px) 0 clamp(28px, 4vw, 44px);
+  padding: clamp(18px, 3vw, 28px) 0 clamp(14px, 2.5vw, 20px);
 }
 .tool-head .idx {
   font-size: 12px;
@@ -59,25 +39,38 @@ main.catalogue {
   margin: 0;
 }
 .tool-head h1 {
-  margin: 14px 0 0;
-  font-size: clamp(34px, 6.5vw, 72px);
-  line-height: 0.98;
+  margin: 8px 0 0;
+  font-size: clamp(22px, 3vw, 30px);
+  line-height: 1.1;
   font-weight: 800;
-  letter-spacing: -0.035em;
+  letter-spacing: -0.02em;
 }
 .tool-head .lead {
-  margin-top: 16px;
+  margin-top: 10px;
+  font-size: 14px;
 }
 
-/* Action area below the work grid on tool pages */
+/* Action area below the work grid on tool pages.
+   The primary CTA is large + full-width within a constrained column so it's
+   unmissable but not absurdly wide. See docs/design-guidelines.md. */
 .action {
   padding: clamp(28px, 4vw, 44px) 0 clamp(40px, 6vw, 72px);
 }
+.action__cta {
+  max-width: 560px;
+}
+.action__hint {
+  margin: 10px 0 0;
+  font-size: 13px;
+  color: var(--grey);
+}
 .action__panel {
-  margin-top: 8px;
+  margin-top: 12px;
+  max-width: 560px;
 }
 .action__error {
-  margin: 8px 0 0;
+  margin: 12px 0 0;
+  max-width: 560px;
   font-size: 13px;
   color: var(--red);
   display: flex;
@@ -99,7 +92,7 @@ main.catalogue {
 .coming code {
   font-family: ui-monospace, Menlo, Consolas, monospace;
   font-size: 13px;
-  background: #f4f4f4;
+  background: var(--code-bg);
   padding: 2px 6px;
 }
 
@@ -202,14 +195,4 @@ main.catalogue {
 .related-list a:hover,
 .pairs-grid a:hover {
   color: var(--red);
-}
-
-@media (max-width: 760px) {
-  .hero-grid {
-    grid-template-columns: 1fr;
-    align-items: start;
-  }
-  .hero-aside {
-    padding-bottom: 0;
-  }
 }

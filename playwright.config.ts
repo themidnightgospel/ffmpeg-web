@@ -4,9 +4,10 @@ import { defineConfig, devices } from '@playwright/test';
 export default defineConfig({
   testDir: './tests/e2e',
   timeout: 120_000,
-  expect: { timeout: 100_000 },
+  expect: { timeout: 30_000 },
   fullyParallel: true,
-  workers: process.env.CI ? 2 : undefined,
+  // One worker per shard so shards run in parallel (each loads the ffmpeg core once).
+  workers: process.env.CI ? Number(process.env.MATRIX_SHARDS ?? 2) : undefined,
   retries: process.env.CI ? 1 : 0,
   reporter: process.env.CI
     ? [['list'], ['json', { outputFile: 'test-results/matrix-report.json' }]]

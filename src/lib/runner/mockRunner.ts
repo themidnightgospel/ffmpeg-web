@@ -37,7 +37,7 @@ export const mockRunner: ConversionRunner = {
 
         signal?.removeEventListener('abort', onAbort);
         const text = [
-          `ffmpeg.web — mock output for ${outputName}`,
+          `Khinkali Tool Chain — mock output for ${outputName}`,
           `source: ${input.name}`,
           `ffmpeg ${args.join(' ')}`,
           'This is a development stand-in; no real conversion was performed.',

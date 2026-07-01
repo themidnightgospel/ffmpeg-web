@@ -4,19 +4,19 @@ import sitemap from '@astrojs/sitemap';
 
 // https://astro.build/config
 export default defineConfig({
-  // TODO: replace with the real custom domain once chosen. Drives canonicals + sitemap.
-  site: 'https://ffmpeg.web',
+  // Custom domain (khinkali.cc). Drives canonicals + sitemap.
+  site: 'https://khinkali.cc',
   base: '/',
   integrations: [react(), sitemap()],
-  vite: {
-    // Cross-origin isolation for ffmpeg.wasm's multithreaded core (dev only;
-    // production uses public/coi-serviceworker.js). See docs/tech-stack.md.
-    server: {
-      headers: {
-        'Cross-Origin-Opener-Policy': 'same-origin',
-        'Cross-Origin-Embedder-Policy': 'require-corp',
-      },
+  // Cross-origin isolation for ffmpeg.wasm's multithreaded core in dev/preview
+  // (production uses public/coi-serviceworker.js). See docs/tech-stack.md.
+  server: {
+    headers: {
+      'Cross-Origin-Opener-Policy': 'same-origin',
+      'Cross-Origin-Embedder-Policy': 'require-corp',
     },
+  },
+  vite: {
     // ffmpeg packages ship their own workers/wasm — don't pre-bundle them.
     optimizeDeps: {
       exclude: ['@ffmpeg/ffmpeg', '@ffmpeg/util'],

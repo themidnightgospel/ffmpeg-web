@@ -2,6 +2,7 @@ import type { OptionValue, OptionValues, ToolOption } from '@/lib/tools/types';
 import { Field } from '@/components/ui/Field';
 import { Segmented } from '@/components/ui/Segmented';
 import { Slider } from '@/components/ui/Slider';
+import { Stepper } from '@/components/ui/Stepper';
 import { Checkbox } from '@/components/ui/Checkbox';
 
 interface ToolOptionControlProps {
@@ -42,6 +43,21 @@ export function ToolOptionControl({ option, values, disabled, onChange }: ToolOp
           step={option.step}
           minLabel={option.minLabel}
           maxLabel={option.maxLabel}
+          hint={option.hint}
+          disabled={disabled}
+          onChange={(v) => onChange(option.id, v)}
+        />
+      );
+
+    case 'stepper':
+      return (
+        <Stepper
+          id={option.id}
+          label={option.label}
+          value={Number(values[option.id] ?? option.default)}
+          min={option.min}
+          max={option.max}
+          step={option.step}
           hint={option.hint}
           disabled={disabled}
           onChange={(v) => onChange(option.id, v)}

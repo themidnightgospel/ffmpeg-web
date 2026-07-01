@@ -61,6 +61,17 @@ export interface SliderOption extends OptionBase {
   hint?: string;
 }
 
+/** Numeric value with −/+ buttons and direct typing (preferred over slider). */
+export interface StepperOption extends OptionBase {
+  type: 'stepper';
+  min: number;
+  max: number;
+  step?: number;
+  default: number;
+  /** Small helper text shown beside the label, e.g. "lower = better". */
+  hint?: string;
+}
+
 export interface ToggleOption extends OptionBase {
   type: 'toggle';
   default: boolean;
@@ -75,7 +86,12 @@ export interface TimeOption extends OptionBase {
 }
 
 /** Discriminated union — extend here + in ToolOptionControl to add a control. */
-export type ToolOption = SegmentedOption | SliderOption | ToggleOption | TimeOption;
+export type ToolOption =
+  | SegmentedOption
+  | SliderOption
+  | StepperOption
+  | ToggleOption
+  | TimeOption;
 
 export interface BuiltCommand {
   args: string[];
@@ -101,6 +117,9 @@ export function defaultValues(options: ToolOption[]): OptionValues {
         values[o.id] = o.default;
         break;
       case 'slider':
+        values[o.id] = o.default;
+        break;
+      case 'stepper':
         values[o.id] = o.default;
         break;
       case 'toggle':
