@@ -15,7 +15,7 @@ export const TOOLS: readonly ToolMeta[] = [
   { slug: 'image-format-converter', name: 'Image Format Converter', category: 'Format conversion', desc: 'PNG, JPG, WebP, AVIF, and back.', status: 'planned' },
 
   // Compression
-  { slug: 'video-compressor', name: 'Video Compressor', category: 'Compression', desc: 'Shrink file size, keep it watchable.', status: 'planned' },
+  { slug: 'video-compressor', name: 'Video Compressor', category: 'Compression', desc: 'Shrink file size, keep it watchable.', status: 'live' },
   { slug: 'audio-compressor', name: 'Audio Compressor', category: 'Compression', desc: 'Reduce bitrate for smaller audio files.', status: 'planned' },
   { slug: 'gif-optimizer', name: 'GIF Optimizer', category: 'Compression', desc: 'Cut GIF weight with smart palettes.', status: 'planned' },
   { slug: 'fit-under-target-size', name: 'Fit Under Target Size', category: 'Compression', desc: 'Hit an exact megabyte budget.', status: 'planned' },
