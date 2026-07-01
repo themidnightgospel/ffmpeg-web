@@ -107,8 +107,13 @@ async function convert(page: Page, from: string, to: string, firstRun: boolean):
   await convertBtn.click();
 
   const download = page.locator('a[download]');
-  // First run includes the one-time core load; later runs are quick.
-  await expect(download).toBeVisible({ timeout: firstRun ? 120_000 : 45_000 });
+  const error = page.locator('.action__error');
+  // Race the result against the error alert so failures surface fast (with the
+  // real ffmpeg message) instead of waiting out the whole timeout.
+  await expect(download.or(error)).toBeVisible({ timeout: firstRun ? 120_000 : 45_000 });
+  if (await error.isVisible()) {
+    throw new Error((await error.textContent())?.trim() || 'conversion failed');
+  }
 
   const href = await download.getAttribute('href');
   if (!href) throw new Error('download link has no href');

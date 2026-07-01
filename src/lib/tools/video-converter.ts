@@ -14,6 +14,10 @@ const AUDIO_ENCODERS: Record<string, string> = {
 };
 
 const isRemux = (v: { remux?: unknown }) => v.remux === true;
+// WebM can only hold VP8/VP9/AV1 video + Opus/Vorbis audio, so codec choice is
+// fixed for it — disable the codec pickers and force the right encoders.
+const codecFixed = (v: { remux?: unknown; format?: unknown }) =>
+  v.remux === true || v.format === 'webm';
 
 /**
  * Video Converter — the reference tool.
@@ -47,7 +51,7 @@ export const videoConverter: Tool = {
       type: 'segmented',
       label: 'Video codec',
       default: 'h264',
-      disabledWhen: isRemux,
+      disabledWhen: codecFixed,
       choices: [
         { value: 'h264', label: 'H.264' },
         { value: 'vp9', label: 'VP9' },
@@ -59,7 +63,7 @@ export const videoConverter: Tool = {
       type: 'segmented',
       label: 'Audio codec',
       default: 'aac',
-      disabledWhen: isRemux,
+      disabledWhen: codecFixed,
       choices: [
         { value: 'aac', label: 'AAC' },
         { value: 'opus', label: 'Opus' },
@@ -96,13 +100,17 @@ export const videoConverter: Tool = {
     if (values.remux === true) {
       args.push('-c', 'copy');
     } else {
-      const vcodec = String(values.vcodec);
-      args.push('-c:v', VIDEO_ENCODERS[vcodec] ?? 'libx264');
-      if (vcodec !== 'copy') {
+      const webm = format === 'webm';
+      // WebM forces VP9/Opus; other containers respect the chosen codecs.
+      const vEnc = webm ? 'libvpx-vp9' : (VIDEO_ENCODERS[String(values.vcodec)] ?? 'libx264');
+      const aEnc = webm ? 'libopus' : (AUDIO_ENCODERS[String(values.acodec)] ?? 'aac');
+
+      args.push('-c:v', vEnc);
+      if (vEnc !== 'copy') {
         args.push('-crf', String(values.crf));
+        if (vEnc === 'libvpx-vp9') args.push('-b:v', '0'); // constant-quality VP9
       }
-      const acodec = String(values.acodec);
-      args.push('-c:a', AUDIO_ENCODERS[acodec] ?? 'aac');
+      args.push('-c:a', aEnc);
     }
 
     args.push(outputName);
