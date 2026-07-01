@@ -26,6 +26,8 @@ const title = `Convert ${pair.from.name} to ${pair.to.name} — Free, In-Browser
 const description = `Convert ${pair.from.name} to ${pair.to.name} free and privately in your browser. No uploads, no watermarks — powered by ffmpeg.wasm.`;
 const howToTitle = `How to convert ${pair.from.name} to ${pair.to.name}`;
 
+// Content stays in the static HTML (collapsed), so it's still fully indexed and
+// the HowTo/FAQ structured data remains valid.
 const jsonLd = [
   howToLd(howToTitle, content.steps),
   faqPageLd(content.faqs),
@@ -64,30 +66,33 @@ const jsonLd = [
     client:visible
   />
 
-  <article class="wrap prose">
-    <p>{content.intro}</p>
-
-    <h2>{pair.from.name} vs {pair.to.name}</h2>
-    <p>{content.comparison}</p>
-
-    <h2>When to convert {pair.from.name} to {pair.to.name}</h2>
-    <p>{content.whenToUse}</p>
-
-    <h2>{howToTitle}</h2>
-    <ol>{content.steps.map((step) => <li>{step}</li>)}</ol>
-
-    <h2>Frequently asked questions</h2>
-    <dl class="faq">
-      {content.faqs.map((f) => (
-        <Fragment>
-          <dt>{f.q}</dt>
-          <dd>{f.a}</dd>
-        </Fragment>
-      ))}
-    </dl>
-  </article>
-
   <div class="wrap"><RelatedConversions pairs={related} /></div>
+
+  <details class="wrap prose-disclosure">
+    <summary>About converting {pair.from.name} to {pair.to.name}</summary>
+    <article class="prose">
+      <p>{content.intro}</p>
+
+      <h2>{pair.from.name} vs {pair.to.name}</h2>
+      <p>{content.comparison}</p>
+
+      <h2>When to convert {pair.from.name} to {pair.to.name}</h2>
+      <p>{content.whenToUse}</p>
+
+      <h2>{howToTitle}</h2>
+      <ol>{content.steps.map((step) => <li>{step}</li>)}</ol>
+
+      <h2>Frequently asked questions</h2>
+      <dl class="faq">
+        {content.faqs.map((f) => (
+          <Fragment>
+            <dt>{f.q}</dt>
+            <dd>{f.a}</dd>
+          </Fragment>
+        ))}
+      </dl>
+    </article>
+  </details>
 
   <Footer />
 </BaseLayout>

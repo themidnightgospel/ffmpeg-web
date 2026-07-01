@@ -8,7 +8,7 @@ On any tool page (`/convert/…`, `/tools/…`, and every future tool), the **ac
 
 - **Compact title.** The page `<h1>` is a modest heading, **not** a giant hero. It orients the user; it doesn't dominate. (Enforced by `.tool-head` — small size + tight padding.)
 - **No decorative sub-copy above the tool.** Don't add a "lead" paragraph that just restates what the tool does ("Change a video's container and codec…"). It adds no value and pushes the tool down. The header is: breadcrumb + compact H1 (+ optional tiny category index).
-- **Explanatory / SEO prose goes _below_ the tool**, in the content section — never above it. This keeps the tool front-and-centre while preserving the fact-driven copy search engines need. (H1 keeps its keyword for SEO; visual size is irrelevant to ranking, so a small H1 is fine.)
+- **Explanatory / SEO prose goes _below_ the tool, inside a collapsed `<details>` disclosure** — never above it, and not expanded by default. Because it's a native `<details>` in the static HTML (not JS-loaded on click), the content stays fully **indexed** and FAQ/HowTo structured data remains valid, while the page reads as tool-focused. (H1 keeps its keyword for SEO; visual size is irrelevant to ranking, so a small H1 is fine.)
 - **Order on a tool page:** header (breadcrumb + small H1) → **the tool** → supporting prose (comparison / when-to-use / how-to / FAQ) → related links → footer.
 
 Rationale: users arrive to *do the thing*. Every pixel of hero title and marketing blurb above the tool is a pixel of friction between them and the upload box.
