@@ -11,6 +11,7 @@ import { framerateConverter } from './framerate-converter';
 import { reverseMedia } from './reverse-media';
 import { volumeNormalizer } from './volume-normalizer';
 import { channelTools } from './channel-tools';
+import { pitchTempoChanger } from './pitch-tempo-changer';
 
 /* Registry of implemented ("live") tools. Add a tool's config here to wire it up.
    The catalogue metadata for all tools (including planned ones) lives in @/data/tools. */
@@ -27,6 +28,7 @@ const LIVE_TOOLS: Tool[] = [
   reverseMedia,
   volumeNormalizer,
   channelTools,
+  pitchTempoChanger,
 ];
 
 const bySlug = new Map<string, Tool>(LIVE_TOOLS.map((t) => [t.slug, t]));
