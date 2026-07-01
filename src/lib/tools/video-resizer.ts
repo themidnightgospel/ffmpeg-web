@@ -1,5 +1,6 @@
 import type { Tool } from './types';
 import { baseName } from '@/lib/format';
+import { h264Tail } from './videoEncode';
 
 /**
  * Video Resizer — scale to a target height, preserving aspect ratio (width is
@@ -49,18 +50,7 @@ export const videoResizer: Tool = {
       input.name,
       '-vf',
       `scale=-2:${String(values.height)}:flags=${String(values.scaler)}`,
-      '-c:v',
-      'libx264',
-      '-crf',
-      '20',
-      '-preset',
-      'veryfast',
-      '-c:a',
-      'aac',
-      '-b:a',
-      '128k',
-      '-movflags',
-      '+faststart',
+      ...h264Tail(),
       outputName,
     ];
     return { args, outputName };
