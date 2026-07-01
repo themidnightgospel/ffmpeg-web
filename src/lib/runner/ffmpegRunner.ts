@@ -3,22 +3,92 @@ import type { ConversionRunner, RunResult } from './types';
 /* Real ffmpeg.wasm engine behind the ConversionRunner interface.
 
    - Lazy-imports @ffmpeg/ffmpeg so nothing browser-only runs during SSR/build.
-   - Feature-detects `crossOriginIsolated`: loads the multithreaded core when the
-     page is cross-origin isolated (via coi-serviceworker), else the single-thread
-     core. See docs/tech-stack.md.
+   - Feature-detects `crossOriginIsolated`: multithreaded core when isolated,
+     single-thread otherwise.
+   - Prefetches + caches the core files (Cache Storage, versioned) so they
+     download once and persist across visits — bump CORE_VERSION to invalidate.
 
-   NOTE: runtime behavior requires a browser and cannot be verified headlessly —
-   smoke-test in the browser after build. */
+   NOTE: runtime behavior requires a browser and cannot be verified headlessly. */
+
+// Bump when @ffmpeg/core is updated so the persistent cache invalidates.
+const CORE_VERSION = '0.12.6';
+const CACHE_NAME = `ffmpeg-core-${CORE_VERSION}`;
 
 const isolated = (): boolean =>
   typeof crossOriginIsolated !== 'undefined' && crossOriginIsolated === true;
 
-// Core files are self-hosted (copied into public/ffmpeg by scripts/copy-ffmpeg-core.mjs)
-// so they load same-origin under COEP and don't depend on a CDN. See docs/testing.md.
+// Self-hosted core (copied into public/ffmpeg by scripts/copy-ffmpeg-core.mjs).
 const coreBase = (multithread: boolean): string =>
   `${import.meta.env.BASE_URL}ffmpeg/core${multithread ? '-mt' : ''}`;
 
-// Minimal structural type of the FFmpeg instance we use (avoids importing types at module top).
+const coreFiles = (multithread: boolean): string[] => {
+  const base = coreBase(multithread);
+  const files = [`${base}/ffmpeg-core.js`, `${base}/ffmpeg-core.wasm`];
+  if (multithread) files.push(`${base}/ffmpeg-core.worker.js`);
+  return files;
+};
+
+const cacheAvailable = (): boolean => typeof caches !== 'undefined';
+
+// Remove core caches from older versions.
+async function cleanupOldCaches(): Promise<void> {
+  if (!cacheAvailable()) return;
+  try {
+    const keys = await caches.keys();
+    await Promise.all(
+      keys
+        .filter((k) => k.startsWith('ffmpeg-core-') && k !== CACHE_NAME)
+        .map((k) => caches.delete(k)),
+    );
+  } catch {
+    /* best-effort */
+  }
+}
+
+let prefetchStarted = false;
+
+/** Download + persistently cache the core files (called on tool-page load).
+    Best-effort and idempotent; the actual wasm instantiation still happens on
+    first conversion, reading straight from this cache. */
+export async function prefetchCore(): Promise<void> {
+  if (prefetchStarted || !cacheAvailable()) return;
+  prefetchStarted = true;
+  try {
+    void cleanupOldCaches();
+    const cache = await caches.open(CACHE_NAME);
+    await Promise.all(
+      coreFiles(isolated()).map(async (url) => {
+        if (await cache.match(url)) return;
+        const res = await fetch(url);
+        if (res.ok) await cache.put(url, res);
+      }),
+    );
+  } catch {
+    /* best-effort — falls back to fetching on demand */
+  }
+}
+
+// Resolve a core asset to a blob URL, preferring the persistent cache.
+async function assetBlobURL(url: string, mime: string): Promise<string> {
+  if (cacheAvailable()) {
+    try {
+      const cache = await caches.open(CACHE_NAME);
+      let res = await cache.match(url);
+      if (!res) {
+        const fetched = await fetch(url);
+        if (fetched.ok) await cache.put(url, fetched.clone());
+        res = fetched;
+      }
+      return URL.createObjectURL(new Blob([await res.arrayBuffer()], { type: mime }));
+    } catch {
+      /* fall through to plain fetch */
+    }
+  }
+  const { toBlobURL } = await import('@ffmpeg/util');
+  return toBlobURL(url, mime);
+}
+
+// Minimal structural type of the FFmpeg instance we use.
 interface FFmpegLike {
   loaded: boolean;
   load(opts: { coreURL: string; wasmURL: string; workerURL?: string }): Promise<boolean>;
@@ -30,44 +100,48 @@ interface FFmpegLike {
 }
 
 let instance: FFmpegLike | null = null;
-// Routed to the current run's callback. The listener is registered once for the
-// lifetime of the (cached) instance, so repeated conversions don't stack listeners.
+let loadPromise: Promise<FFmpegLike> | null = null;
+// Routed to the current run's callback; the listener is registered once.
 let currentProgress: ((ratio: number) => void) | null = null;
 
-async function getFFmpeg(): Promise<FFmpegLike> {
-  if (instance?.loaded) return instance;
-
-  const [{ FFmpeg }, { toBlobURL }] = await Promise.all([
-    import('@ffmpeg/ffmpeg'),
-    import('@ffmpeg/util'),
-  ]);
-
+async function loadFFmpeg(): Promise<FFmpegLike> {
+  const { FFmpeg } = await import('@ffmpeg/ffmpeg');
   const ffmpeg = new FFmpeg() as unknown as FFmpegLike;
   const multithread = isolated();
-  const base = coreBase(multithread);
 
   ffmpeg.on('progress', ({ progress }) => {
     currentProgress?.(Math.min(Math.max(progress, 0), 1));
   });
 
-  await ffmpeg.load({
-    coreURL: await toBlobURL(`${base}/ffmpeg-core.js`, 'text/javascript'),
-    wasmURL: await toBlobURL(`${base}/ffmpeg-core.wasm`, 'application/wasm'),
-    ...(multithread
-      ? { workerURL: await toBlobURL(`${base}/ffmpeg-core.worker.js`, 'text/javascript') }
-      : {}),
-  });
+  const files = coreFiles(multithread);
+  const [coreURL, wasmURL, workerURL] = await Promise.all([
+    assetBlobURL(files[0]!, 'text/javascript'),
+    assetBlobURL(files[1]!, 'application/wasm'),
+    multithread ? assetBlobURL(files[2]!, 'text/javascript') : Promise.resolve(''),
+  ]);
 
-  instance = ffmpeg;
+  await ffmpeg.load({ coreURL, wasmURL, ...(multithread ? { workerURL } : {}) });
   return ffmpeg;
 }
 
+async function getFFmpeg(): Promise<FFmpegLike> {
+  if (instance?.loaded) return instance;
+  loadPromise ??= loadFFmpeg();
+  instance = await loadPromise;
+  return instance;
+}
+
 export const ffmpegRunner: ConversionRunner = {
+  // Called on tool-page load to download + cache the core ahead of time.
+  warmUp() {
+    void prefetchCore();
+  },
+
   async run(input, args, outputName, options): Promise<RunResult> {
     const { onProgress, signal } = options ?? {};
     if (signal?.aborted) throw new DOMException('Aborted', 'AbortError');
 
-    onProgress?.({ ratio: 0, stage: 'Loading engine — first run downloads ~30 MB' });
+    onProgress?.({ ratio: 0, stage: 'Loading engine…' });
     const ffmpeg = await getFFmpeg();
 
     currentProgress = onProgress ? (ratio) => onProgress({ ratio, stage: 'Transcoding' }) : null;
@@ -84,7 +158,6 @@ export const ffmpegRunner: ConversionRunner = {
     const bytes = typeof data === 'string' ? new TextEncoder().encode(data) : new Uint8Array(data);
     const blob = new Blob([bytes], { type: 'application/octet-stream' });
 
-    // Tidy the in-memory FS so repeated runs don't accumulate files.
     await ffmpeg.deleteFile(input.name).catch(() => undefined);
     await ffmpeg.deleteFile(outputName).catch(() => undefined);
 

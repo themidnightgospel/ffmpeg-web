@@ -25,4 +25,6 @@ export interface ConversionRunner {
     outputName: string,
     options?: RunOptions,
   ): Promise<RunResult>;
+  /** Optional: preload/cache the engine ahead of the first run (best-effort). */
+  warmUp?(): void;
 }

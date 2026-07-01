@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import type { OptionValues, Tool, ToolOption } from '@/lib/tools/types';
 import type { ConversionRunner } from '@/lib/runner/types';
 import { DropZone } from '@/components/ui/DropZone';
@@ -25,6 +26,13 @@ export function ToolRunner({
 }: ToolRunnerProps) {
   const conversion = useConversion(tool, runner, initialValues);
   const { file, values, phase, progress, output, error } = conversion;
+
+  // Warm the engine on load (download + cache the core) so Convert is instant.
+  // Deferred slightly so it doesn't compete with first paint/hydration.
+  useEffect(() => {
+    const id = window.setTimeout(() => runner.warmUp?.(), 400);
+    return () => window.clearTimeout(id);
+  }, [runner]);
 
   const dropPrompt = sourceHint
     ? `Drop your ${sourceHint.toUpperCase()} or click to browse`
