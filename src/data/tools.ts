@@ -28,7 +28,7 @@ export const TOOLS: readonly ToolMeta[] = [
   { slug: 'loop-maker', name: 'Loop Maker', category: 'Trimming & cutting', desc: 'Repeat a clip a set number of times.', status: 'planned' },
 
   // Resize & transform
-  { slug: 'video-resizer', name: 'Video Resizer', category: 'Resize & transform', desc: 'Scale to any width and height.', status: 'planned' },
+  { slug: 'video-resizer', name: 'Video Resizer', category: 'Resize & transform', desc: 'Scale to any width and height.', status: 'live' },
   { slug: 'aspect-ratio-changer', name: 'Aspect-Ratio Changer', category: 'Resize & transform', desc: 'Reframe to 16:9, 9:16, 1:1.', status: 'planned' },
   { slug: 'rotate-flip-mirror', name: 'Rotate / Flip / Mirror', category: 'Resize & transform', desc: 'Fix orientation in one click.', status: 'planned' },
   { slug: 'crop-tool', name: 'Crop Tool', category: 'Resize & transform', desc: 'Trim the frame to any region.', status: 'planned' },
