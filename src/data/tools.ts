@@ -39,7 +39,7 @@ export const TOOLS: readonly ToolMeta[] = [
   // Audio tools
   { slug: 'volume-normalizer', name: 'Volume Normalizer', category: 'Audio tools', desc: 'Even out loudness to a target level.', status: 'live' },
   { slug: 'audio-fader', name: 'Audio Fader', category: 'Audio tools', desc: 'Add smooth fade-in and fade-out.', status: 'planned' },
-  { slug: 'channel-tools', name: 'Channel Tools', category: 'Audio tools', desc: 'Mono, stereo, and channel mixing.', status: 'planned' },
+  { slug: 'channel-tools', name: 'Channel Tools', category: 'Audio tools', desc: 'Mono, stereo, and channel mixing.', status: 'live' },
   { slug: 'pitch-tempo-changer', name: 'Pitch / Tempo Changer', category: 'Audio tools', desc: 'Shift pitch or tempo independently.', status: 'planned' },
   { slug: 'audio-joiner', name: 'Audio Joiner', category: 'Audio tools', desc: 'Concatenate tracks into one file.', status: 'planned' },
   { slug: 'ringtone-maker', name: 'Ringtone Maker', category: 'Audio tools', desc: 'Cut a short loop for your phone.', status: 'planned' },
