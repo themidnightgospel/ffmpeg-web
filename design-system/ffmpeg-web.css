@@ -496,6 +496,12 @@ input[type="range"].slider:focus-visible { outline: var(--focus); outline-offset
 .progress .ppct { font-size: 22px; font-weight: 700; font-variant-numeric: tabular-nums; letter-spacing: -0.02em; }
 .track { height: 3px; background: var(--hairline); position: relative; overflow: hidden; }
 .bar { position: absolute; left: 0; top: 0; bottom: 0; width: 0%; background: var(--red); transition: width var(--dur) linear; }
+/* Indeterminate state — a red segment sweeping across while the engine loads. */
+.bar--indeterminate { width: 35%; transition: none; animation: bar-indeterminate 1.1s ease-in-out infinite; }
+@keyframes bar-indeterminate {
+  0% { transform: translateX(-120%); }
+  100% { transform: translateX(320%); }
+}
 
 /* ----------------------------------------------------------------------------
    16. RESULT PANEL & NOTE

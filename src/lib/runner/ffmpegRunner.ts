@@ -67,7 +67,7 @@ export const ffmpegRunner: ConversionRunner = {
     const { onProgress, signal } = options ?? {};
     if (signal?.aborted) throw new DOMException('Aborted', 'AbortError');
 
-    onProgress?.({ ratio: 0, stage: 'Loading ffmpeg' });
+    onProgress?.({ ratio: 0, stage: 'Loading engine — first run downloads ~30 MB' });
     const ffmpeg = await getFFmpeg();
 
     currentProgress = onProgress ? (ratio) => onProgress({ ratio, stage: 'Transcoding' }) : null;

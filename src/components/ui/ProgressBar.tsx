@@ -1,3 +1,5 @@
+import { cx } from '@/lib/cx';
+
 interface ProgressBarProps {
   ratio: number;
   stage: string;
@@ -5,22 +7,28 @@ interface ProgressBarProps {
 
 export function ProgressBar({ ratio, stage }: ProgressBarProps) {
   const pct = Math.round(Math.min(Math.max(ratio, 0), 1) * 100);
+  // Before real progress arrives (e.g. loading the ~30 MB ffmpeg core) show an
+  // animated indeterminate bar so it's clearly working, not stuck.
+  const indeterminate = ratio <= 0;
+
   return (
     <div className="progress on">
       <div className="ptop">
         <span className="pstage">{stage}</span>
-        <span className="ppct">{pct}%</span>
+        {!indeterminate && <span className="ppct">{pct}%</span>}
       </div>
       <div
         className="track"
         role="progressbar"
         aria-label={stage}
-        aria-valuenow={pct}
+        aria-valuenow={indeterminate ? undefined : pct}
         aria-valuemin={0}
         aria-valuemax={100}
       >
-        {/* Inline width is a runtime-computed value — the one allowed use of inline style. */}
-        <div className="bar" style={{ width: `${pct}%` }} />
+        <div
+          className={cx('bar', indeterminate && 'bar--indeterminate')}
+          style={indeterminate ? undefined : { width: `${pct}%` }}
+        />
       </div>
     </div>
   );

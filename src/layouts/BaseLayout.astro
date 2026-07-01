@@ -26,8 +26,10 @@ const { title, description, canonicalPath, jsonLd } = Astro.props;
 <html lang="en">
   <head>
     <Seo title={title} description={description} canonicalPath={canonicalPath} jsonLd={jsonLd} />
-    <!-- Cross-origin isolation for ffmpeg.wasm threads (reloads once on first visit). -->
-    <script is:inline src="/coi-serviceworker.js"></script>
+    {/* Cross-origin isolation for ffmpeg.wasm threads. Only in production —
+        in dev the Vite server already sets COOP/COEP, and a stale service
+        worker would just get in the way. */}
+    {import.meta.env.PROD && <script is:inline src="/coi-serviceworker.js"></script>}
   </head>
   <body>
     <slot />
