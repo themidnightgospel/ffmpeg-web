@@ -7,6 +7,7 @@ import { audioCompressor } from './audio-compressor';
 import { videoResizer } from './video-resizer';
 import { rotateFlipMirror } from './rotate-flip-mirror';
 import { speedChanger } from './speed-changer';
+import { framerateConverter } from './framerate-converter';
 
 /* Registry of implemented ("live") tools. Add a tool's config here to wire it up.
    The catalogue metadata for all tools (including planned ones) lives in @/data/tools. */
@@ -19,6 +20,7 @@ const LIVE_TOOLS: Tool[] = [
   videoResizer,
   rotateFlipMirror,
   speedChanger,
+  framerateConverter,
 ];
 
 const bySlug = new Map<string, Tool>(LIVE_TOOLS.map((t) => [t.slug, t]));

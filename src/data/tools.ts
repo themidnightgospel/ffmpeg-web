@@ -33,7 +33,7 @@ export const TOOLS: readonly ToolMeta[] = [
   { slug: 'rotate-flip-mirror', name: 'Rotate / Flip / Mirror', category: 'Resize & transform', desc: 'Fix orientation in one click.', status: 'live' },
   { slug: 'crop-tool', name: 'Crop Tool', category: 'Resize & transform', desc: 'Trim the frame to any region.', status: 'planned' },
   { slug: 'speed-changer', name: 'Speed Changer', category: 'Resize & transform', desc: 'Speed up or slow down playback.', status: 'live' },
-  { slug: 'framerate-converter', name: 'Framerate Converter', category: 'Resize & transform', desc: 'Retime between 24, 30, 60 fps.', status: 'planned' },
+  { slug: 'framerate-converter', name: 'Framerate Converter', category: 'Resize & transform', desc: 'Retime between 24, 30, 60 fps.', status: 'live' },
   { slug: 'reverse-media', name: 'Reverse Media', category: 'Resize & transform', desc: 'Play video or audio backwards.', status: 'planned' },
 
   // Audio tools
