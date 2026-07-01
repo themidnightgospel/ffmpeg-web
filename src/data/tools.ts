@@ -72,7 +72,7 @@ export const TOOLS: readonly ToolMeta[] = [
 
   // Advanced
   { slug: 'color-adjuster', name: 'Color Adjuster', category: 'Advanced', desc: 'Tune brightness, contrast, saturation.', status: 'live' },
-  { slug: 'deinterlacer', name: 'Deinterlacer', category: 'Advanced', desc: 'Remove combing from interlaced video.', status: 'planned' },
+  { slug: 'deinterlacer', name: 'Deinterlacer', category: 'Advanced', desc: 'Remove combing from interlaced video.', status: 'live' },
   { slug: 'video-stabilization', name: 'Video Stabilization', category: 'Advanced', desc: 'Smooth out shaky handheld footage.', status: 'planned' },
   { slug: 'chroma-key', name: 'Chroma Key', category: 'Advanced', desc: 'Remove a green or blue background.', status: 'planned' },
   { slug: 'video-comparison', name: 'Video Comparison', category: 'Advanced', desc: 'Side-by-side before/after view.', status: 'planned' },

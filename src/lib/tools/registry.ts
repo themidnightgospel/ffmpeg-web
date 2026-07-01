@@ -15,6 +15,7 @@ import { pitchTempoChanger } from './pitch-tempo-changer';
 import { metadataStripper } from './metadata-stripper';
 import { loopMaker } from './loop-maker';
 import { colorAdjuster } from './color-adjuster';
+import { deinterlacer } from './deinterlacer';
 
 /* Registry of implemented ("live") tools. Add a tool's config here to wire it up.
    The catalogue metadata for all tools (including planned ones) lives in @/data/tools. */
@@ -35,6 +36,7 @@ const LIVE_TOOLS: Tool[] = [
   metadataStripper,
   loopMaker,
   colorAdjuster,
+  deinterlacer,
 ];
 
 const bySlug = new Map<string, Tool>(LIVE_TOOLS.map((t) => [t.slug, t]));
