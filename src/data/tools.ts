@@ -29,7 +29,7 @@ export const TOOLS: readonly ToolMeta[] = [
 
   // Resize & transform
   { slug: 'video-resizer', name: 'Video Resizer', category: 'Resize & transform', desc: 'Scale to any width and height.', status: 'live' },
-  { slug: 'aspect-ratio-changer', name: 'Aspect-Ratio Changer', category: 'Resize & transform', desc: 'Reframe to 16:9, 9:16, 1:1.', status: 'planned' },
+  { slug: 'aspect-ratio-changer', name: 'Aspect-Ratio Changer', category: 'Resize & transform', desc: 'Reframe to 16:9, 9:16, 1:1.', status: 'live' },
   { slug: 'rotate-flip-mirror', name: 'Rotate / Flip / Mirror', category: 'Resize & transform', desc: 'Fix orientation in one click.', status: 'live' },
   { slug: 'crop-tool', name: 'Crop Tool', category: 'Resize & transform', desc: 'Trim the frame to any region.', status: 'planned' },
   { slug: 'speed-changer', name: 'Speed Changer', category: 'Resize & transform', desc: 'Speed up or slow down playback.', status: 'live' },
