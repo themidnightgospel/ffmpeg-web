@@ -14,10 +14,14 @@ import type { ConversionRunner, RunResult } from './types';
 const CORE_VERSION = '0.12.6';
 const CACHE_NAME = `ffmpeg-core-${CORE_VERSION}`;
 
-// Single-threaded core only. The multithreaded core (SharedArrayBuffer + pthreads)
-// is unreliable in ffmpeg.wasm across environments — exec() hangs or crashes the
-// tab — so we use the dependable single-thread build. See docs/testing.md.
-const MULTITHREAD = false;
+// The multithreaded core (SharedArrayBuffer + pthreads) would be several times
+// faster, but it CRASHES the tab ("context lost") in this environment even WITH
+// cross-origin isolation — re-verified 2026-07 via the conversion matrix (4/5
+// shards crashed, 6min vs 8s). So we stay on the dependable single-thread core.
+// Kept as a function so the decision lives in one place if a future core fixes MT.
+function useMultithread(): boolean {
+  return false;
+}
 
 // Self-hosted core (copied into public/ffmpeg by scripts/copy-ffmpeg-core.mjs).
 const coreBase = (multithread: boolean): string =>
@@ -59,7 +63,7 @@ export async function prefetchCore(): Promise<void> {
     void cleanupOldCaches();
     const cache = await caches.open(CACHE_NAME);
     await Promise.all(
-      coreFiles(MULTITHREAD).map(async (url) => {
+      coreFiles(useMultithread()).map(async (url) => {
         if (await cache.match(url)) return;
         const res = await fetch(url);
         if (res.ok) await cache.put(url, res);
@@ -120,14 +124,15 @@ async function loadFFmpeg(): Promise<FFmpegLike> {
     currentLog?.(message);
   });
 
-  const files = coreFiles(MULTITHREAD);
+  const mt = useMultithread();
+  const files = coreFiles(mt);
   const [coreURL, wasmURL, workerURL] = await Promise.all([
     assetBlobURL(files[0]!, 'text/javascript'),
     assetBlobURL(files[1]!, 'application/wasm'),
-    MULTITHREAD ? assetBlobURL(files[2]!, 'text/javascript') : Promise.resolve(''),
+    mt ? assetBlobURL(files[2]!, 'text/javascript') : Promise.resolve(''),
   ]);
 
-  await ffmpeg.load({ coreURL, wasmURL, ...(MULTITHREAD ? { workerURL } : {}) });
+  await ffmpeg.load({ coreURL, wasmURL, ...(mt ? { workerURL } : {}) });
   return ffmpeg;
 }
 

@@ -8,8 +8,8 @@ import { fileURLToPath } from 'node:url';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 
-// Single-threaded core only (the multithreaded core is unreliable — see
-// src/lib/runner/ffmpegRunner.ts).
+// Single-threaded core only. The multithreaded core crashes the tab in this
+// environment (see useMultithread() in src/lib/runner/ffmpegRunner.ts).
 const targets = [['node_modules/@ffmpeg/core/dist/esm', 'public/ffmpeg/core']];
 
 for (const [src, dest] of targets) {
