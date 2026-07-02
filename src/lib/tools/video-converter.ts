@@ -76,7 +76,19 @@ export const videoConverter: Tool = {
       label: 'Remux — no re-encode',
       default: false,
       description:
-        'Repackage streams without quality loss. Much faster; codecs must be compatible.',
+        'Repackage streams without quality loss. Near-instant; codecs must be compatible ' +
+        '(e.g. most MOV→MP4). Try this first.',
+    },
+    {
+      id: 'speed',
+      type: 'segmented',
+      label: 'Encoding',
+      default: 'ultrafast',
+      disabledWhen: isRemux,
+      choices: [
+        { value: 'ultrafast', label: 'Faster' },
+        { value: 'veryfast', label: 'Smaller file' },
+      ],
     },
     {
       id: 'crf',
@@ -97,18 +109,22 @@ export const videoConverter: Tool = {
     const outputName = `${baseName(input.name)}.${format}`;
     const args: string[] = ['-i', input.name];
 
+    // "Faster" (ultrafast) vs "Smaller file" (veryfast). Defaults to Faster —
+    // single-thread wasm is slow, so speed is the priority for most conversions.
+    const speed = values.speed === 'veryfast' ? 'veryfast' : 'ultrafast';
+
     if (values.remux === true) {
       args.push('-c', 'copy');
     } else if (format === 'webm') {
       // WebM forces VP8 (libvpx) + Opus. VP8 is far lighter than VP9 in wasm.
-      // -cpu-used 5 speeds VP8 up a lot (default is the slowest quality setting).
-      args.push('-c:v', 'libvpx', '-cpu-used', '5', '-crf', '10', '-b:v', '1M', '-c:a', 'libopus');
+      // -cpu-used maps the speed choice (higher = faster; default is slowest).
+      const cpu = speed === 'veryfast' ? '5' : '8';
+      args.push('-c:v', 'libvpx', '-cpu-used', cpu, '-crf', '10', '-b:v', '1M', '-c:a', 'libopus');
     } else {
       const vEnc = VIDEO_ENCODERS[String(values.vcodec)] ?? 'libx264';
       args.push('-c:v', vEnc);
-      // -preset veryfast: libx264 otherwise defaults to "medium", several times
-      // slower in wasm for little size benefit.
-      if (vEnc !== 'copy') args.push('-crf', String(values.crf), '-preset', 'veryfast');
+      // Explicit preset — libx264 otherwise defaults to slow "medium".
+      if (vEnc !== 'copy') args.push('-crf', String(values.crf), '-preset', speed);
       args.push('-c:a', AUDIO_ENCODERS[String(values.acodec)] ?? 'aac');
     }
 
