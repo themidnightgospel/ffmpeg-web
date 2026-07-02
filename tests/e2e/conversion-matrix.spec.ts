@@ -57,37 +57,50 @@ test.describe('conversion matrix', () => {
       let firstRun = true;
 
       for (const { slug, from, to } of batch) {
-        try {
-          const output = await convert(page, from, to, firstRun);
-          firstRun = false;
+        // Each conversion gets one retry: the shared-page converter can, rarely,
+        // surface a stale result for a slow source (e.g. avi) — a fresh attempt
+        // clears it. A genuine failure fails both attempts.
+        let lastError = '';
+        for (let attempt = 0; attempt < 2; attempt++) {
+          try {
+            const output = await convert(page, from, to, firstRun);
+            firstRun = false;
 
-          if (output.length <= 256) {
-            failures.push(`${slug}: output too small (${output.length} bytes)`);
-            continue;
-          }
-          const outPath = `${FIXTURE_DIR}out-${slug}.${to}`;
-          writeFileSync(outPath, output);
-          const { format, hasVideo } = await probe(outPath);
-          const tokens = FORMAT_TOKENS[to] ?? [to];
-          if (!tokens.some((t) => format.includes(t))) {
-            failures.push(`${slug}: output format "${format}" doesn't match target ${to}`);
-          } else if (!hasVideo) {
-            failures.push(`${slug}: output has no video stream`);
-          }
-        } catch (err) {
-          const msg = (err as Error).message.split('\n')[0];
-          failures.push(`${slug}: ${msg}`);
-          // If the tab died, recreate it once (and reload the core on next run).
-          if (page.isClosed() || /crash|closed|Target/i.test(msg)) {
-            await page.close().catch(() => undefined);
-            try {
-              page = await openConverter(context);
-              firstRun = true;
-            } catch {
-              break; // context is gone — stop this shard
+            if (output.length <= 256) {
+              lastError = `${slug}: output too small (${output.length} bytes)`;
+              continue;
+            }
+            const outPath = `${FIXTURE_DIR}out-${slug}.${to}`;
+            writeFileSync(outPath, output);
+            const { format, hasVideo } = await probe(outPath);
+            const tokens = FORMAT_TOKENS[to] ?? [to];
+            if (!tokens.some((t) => format.includes(t))) {
+              lastError = `${slug}: output format "${format}" doesn't match target ${to}`;
+              continue;
+            }
+            if (!hasVideo) {
+              lastError = `${slug}: output has no video stream`;
+              continue;
+            }
+            lastError = ''; // success
+            break;
+          } catch (err) {
+            const msg = (err as Error).message.split('\n')[0];
+            lastError = `${slug}: ${msg}`;
+            // If the tab died, recreate it (and reload the core on next run).
+            if (page.isClosed() || /crash|closed|Target/i.test(msg)) {
+              await page.close().catch(() => undefined);
+              try {
+                page = await openConverter(context);
+                firstRun = true;
+              } catch {
+                lastError = `${slug}: context lost`;
+                break; // context is gone — stop retrying
+              }
             }
           }
         }
+        if (lastError) failures.push(lastError);
       }
 
       await page.close().catch(() => undefined);

@@ -4,12 +4,11 @@ import sitemap from '@astrojs/sitemap';
 
 // https://astro.build/config
 export default defineConfig({
-  // Canonicals + sitemap point at the eventual custom domain (khinkali.cc).
+  // Custom domain khinkali.cc serves at the root, so canonicals/sitemap and the
+  // base path are both '/'. (All internal links go through withBase(), so this
+  // is the only knob to flip if the host ever changes to a project sub-path.)
   site: 'https://khinkali.cc',
-  // Served from a GitHub project sub-path for now. Switch back to '/' when the
-  // khinkali.cc custom domain is live — all internal links use withBase(), so
-  // no other change is needed.
-  base: '/ffmpeg-web/',
+  base: '/',
   integrations: [react(), sitemap()],
   vite: {
     // ffmpeg packages ship their own workers/wasm — don't pre-bundle them.
