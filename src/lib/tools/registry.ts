@@ -31,6 +31,7 @@ import { contactSheet } from './contact-sheet';
 import { boomerangMaker } from './boomerang-maker';
 import { extractSubtitles } from './extract-subtitles';
 import { podcastPrep } from './podcast-prep';
+import { messagingOptimizer } from './messaging-optimizer';
 
 /* Registry of implemented ("live") tools. Add a tool's config here to wire it up.
    The catalogue metadata for all tools (including planned ones) lives in @/data/tools. */
@@ -67,6 +68,7 @@ const LIVE_TOOLS: Tool[] = [
   boomerangMaker,
   extractSubtitles,
   podcastPrep,
+  messagingOptimizer,
 ];
 
 const bySlug = new Map<string, Tool>(LIVE_TOOLS.map((t) => [t.slug, t]));
