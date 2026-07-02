@@ -17,7 +17,7 @@ export const TOOLS: readonly ToolMeta[] = [
   // Compression
   { slug: 'video-compressor', name: 'Video Compressor', category: 'Compression', desc: 'Shrink file size, keep it watchable.', status: 'live' },
   { slug: 'audio-compressor', name: 'Audio Compressor', category: 'Compression', desc: 'Reduce bitrate for smaller audio files.', status: 'live' },
-  { slug: 'gif-optimizer', name: 'GIF Optimizer', category: 'Compression', desc: 'Cut GIF weight with smart palettes.', status: 'planned' },
+  { slug: 'gif-optimizer', name: 'GIF Optimizer', category: 'Compression', desc: 'Cut GIF weight with smart palettes.', status: 'live' },
   { slug: 'fit-under-target-size', name: 'Fit Under Target Size', category: 'Compression', desc: 'Hit an exact megabyte budget.', status: 'planned' },
 
   // Trimming & cutting
