@@ -8,13 +8,21 @@ interface DropZoneProps {
   file: File | null;
   onFile: (file: File) => void;
   prompt?: string;
+  /** Multi-file mode: accept several files at once (e.g. concat/join). */
+  multiple?: boolean;
+  /** Selected files in multi-file mode. */
+  files?: File[];
+  /** Called with all selected files in multi-file mode. */
+  onFiles?: (files: File[]) => void;
 }
 
-export function DropZone({ accept, file, onFile, prompt }: DropZoneProps) {
+export function DropZone({ accept, file, onFile, prompt, multiple, files, onFiles }: DropZoneProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [dragging, setDragging] = useState(false);
 
   const openPicker = () => inputRef.current?.click();
+  const selected = multiple ? (files ?? []) : file ? [file] : [];
+  const hasFiles = selected.length > 0;
 
   const onKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
     if (e.key === 'Enter' || e.key === ' ') {
@@ -28,17 +36,22 @@ export function DropZone({ accept, file, onFile, prompt }: DropZoneProps) {
     setDragging(on);
   };
 
+  const accept_ = (dropped: FileList | null) => {
+    if (!dropped || dropped.length === 0) return;
+    if (multiple) onFiles?.(Array.from(dropped));
+    else onFile(dropped[0]!);
+  };
+
   const onDrop = (e: DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     setDragging(false);
-    const dropped = e.dataTransfer.files?.[0];
-    if (dropped) onFile(dropped);
+    accept_(e.dataTransfer.files);
   };
 
   return (
     <>
       <div
-        className={cx('drop', file && 'has-file', dragging && 'drag')}
+        className={cx('drop', hasFiles && 'has-file', dragging && 'drag')}
         role="button"
         tabIndex={0}
         aria-label="Drop a file here or press Enter to browse"
@@ -57,11 +70,23 @@ export function DropZone({ accept, file, onFile, prompt }: DropZoneProps) {
           <p className="hint">Processed locally — nothing is uploaded</p>
         </div>
 
-        {file && (
+        {hasFiles && !multiple && (
           <div className="filemeta" aria-live="polite">
-            <div className="fname">{file.name}</div>
-            <div className="fsize">{humanSize(file.size)} · ready to convert</div>
+            <div className="fname">{selected[0]!.name}</div>
+            <div className="fsize">{humanSize(selected[0]!.size)} · ready to convert</div>
             <span className="change">Choose a different file</span>
+          </div>
+        )}
+
+        {hasFiles && multiple && (
+          <div className="filemeta" aria-live="polite">
+            <div className="fname">{selected.length} files selected</div>
+            <ol className="filelist">
+              {selected.map((f, i) => (
+                <li key={`${f.name}-${i}`}>{f.name}</li>
+              ))}
+            </ol>
+            <span className="change">Choose different files</span>
           </div>
         )}
       </div>
@@ -73,10 +98,8 @@ export function DropZone({ accept, file, onFile, prompt }: DropZoneProps) {
         className="sr-only"
         type="file"
         accept={accept}
-        onChange={(e) => {
-          const picked = e.target.files?.[0];
-          if (picked) onFile(picked);
-        }}
+        multiple={multiple}
+        onChange={(e) => accept_(e.target.files)}
       />
     </>
   );

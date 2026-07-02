@@ -23,7 +23,7 @@ export const TOOLS: readonly ToolMeta[] = [
   // Trimming & cutting
   { slug: 'video-trimmer', name: 'Video/Audio Trimmer', category: 'Trimming & cutting', desc: 'Cut a clean start and end.', status: 'live' },
   { slug: 'media-splitter', name: 'Media Splitter', category: 'Trimming & cutting', desc: 'Slice one file into many parts.', status: 'planned' },
-  { slug: 'media-merger', name: 'Media Merger', category: 'Trimming & cutting', desc: 'Join multiple clips end to end.', status: 'planned' },
+  { slug: 'media-merger', name: 'Media Merger', category: 'Trimming & cutting', desc: 'Join multiple clips end to end.', status: 'live' },
   { slug: 'silence-remover', name: 'Silence Remover', category: 'Trimming & cutting', desc: 'Strip out dead air automatically.', status: 'live' },
   { slug: 'loop-maker', name: 'Loop Maker', category: 'Trimming & cutting', desc: 'Repeat a clip a set number of times.', status: 'live' },
 
@@ -41,7 +41,7 @@ export const TOOLS: readonly ToolMeta[] = [
   { slug: 'audio-fader', name: 'Audio Fader', category: 'Audio tools', desc: 'Add smooth fade-in and fade-out.', status: 'live' },
   { slug: 'channel-tools', name: 'Channel Tools', category: 'Audio tools', desc: 'Mono, stereo, and channel mixing.', status: 'live' },
   { slug: 'pitch-tempo-changer', name: 'Pitch / Tempo Changer', category: 'Audio tools', desc: 'Shift pitch or tempo independently.', status: 'live' },
-  { slug: 'audio-joiner', name: 'Audio Joiner', category: 'Audio tools', desc: 'Concatenate tracks into one file.', status: 'planned' },
+  { slug: 'audio-joiner', name: 'Audio Joiner', category: 'Audio tools', desc: 'Concatenate tracks into one file.', status: 'live' },
   { slug: 'ringtone-maker', name: 'Ringtone Maker', category: 'Audio tools', desc: 'Cut a short loop for your phone.', status: 'live' },
   { slug: 'waveform-generator', name: 'Waveform Generator', category: 'Audio tools', desc: 'Render audio as a waveform image.', status: 'live' },
   { slug: 'replace-audio-track', name: 'Replace Audio Track', category: 'Audio tools', desc: "Swap a video's soundtrack.", status: 'live' },

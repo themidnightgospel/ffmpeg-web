@@ -46,6 +46,8 @@ import { videoStabilization } from './video-stabilization';
 import { addTextOverlay } from './add-text-overlay';
 import { memeCaption } from './meme-caption';
 import { gifMaker } from './gif-maker';
+import { mediaMerger } from './media-merger';
+import { audioJoiner } from './audio-joiner';
 
 /* Registry of implemented ("live") tools. Add a tool's config here to wire it up.
    The catalogue metadata for all tools (including planned ones) lives in @/data/tools. */
@@ -97,6 +99,8 @@ const LIVE_TOOLS: Tool[] = [
   addTextOverlay,
   memeCaption,
   gifMaker,
+  mediaMerger,
+  audioJoiner,
 ];
 
 const bySlug = new Map<string, Tool>(LIVE_TOOLS.map((t) => [t.slug, t]));

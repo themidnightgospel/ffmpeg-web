@@ -124,11 +124,22 @@ export interface SecondaryInput {
   prompt?: string;
 }
 
-/** The input the command builder sees: primary file name + optional second file. */
+/** A multi-file input (e.g. clips to merge, tracks to join). */
+export interface MultiInput {
+  label: string;
+  accept?: string;
+  prompt?: string;
+  /** Minimum number of files required (default 2). */
+  min?: number;
+}
+
+/** The input the command builder sees: primary file name + optional extras. */
 export interface CommandInput {
   name: string;
   /** Present only for tools that declare a `secondary` input. */
   secondaryName?: string;
+  /** All file names for tools that declare a `multi` input (includes `name`). */
+  names?: string[];
 }
 
 /** A fully-implemented ("live") tool. */
@@ -138,6 +149,8 @@ export interface Tool extends ToolMeta {
   accept?: string;
   /** When set, the tool requires a second file (rendered as a second drop zone). */
   secondary?: SecondaryInput;
+  /** When set, the tool takes several files at once (rendered as a multi drop zone). */
+  multi?: MultiInput;
   /** Static assets staged into the FS before exec (e.g. a bundled font). */
   assets?: ToolAsset[];
   options: ToolOption[];

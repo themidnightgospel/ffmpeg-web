@@ -15,6 +15,7 @@ export interface ConversionOutput {
 export interface Conversion {
   file: File | null;
   secondaryFile: File | null;
+  multiFiles: File[];
   values: OptionValues;
   phase: ConversionPhase;
   progress: RunProgress;
@@ -24,6 +25,7 @@ export interface Conversion {
   setValue: (id: string, value: OptionValue) => void;
   selectFile: (file: File) => void;
   selectSecondaryFile: (file: File) => void;
+  selectMultiFiles: (files: File[]) => void;
   start: () => void;
 }
 
@@ -39,6 +41,7 @@ export function useConversion(
 ): Conversion {
   const [file, setFile] = useState<File | null>(null);
   const [secondaryFile, setSecondaryFile] = useState<File | null>(null);
+  const [multiFiles, setMultiFiles] = useState<File[]>([]);
   const [values, setValues] = useState<OptionValues>(() => {
     const base = defaultValues(tool.options);
     for (const [id, value] of Object.entries(initialValues ?? {})) {
@@ -88,10 +91,25 @@ export function useConversion(
     [releaseOutput],
   );
 
+  const selectMultiFiles = useCallback(
+    (next: File[]) => {
+      setMultiFiles(next);
+      setPhase('idle');
+      setError(null);
+      releaseOutput();
+    },
+    [releaseOutput],
+  );
+
   const needsSecondary = tool.secondary != null;
+  const isMulti = tool.multi != null;
+  const minFiles = tool.multi?.min ?? 2;
 
   const start = useCallback(() => {
-    if (!file) return;
+    // Multi-file tools run over the collected list; others use the single file.
+    const primary = isMulti ? multiFiles[0] : file;
+    if (!primary) return;
+    if (isMulti && multiFiles.length < minFiles) return;
     if (needsSecondary && !secondaryFile) return;
 
     releaseOutput();
@@ -100,14 +118,17 @@ export function useConversion(
     setProgress({ ratio: 0, stage: 'Starting' });
 
     const { args, outputName } = tool.buildCommand(values, {
-      name: file.name,
+      name: primary.name,
       secondaryName: secondaryFile?.name,
+      names: isMulti ? multiFiles.map((f) => f.name) : undefined,
     });
 
+    const extras = isMulti ? multiFiles.slice(1) : secondaryFile ? [secondaryFile] : [];
+
     runner
-      .run(file, args, outputName, {
+      .run(primary, args, outputName, {
         onProgress: setProgress,
-        ...(secondaryFile ? { extraFiles: [secondaryFile] } : {}),
+        ...(extras.length > 0 ? { extraFiles: extras } : {}),
         ...(tool.assets ? { assets: tool.assets } : {}),
       })
       .then((result) => {
@@ -129,20 +150,24 @@ export function useConversion(
         setError(err instanceof Error ? err.message : 'Conversion failed. Please try again.');
         setPhase('error');
       });
-  }, [file, secondaryFile, needsSecondary, values, tool, runner, releaseOutput]);
+  }, [file, secondaryFile, multiFiles, isMulti, minFiles, needsSecondary, values, tool, runner, releaseOutput]);
+
+  const hasInput = isMulti ? multiFiles.length >= minFiles : file !== null;
 
   return {
     file,
     secondaryFile,
+    multiFiles,
     values,
     phase,
     progress,
     output,
     error,
-    canStart: file !== null && (!needsSecondary || secondaryFile !== null) && phase !== 'running',
+    canStart: hasInput && (!needsSecondary || secondaryFile !== null) && phase !== 'running',
     setValue,
     selectFile,
     selectSecondaryFile,
+    selectMultiFiles,
     start,
   };
 }

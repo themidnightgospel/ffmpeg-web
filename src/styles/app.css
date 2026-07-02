@@ -6,6 +6,20 @@
   margin-top: 20px;
 }
 
+/* Multi-file list (merge / join) */
+.filelist {
+  margin: 8px 0 0;
+  padding-left: 20px;
+  text-align: left;
+  font-size: 13px;
+  color: var(--grey);
+  max-height: 160px;
+  overflow-y: auto;
+}
+.filelist li {
+  padding: 1px 0;
+}
+
 /* Hero (hub) */
 .hero {
   border-bottom: 1px solid var(--hairline);

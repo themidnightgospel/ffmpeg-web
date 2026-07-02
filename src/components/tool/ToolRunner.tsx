@@ -25,7 +25,7 @@ export function ToolRunner({
   runner = ffmpegRunner,
 }: ToolRunnerProps) {
   const conversion = useConversion(tool, runner, initialValues);
-  const { file, secondaryFile, values, phase, progress, output, error } = conversion;
+  const { file, secondaryFile, multiFiles, values, phase, progress, output, error } = conversion;
 
   // Warm the engine on load (download + cache the core) so Convert is instant.
   // Deferred slightly so it doesn't compete with first paint/hydration.
@@ -55,13 +55,25 @@ export function ToolRunner({
     <>
       <div className="wrap work">
         <div className="col-a">
-          <p className="section-label">Source file</p>
-          <DropZone
-            accept={tool.accept}
-            file={file}
-            onFile={conversion.selectFile}
-            prompt={dropPrompt}
-          />
+          <p className="section-label">{tool.multi ? tool.multi.label : 'Source file'}</p>
+          {tool.multi ? (
+            <DropZone
+              multiple
+              accept={tool.multi.accept}
+              file={null}
+              files={multiFiles}
+              onFile={conversion.selectFile}
+              onFiles={conversion.selectMultiFiles}
+              prompt={tool.multi.prompt}
+            />
+          ) : (
+            <DropZone
+              accept={tool.accept}
+              file={file}
+              onFile={conversion.selectFile}
+              prompt={dropPrompt}
+            />
+          )}
 
           {tool.secondary && (
             <div className="secondary-input">
@@ -108,11 +120,13 @@ export function ToolRunner({
           </Button>
           {!conversion.canStart && phase !== 'running' && (
             <p className="action__hint">
-              {!file
-                ? 'Add a file to get started'
-                : tool.secondary && !secondaryFile
-                  ? `Add ${tool.secondary.label.toLowerCase()} to continue`
-                  : 'Add a file to get started'}
+              {tool.multi
+                ? `Add at least ${tool.multi.min ?? 2} files to get started`
+                : !file
+                  ? 'Add a file to get started'
+                  : tool.secondary && !secondaryFile
+                    ? `Add ${tool.secondary.label.toLowerCase()} to continue`
+                    : 'Add a file to get started'}
             </p>
           )}
         </div>
