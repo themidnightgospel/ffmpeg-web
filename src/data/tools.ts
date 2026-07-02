@@ -31,7 +31,7 @@ export const TOOLS: readonly ToolMeta[] = [
   { slug: 'video-resizer', name: 'Video Resizer', category: 'Resize & transform', desc: 'Scale to any width and height.', status: 'live' },
   { slug: 'aspect-ratio-changer', name: 'Aspect-Ratio Changer', category: 'Resize & transform', desc: 'Reframe to 16:9, 9:16, 1:1.', status: 'live' },
   { slug: 'rotate-flip-mirror', name: 'Rotate / Flip / Mirror', category: 'Resize & transform', desc: 'Fix orientation in one click.', status: 'live' },
-  { slug: 'crop-tool', name: 'Crop Tool', category: 'Resize & transform', desc: 'Trim the frame to any region.', status: 'planned' },
+  { slug: 'crop-tool', name: 'Crop Tool', category: 'Resize & transform', desc: 'Trim the frame to any region.', status: 'live' },
   { slug: 'speed-changer', name: 'Speed Changer', category: 'Resize & transform', desc: 'Speed up or slow down playback.', status: 'live' },
   { slug: 'framerate-converter', name: 'Framerate Converter', category: 'Resize & transform', desc: 'Retime between 24, 30, 60 fps.', status: 'live' },
   { slug: 'reverse-media', name: 'Reverse Media', category: 'Resize & transform', desc: 'Play video or audio backwards.', status: 'live' },

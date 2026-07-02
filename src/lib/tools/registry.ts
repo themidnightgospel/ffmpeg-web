@@ -35,6 +35,7 @@ import { messagingOptimizer } from './messaging-optimizer';
 import { socialMediaPresets } from './social-media-presets';
 import { videoTrimmer } from './video-trimmer';
 import { ringtoneMaker } from './ringtone-maker';
+import { cropTool } from './crop-tool';
 
 /* Registry of implemented ("live") tools. Add a tool's config here to wire it up.
    The catalogue metadata for all tools (including planned ones) lives in @/data/tools. */
@@ -75,6 +76,7 @@ const LIVE_TOOLS: Tool[] = [
   socialMediaPresets,
   videoTrimmer,
   ringtoneMaker,
+  cropTool,
 ];
 
 const bySlug = new Map<string, Tool>(LIVE_TOOLS.map((t) => [t.slug, t]));
