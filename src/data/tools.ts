@@ -61,7 +61,7 @@ export const TOOLS: readonly ToolMeta[] = [
   { slug: 'metadata-stripper', name: 'Metadata Stripper', category: 'Extraction & capture', desc: 'Remove hidden metadata for privacy.', status: 'live' },
 
   // Social & platform
-  { slug: 'social-media-presets', name: 'Social-Media Presets', category: 'Social & platform', desc: 'One-tap exports for every platform.', status: 'planned' },
+  { slug: 'social-media-presets', name: 'Social-Media Presets', category: 'Social & platform', desc: 'One-tap exports for every platform.', status: 'live' },
   { slug: 'messaging-optimizer', name: 'Messaging Optimizer', category: 'Social & platform', desc: 'Right size for chat apps and DMs.', status: 'live' },
   { slug: 'podcast-prep', name: 'Podcast Prep', category: 'Social & platform', desc: 'Clean, level, and export episodes.', status: 'live' },
 
