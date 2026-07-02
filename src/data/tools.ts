@@ -48,7 +48,7 @@ export const TOOLS: readonly ToolMeta[] = [
 
   // Subtitles & overlays
   { slug: 'burn-subtitles', name: 'Burn Subtitles', category: 'Subtitles & overlays', desc: 'Hard-code captions into the video.', status: 'planned' },
-  { slug: 'extract-subtitles', name: 'Extract Subtitles', category: 'Subtitles & overlays', desc: 'Pull embedded subtitle tracks out.', status: 'planned' },
+  { slug: 'extract-subtitles', name: 'Extract Subtitles', category: 'Subtitles & overlays', desc: 'Pull embedded subtitle tracks out.', status: 'live' },
   { slug: 'add-watermark', name: 'Add Watermark', category: 'Subtitles & overlays', desc: 'Overlay a logo or image mark.', status: 'planned' },
   { slug: 'add-text-overlay', name: 'Add Text Overlay', category: 'Subtitles & overlays', desc: 'Place titles and captions on video.', status: 'planned' },
   { slug: 'picture-in-picture', name: 'Picture-in-Picture', category: 'Subtitles & overlays', desc: 'Composite one video over another.', status: 'planned' },
