@@ -24,7 +24,7 @@ export const TOOLS: readonly ToolMeta[] = [
   { slug: 'video-trimmer', name: 'Video/Audio Trimmer', category: 'Trimming & cutting', desc: 'Cut a clean start and end.', status: 'planned' },
   { slug: 'media-splitter', name: 'Media Splitter', category: 'Trimming & cutting', desc: 'Slice one file into many parts.', status: 'planned' },
   { slug: 'media-merger', name: 'Media Merger', category: 'Trimming & cutting', desc: 'Join multiple clips end to end.', status: 'planned' },
-  { slug: 'silence-remover', name: 'Silence Remover', category: 'Trimming & cutting', desc: 'Strip out dead air automatically.', status: 'planned' },
+  { slug: 'silence-remover', name: 'Silence Remover', category: 'Trimming & cutting', desc: 'Strip out dead air automatically.', status: 'live' },
   { slug: 'loop-maker', name: 'Loop Maker', category: 'Trimming & cutting', desc: 'Repeat a clip a set number of times.', status: 'live' },
 
   // Resize & transform

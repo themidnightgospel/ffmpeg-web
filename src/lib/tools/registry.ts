@@ -21,6 +21,7 @@ import { imageFormatConverter } from './image-format-converter';
 import { gifToVideo } from './gif-to-video';
 import { videoToGif } from './video-to-gif';
 import { gifOptimizer } from './gif-optimizer';
+import { silenceRemover } from './silence-remover';
 
 /* Registry of implemented ("live") tools. Add a tool's config here to wire it up.
    The catalogue metadata for all tools (including planned ones) lives in @/data/tools. */
@@ -47,6 +48,7 @@ const LIVE_TOOLS: Tool[] = [
   gifToVideo,
   videoToGif,
   gifOptimizer,
+  silenceRemover,
 ];
 
 const bySlug = new Map<string, Tool>(LIVE_TOOLS.map((t) => [t.slug, t]));
