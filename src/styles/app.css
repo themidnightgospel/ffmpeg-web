@@ -6,6 +6,33 @@
   margin-top: 20px;
 }
 
+/* Media info (metadata viewer) */
+.mediainfo {
+  margin: 12px 0 0;
+  display: grid;
+  gap: 10px;
+  text-align: left;
+}
+.mediainfo dt {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--grey);
+}
+.mediainfo dd {
+  margin: 2px 0 0;
+  font-variant-numeric: tabular-nums;
+  word-break: break-word;
+}
+.mediainfo__stream {
+  border-top: 1px solid var(--hairline);
+  padding-top: 8px;
+}
+.mediainfo__idx {
+  color: var(--grey-light);
+  font-weight: 400;
+}
+
 /* Multi-file list (merge / join) */
 .filelist {
   margin: 8px 0 0;

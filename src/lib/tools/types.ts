@@ -159,6 +159,8 @@ export interface Tool extends ToolMeta {
   multi?: MultiInput;
   /** Static assets staged into the FS before exec (e.g. a bundled font). */
   assets?: ToolAsset[];
+  /** Read-only inspection tool: probes the file and shows info, no output file. */
+  inspect?: boolean;
   options: ToolOption[];
   /** Pure: option values + input -> ffmpeg argv + output filename. Unit-testable. */
   buildCommand: (values: OptionValues, input: CommandInput) => BuiltCommand;

@@ -25,7 +25,9 @@ export function ToolRunner({
   runner = ffmpegRunner,
 }: ToolRunnerProps) {
   const conversion = useConversion(tool, runner, initialValues);
-  const { file, secondaryFile, multiFiles, values, phase, progress, output, error } = conversion;
+  const { file, secondaryFile, multiFiles, values, phase, progress, output, report, error } =
+    conversion;
+  const isInspect = tool.inspect === true;
 
   // Warm the engine on load (download + cache the core) so Convert is instant.
   // Deferred slightly so it doesn't compete with first paint/hydration.
@@ -116,7 +118,13 @@ export function ToolRunner({
             disabled={!conversion.canStart}
             arrow="→"
           >
-            {phase === 'running' ? 'Converting…' : 'Convert'}
+            {isInspect
+              ? phase === 'running'
+                ? 'Reading…'
+                : 'Analyze'
+              : phase === 'running'
+                ? 'Converting…'
+                : 'Convert'}
           </Button>
           {!conversion.canStart && phase !== 'running' && (
             <p className="action__hint">
@@ -143,7 +151,38 @@ export function ToolRunner({
           </p>
         )}
 
-        {phase === 'done' && output && (
+        {phase === 'done' && isInspect && report && (
+          <div className="result on action__panel">
+            <span className="done-label">✓ File analyzed</span>
+            <dl className="mediainfo">
+              {report.duration && (
+                <>
+                  <dt>Duration</dt>
+                  <dd>{report.duration}</dd>
+                </>
+              )}
+              {report.bitrate && (
+                <>
+                  <dt>Bitrate</dt>
+                  <dd>{report.bitrate}</dd>
+                </>
+              )}
+              {report.streams.map((s) => (
+                <div className="mediainfo__stream" key={s.index}>
+                  <dt>
+                    {s.kind} <span className="mediainfo__idx">#{s.index}</span>
+                  </dt>
+                  <dd>{s.detail}</dd>
+                </div>
+              ))}
+            </dl>
+            {report.streams.length === 0 && !report.duration && (
+              <p className="outmeta">No readable media info found.</p>
+            )}
+          </div>
+        )}
+
+        {phase === 'done' && !isInspect && output && (
           <div className="result on action__panel">
             <span className="done-label">✓ Conversion complete</span>
             <div className="outname">{output.name}</div>

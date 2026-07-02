@@ -95,6 +95,7 @@ interface FFmpegLike {
   loaded: boolean;
   load(opts: { coreURL: string; wasmURL: string; workerURL?: string }): Promise<boolean>;
   on(event: 'progress', cb: (e: { progress: number }) => void): void;
+  on(event: 'log', cb: (e: { type: string; message: string }) => void): void;
   writeFile(name: string, data: Uint8Array): Promise<boolean>;
   readFile(name: string): Promise<Uint8Array | string>;
   exec(args: string[]): Promise<number>;
@@ -104,8 +105,9 @@ interface FFmpegLike {
 
 let instance: FFmpegLike | null = null;
 let loadPromise: Promise<FFmpegLike> | null = null;
-// Routed to the current run's callback; the listener is registered once.
+// Routed to the current run's callbacks; the listeners are registered once.
 let currentProgress: ((ratio: number) => void) | null = null;
+let currentLog: ((message: string) => void) | null = null;
 
 async function loadFFmpeg(): Promise<FFmpegLike> {
   const { FFmpeg } = await import('@ffmpeg/ffmpeg');
@@ -113,6 +115,9 @@ async function loadFFmpeg(): Promise<FFmpegLike> {
 
   ffmpeg.on('progress', ({ progress }) => {
     currentProgress?.(Math.min(Math.max(progress, 0), 1));
+  });
+  ffmpeg.on('log', ({ message }) => {
+    currentLog?.(message);
   });
 
   const files = coreFiles(MULTITHREAD);
@@ -137,6 +142,25 @@ export const ffmpegRunner: ConversionRunner = {
   // Called on tool-page load to download + cache the core ahead of time.
   warmUp() {
     void prefetchCore();
+  },
+
+  // Read-only: run `-i` (no output) and return the captured log banner.
+  async probe(input, args): Promise<string> {
+    const ffmpeg = await getFFmpeg();
+    const { fetchFile } = await import('@ffmpeg/util');
+    await ffmpeg.writeFile(input.name, await fetchFile(input));
+
+    const lines: string[] = [];
+    currentLog = (message) => lines.push(message);
+    try {
+      // Errors with "no output" and returns non-zero — the banner is logged first.
+      await ffmpeg.exec(args);
+    } finally {
+      currentLog = null;
+    }
+
+    await ffmpeg.deleteFile(input.name).catch(() => undefined);
+    return lines.join('\n');
   },
 
   async run(input, args, outputName, options): Promise<RunResult> {

@@ -4,6 +4,7 @@ import { defaultValues } from '@/lib/tools/types';
 import type { ConversionRunner, RunProgress } from '@/lib/runner/types';
 import { extension, humanSize } from '@/lib/format';
 import { getMediaDuration } from '@/lib/media';
+import { parseMediaInfo, type MediaInfo } from '@/lib/mediaInfo';
 
 export type ConversionPhase = 'idle' | 'running' | 'done' | 'error';
 
@@ -21,6 +22,8 @@ export interface Conversion {
   phase: ConversionPhase;
   progress: RunProgress;
   output: ConversionOutput | null;
+  /** Populated by inspection tools instead of `output`. */
+  report: MediaInfo | null;
   error: string | null;
   canStart: boolean;
   setValue: (id: string, value: OptionValue) => void;
@@ -54,6 +57,7 @@ export function useConversion(
   const [phase, setPhase] = useState<ConversionPhase>('idle');
   const [progress, setProgress] = useState<RunProgress>({ ratio: 0, stage: '' });
   const [output, setOutput] = useState<ConversionOutput | null>(null);
+  const [report, setReport] = useState<MediaInfo | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const outputUrl = useRef<string | null>(null);
@@ -120,6 +124,7 @@ export function useConversion(
     if (needsSecondary && !secondaryFile) return;
 
     releaseOutput();
+    setReport(null);
     setError(null);
     setPhase('running');
     setProgress({ ratio: 0, stage: 'Starting' });
@@ -130,6 +135,22 @@ export function useConversion(
       names: isMulti ? multiFiles.map((f) => f.name) : undefined,
       durationSec: durationRef.current,
     });
+
+    // Inspection tools probe the file and show info instead of producing output.
+    if (tool.inspect) {
+      setProgress({ ratio: 0, stage: 'Reading file…' });
+      (runner.probe?.(primary, args) ?? Promise.reject(new Error('Inspection not supported')))
+        .then((log) => {
+          setReport(parseMediaInfo(log));
+          setPhase('done');
+        })
+        .catch((err: unknown) => {
+          console.error('Inspection failed:', err);
+          setError(err instanceof Error ? err.message : 'Could not read the file.');
+          setPhase('error');
+        });
+      return;
+    }
 
     const extras = isMulti ? multiFiles.slice(1) : secondaryFile ? [secondaryFile] : [];
 
@@ -171,6 +192,7 @@ export function useConversion(
     phase,
     progress,
     output,
+    report,
     error,
     canStart: hasInput && (!needsSecondary || secondaryFile !== null) && phase !== 'running',
     setValue,

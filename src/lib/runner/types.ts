@@ -34,6 +34,9 @@ export interface ConversionRunner {
     outputName: string,
     options?: RunOptions,
   ): Promise<RunResult>;
+  /** Optional: run a read-only command (e.g. `-i`) and return the captured log
+      text, for inspection tools that produce no output file. */
+  probe?(input: File, args: string[]): Promise<string>;
   /** Optional: preload/cache the engine ahead of the first run (best-effort). */
   warmUp?(): void;
 }

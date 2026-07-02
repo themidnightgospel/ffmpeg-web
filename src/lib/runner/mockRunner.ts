@@ -7,6 +7,17 @@ import type { ConversionRunner, RunResult } from './types';
 const DURATION_MS = 2000;
 
 export const mockRunner: ConversionRunner = {
+  probe(input) {
+    return Promise.resolve(
+      [
+        `Input #0, mock, from '${input.name}':`,
+        '  Duration: 00:00:10.00, start: 0.000000, bitrate: 1000 kb/s',
+        '  Stream #0:0: Video: h264, yuv420p, 1280x720, 900 kb/s, 30 fps',
+        '  Stream #0:1: Audio: aac, 44100 Hz, stereo, 128 kb/s',
+      ].join('\n'),
+    );
+  },
+
   run(input, args, outputName, options) {
     const { onProgress, signal } = options ?? {};
 
