@@ -99,7 +99,11 @@ export function DropZone({ accept, file, onFile, prompt, multiple, files, onFile
         type="file"
         accept={accept}
         multiple={multiple}
-        onChange={(e) => accept_(e.target.files)}
+        onChange={(e) => {
+          accept_(e.target.files);
+          // Reset so choosing the identical file again still fires `change`.
+          e.target.value = '';
+        }}
       />
     </>
   );

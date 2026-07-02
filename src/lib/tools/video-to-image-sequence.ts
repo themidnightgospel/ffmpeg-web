@@ -8,8 +8,8 @@ import { baseName } from '@/lib/format';
  */
 export const videoToImageSequence: Tool = {
   slug: 'video-to-image-sequence',
-  name: 'Video to Image Sequence',
-  category: 'Extraction & capture',
+  name: 'Video → Image Sequence',
+  category: 'Format conversion',
   status: 'live',
   accept: 'video/*',
   desc: 'Export frames from a video as a ZIP of images.',

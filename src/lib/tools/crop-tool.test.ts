@@ -18,7 +18,7 @@ describe('cropTool.buildCommand', () => {
       { name: 'clip.mp4' },
     );
     const vf = args[args.indexOf('-vf') + 1]!;
-    expect(vf).toBe('crop=floor((iw-4-6)/2)*2:floor((ih-10-20)/2)*2:4:10');
+    expect(vf).toBe('crop=max(2\\,floor((iw-4-6)/2)*2):max(2\\,floor((ih-10-20)/2)*2):4:10');
   });
 
   it('disables ratio in edges mode and edge steppers in aspect mode', () => {

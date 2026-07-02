@@ -11,7 +11,7 @@ describe('volumeNormalizer.buildCommand', () => {
     );
     expect(outputName).toBe('take.mp3');
     expect(args).toEqual([
-      '-i', 'take.wav', '-vn', '-af', 'loudnorm=I=-16:TP=-1.5:LRA=11',
+      '-i', 'take.wav', '-vn', '-af', 'loudnorm=I=-16:TP=-1.5:LRA=11,aresample=48000',
       '-c:a', 'libmp3lame', '-b:a', '192k', 'take.mp3',
     ]);
   });

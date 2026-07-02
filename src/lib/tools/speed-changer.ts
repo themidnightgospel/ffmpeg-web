@@ -68,6 +68,8 @@ export const speedChanger: Tool = {
         '20',
         '-preset',
         'veryfast',
+        '-pix_fmt',
+        'yuv420p',
         '-movflags',
         '+faststart',
         outputName,

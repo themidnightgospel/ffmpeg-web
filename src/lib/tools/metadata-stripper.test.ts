@@ -9,12 +9,12 @@ describe('metadataStripper.buildCommand', () => {
     );
     expect(outputName).toBe('phone.cleaned.mp4');
     expect(args).toEqual([
-      '-i', 'phone.mp4', '-map_metadata', '-1', '-c', 'copy', '-map_chapters', '-1', 'phone.cleaned.mp4',
+      '-i', 'phone.mp4', '-map', '0', '-map_metadata', '-1', '-c', 'copy', '-map_chapters', '-1', 'phone.cleaned.mp4',
     ]);
   });
 
   it('keeps chapters when the toggle is off', () => {
     const { args } = metadataStripper.buildCommand({ chapters: false }, { name: 'clip.mkv' });
-    expect(args).toEqual(['-i', 'clip.mkv', '-map_metadata', '-1', '-c', 'copy', 'clip.cleaned.mkv']);
+    expect(args).toEqual(['-i', 'clip.mkv', '-map', '0', '-map_metadata', '-1', '-c', 'copy', 'clip.cleaned.mkv']);
   });
 });

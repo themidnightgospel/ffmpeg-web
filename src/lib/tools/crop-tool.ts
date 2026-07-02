@@ -68,8 +68,9 @@ export const cropTool: Tool = {
       const r = Number(values.right);
       const t = Number(values.top);
       const b = Number(values.bottom);
-      // crop=W:H:X:Y — floor W/H to even; offsets already even (step 2).
-      cropExpr = `crop=floor((iw-${l}-${r})/2)*2:floor((ih-${t}-${b})/2)*2:${l}:${t}`;
+      // crop=W:H:X:Y — floor W/H to even and clamp to ≥2 so over-trimming can't
+      // produce a non-positive (invalid) crop size; offsets already even (step 2).
+      cropExpr = `crop=max(2\\,floor((iw-${l}-${r})/2)*2):max(2\\,floor((ih-${t}-${b})/2)*2):${l}:${t}`;
     } else {
       const target = RATIOS[String(values.ratio)] ?? 1;
       // Centered max-area crop at the target ratio. Commas escaped for the

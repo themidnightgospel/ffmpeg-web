@@ -59,7 +59,7 @@ export const socialMediaPresets: Tool = {
       args: [
         '-i', input.name,
         '-vf', vf,
-        '-c:v', 'libx264', '-preset', 'veryfast', '-crf', '20',
+        '-c:v', 'libx264', '-preset', 'veryfast', '-crf', '20', '-pix_fmt', 'yuv420p',
         '-c:a', 'aac', '-b:a', '128k',
         '-movflags', '+faststart',
         outputName,

@@ -8,6 +8,24 @@ import { parseMediaInfo, type MediaInfo } from '@/lib/mediaInfo';
 
 export type ConversionPhase = 'idle' | 'running' | 'done' | 'error';
 
+/** A second file is staged into the FS and sometimes referenced inside a
+    filtergraph (e.g. `subtitles=`), where spaces/colons break parsing. Give it a
+    safe name while preserving the extension. */
+function safeName(original: string, fallback: string): string {
+  const ext = extension(original);
+  return ext ? `${fallback}.${ext}` : fallback;
+}
+
+/** Multi-file inputs need distinct FS names — identical filenames (common from
+    camera rolls) would overwrite each other. Rename all only on collision. */
+function uniqueMultiFiles(files: File[]): File[] {
+  const names = files.map((f) => f.name);
+  if (new Set(names).size === names.length) return files;
+  return files.map(
+    (f, i) => new File([f], `input_${String(i).padStart(3, '0')}.${extension(f.name) || 'dat'}`, { type: f.type }),
+  );
+}
+
 export interface ConversionOutput {
   url: string;
   name: string;
@@ -68,6 +86,7 @@ export function useConversion(
       outputUrl.current = null;
     }
     setOutput(null);
+    setReport(null);
   }, []);
 
   // Revoke the object URL when the consuming component unmounts.
@@ -108,6 +127,13 @@ export function useConversion(
       setPhase('idle');
       setError(null);
       releaseOutput();
+      // Read the first file's duration so size-aware multi tools have it.
+      durationRef.current = 0;
+      if (next[0]) {
+        void getMediaDuration(next[0]).then((d) => {
+          durationRef.current = d;
+        });
+      }
     },
     [releaseOutput],
   );
@@ -118,21 +144,27 @@ export function useConversion(
 
   const start = useCallback(() => {
     // Multi-file tools run over the collected list; others use the single file.
-    const primary = isMulti ? multiFiles[0] : file;
-    if (!primary) return;
+    const rawPrimary = isMulti ? multiFiles[0] : file;
+    if (!rawPrimary) return;
     if (isMulti && multiFiles.length < minFiles) return;
     if (needsSecondary && !secondaryFile) return;
 
     releaseOutput();
-    setReport(null);
     setError(null);
     setPhase('running');
     setProgress({ ratio: 0, stage: 'Starting' });
 
+    // Stage files under safe, collision-free FS names before building the command.
+    const stagedMulti = isMulti ? uniqueMultiFiles(multiFiles) : [];
+    const primary = isMulti ? stagedMulti[0]! : rawPrimary;
+    const secondary = secondaryFile
+      ? new File([secondaryFile], safeName(secondaryFile.name, 'secondary'), { type: secondaryFile.type })
+      : null;
+
     const { args, outputName, collectPrefix } = tool.buildCommand(values, {
       name: primary.name,
-      secondaryName: secondaryFile?.name,
-      names: isMulti ? multiFiles.map((f) => f.name) : undefined,
+      secondaryName: secondary?.name,
+      names: isMulti ? stagedMulti.map((f) => f.name) : undefined,
       durationSec: durationRef.current,
     });
 
@@ -152,7 +184,7 @@ export function useConversion(
       return;
     }
 
-    const extras = isMulti ? multiFiles.slice(1) : secondaryFile ? [secondaryFile] : [];
+    const extras = isMulti ? stagedMulti.slice(1) : secondary ? [secondary] : [];
 
     runner
       .run(primary, args, outputName, {

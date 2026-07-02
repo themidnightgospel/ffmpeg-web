@@ -58,7 +58,7 @@ describe('pictureInPicture', () => {
       { name: 'main.mp4', secondaryName: 'cam.mp4' },
     );
     const f = args[args.indexOf('-filter_complex') + 1]!;
-    expect(f).toBe('[1:v]scale=320:-1[pip];[0:v][pip]overlay=20:20[v];[0:a][1:a]amix=inputs=2[a]');
+    expect(f).toBe('[1:v]scale=320:-2[pip];[0:v][pip]overlay=20:20[v];[0:a][1:a]amix=inputs=2[a]');
     expect(args).toEqual(expect.arrayContaining(['-map', '[a]']));
   });
   it('maps overlay audio only', () => {

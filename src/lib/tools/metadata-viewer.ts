@@ -8,7 +8,7 @@ import type { Tool } from './types';
 export const metadataViewer: Tool = {
   slug: 'metadata-viewer',
   name: 'Metadata Viewer',
-  category: 'Advanced',
+  category: 'Extraction & capture',
   status: 'live',
   accept: 'video/*,audio/*',
   inspect: true,

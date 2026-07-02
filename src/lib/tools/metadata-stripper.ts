@@ -26,7 +26,9 @@ export const metadataStripper: Tool = {
     // -c copy keeps the streams untouched, so the container/extension is preserved.
     const ext = extension(input.name) || 'mp4';
     const outputName = `${baseName(input.name)}.cleaned.${ext}`;
-    const args: string[] = ['-i', input.name, '-map_metadata', '-1', '-c', 'copy'];
+    // -map 0 keeps every stream (extra audio, subtitles, attachments); without
+    // it ffmpeg's default selection would drop all but one stream per type.
+    const args: string[] = ['-i', input.name, '-map', '0', '-map_metadata', '-1', '-c', 'copy'];
     if (values.chapters === true) args.push('-map_chapters', '-1');
     args.push(outputName);
     return { args, outputName };

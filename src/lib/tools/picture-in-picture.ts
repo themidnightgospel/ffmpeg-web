@@ -60,7 +60,7 @@ export const pictureInPicture: Tool = {
     const xy = overlayXY(String(values.position), margin);
     const outputName = `${baseName(input.name)}.pip.mp4`;
 
-    let filter = `[1:v]scale=${scale}:-1[pip];[0:v][pip]overlay=${xy}[v]`;
+    let filter = `[1:v]scale=${scale}:-2[pip];[0:v][pip]overlay=${xy}[v]`;
     const maps = ['-map', '[v]'];
     if (values.audio === 'mix') {
       filter += ';[0:a][1:a]amix=inputs=2[a]';

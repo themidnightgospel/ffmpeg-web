@@ -19,4 +19,19 @@ describe('rotateFlipMirror.buildCommand', () => {
     const { args } = rotateFlipMirror.buildCommand({ op: 'hflip' }, input);
     expect(args[3]).toBe('hflip');
   });
+
+  it('rotates 90° counter-clockwise via transpose=2', () => {
+    const { args } = rotateFlipMirror.buildCommand({ op: '90ccw' }, input);
+    expect(args[3]).toBe('transpose=2');
+  });
+
+  it('mirrors vertically with vflip', () => {
+    const { args } = rotateFlipMirror.buildCommand({ op: 'vflip' }, input);
+    expect(args[3]).toBe('vflip');
+  });
+
+  it('falls back to 90° clockwise for an unknown op', () => {
+    const { args } = rotateFlipMirror.buildCommand({ op: 'bogus' }, input);
+    expect(args[3]).toBe('transpose=1');
+  });
 });

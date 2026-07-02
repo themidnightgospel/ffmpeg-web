@@ -9,7 +9,7 @@ describe('podcastPrep.buildCommand', () => {
     );
     expect(outputName).toBe('ep1.podcast.mp3');
     expect(args).toEqual([
-      '-i', 'ep1.wav', '-vn', '-af', 'loudnorm=I=-16:TP=-1.5:LRA=11',
+      '-i', 'ep1.wav', '-vn', '-af', 'loudnorm=I=-16:TP=-1.5:LRA=11,aresample=48000',
       '-c:a', 'libmp3lame', '-b:a', '128k', 'ep1.podcast.mp3',
     ]);
   });

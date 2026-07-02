@@ -1,5 +1,8 @@
 import type { Tool } from './types';
 import { baseName, extension } from '@/lib/format';
+import { audioEncoder } from './audioEncoders';
+
+const AUDIO_EXTS = new Set(['mp3', 'wav', 'flac', 'aac', 'm4a', 'ogg', 'oga', 'opus', 'wma']);
 
 /**
  * Video / Audio Trimmer — cut a clip between a start and end point. Fast mode is
@@ -8,7 +11,7 @@ import { baseName, extension } from '@/lib/format';
  */
 export const videoTrimmer: Tool = {
   slug: 'video-trimmer',
-  name: 'Video / Audio Trimmer',
+  name: 'Video/Audio Trimmer',
   category: 'Trimming & cutting',
   status: 'live',
   accept: 'video/*,audio/*',
@@ -31,16 +34,35 @@ export const videoTrimmer: Tool = {
 
   buildCommand: (values, input) => {
     const ext = extension(input.name) || 'mp4';
+    const isAudio = AUDIO_EXTS.has(ext);
     const start = String(values.start);
     const end = String(values.end);
-    const outputName = `${baseName(input.name)}.trim.${ext}`;
 
-    // Fast: input-seek + stream copy. Precise: output-seek + re-encode.
-    const args =
-      values.mode === 'precise'
-        ? ['-i', input.name, '-ss', start, '-to', end, '-c:v', 'libx264', '-c:a', 'aac', outputName]
-        : ['-ss', start, '-to', end, '-i', input.name, '-c', 'copy', outputName];
+    // Fast mode: input-seek + stream copy, keep the source container.
+    if (values.mode !== 'precise') {
+      const outputName = `${baseName(input.name)}.trim.${ext}`;
+      return { args: ['-ss', start, '-to', end, '-i', input.name, '-c', 'copy', outputName], outputName };
+    }
 
-    return { args, outputName };
+    // Precise mode: output-seek + re-encode.
+    // Audio → re-encode with the source container's encoder, keep the extension.
+    // Video → re-encode to MP4/H.264 (safe everywhere; libx264 can't mux into
+    // e.g. .webm, so we don't keep an arbitrary source extension).
+    if (isAudio) {
+      const outputName = `${baseName(input.name)}.trim.${ext}`;
+      return {
+        args: ['-i', input.name, '-ss', start, '-to', end, '-vn', '-c:a', audioEncoder(ext), outputName],
+        outputName,
+      };
+    }
+    const outputName = `${baseName(input.name)}.trim.mp4`;
+    return {
+      args: [
+        '-i', input.name, '-ss', start, '-to', end,
+        '-c:v', 'libx264', '-preset', 'veryfast', '-crf', '20', '-pix_fmt', 'yuv420p',
+        '-c:a', 'aac', '-movflags', '+faststart', outputName,
+      ],
+      outputName,
+    };
   },
 };

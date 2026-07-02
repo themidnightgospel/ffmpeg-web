@@ -9,6 +9,10 @@ export function h264Tail(crf = 20): string[] {
     String(crf),
     '-preset',
     'veryfast',
+    // Force 4:2:0 so yuv444p / 10-bit sources (screen recordings) stay playable
+    // in Safari/QuickTime and all browsers.
+    '-pix_fmt',
+    'yuv420p',
     '-c:a',
     'aac',
     '-b:a',

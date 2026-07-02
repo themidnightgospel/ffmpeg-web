@@ -133,7 +133,12 @@ async function loadFFmpeg(): Promise<FFmpegLike> {
 
 async function getFFmpeg(): Promise<FFmpegLike> {
   if (instance?.loaded) return instance;
-  loadPromise ??= loadFFmpeg();
+  // On failure, clear the cached promise so a later attempt can retry instead of
+  // being stuck with a permanently-rejected promise.
+  loadPromise ??= loadFFmpeg().catch((err: unknown) => {
+    loadPromise = null;
+    throw err;
+  });
   instance = await loadPromise;
   return instance;
 }
@@ -173,19 +178,10 @@ export const ffmpegRunner: ConversionRunner = {
     currentProgress = onProgress ? (ratio) => onProgress({ ratio, stage: 'Transcoding' }) : null;
 
     const { fetchFile } = await import('@ffmpeg/util');
-    await ffmpeg.writeFile(input.name, await fetchFile(input));
-    for (const extra of extraFiles ?? []) {
-      await ffmpeg.writeFile(extra.name, await fetchFile(extra));
-    }
-    // Static assets (e.g. fonts) fetched from the site and staged into the FS.
-    for (const asset of assets ?? []) {
-      const res = await fetch(`${import.meta.env.BASE_URL}${asset.url}`);
-      if (!res.ok) throw new Error(`Failed to load asset ${asset.name}`);
-      await ffmpeg.writeFile(asset.name, new Uint8Array(await res.arrayBuffer()));
-    }
-
-    const code = await ffmpeg.exec(args);
-    if (code !== 0) throw new Error(`ffmpeg exited with code ${code}`);
+    // Every filename we stage — never collect these as "output", and always
+    // clean them up afterwards (even on failure).
+    const staged = new Set<string>();
+    const produced: string[] = [];
 
     const readBytes = async (name: string): Promise<Uint8Array<ArrayBuffer>> => {
       const data = await ffmpeg.readFile(name);
@@ -194,40 +190,56 @@ export const ffmpegRunner: ConversionRunner = {
       return typeof data === 'string' ? new TextEncoder().encode(data) : new Uint8Array(data);
     };
 
-    let blob: Blob;
-    const produced: string[] = [];
-
-    if (collectPrefix) {
-      // Multi-output: gather every file matching the prefix and zip them.
-      const entries = await ffmpeg.listDir('/');
-      const outputs = entries
-        .filter((e) => !e.isDir && e.name.startsWith(collectPrefix))
-        .map((e) => e.name)
-        .sort();
-      if (outputs.length === 0) throw new Error('No output files were produced.');
-
-      const files: Record<string, Uint8Array> = {};
-      for (const name of outputs) {
-        files[name] = await readBytes(name);
-        produced.push(name);
+    try {
+      await ffmpeg.writeFile(input.name, await fetchFile(input));
+      staged.add(input.name);
+      for (const extra of extraFiles ?? []) {
+        await ffmpeg.writeFile(extra.name, await fetchFile(extra));
+        staged.add(extra.name);
       }
-      const { zipSync } = await import('fflate');
-      const zipped = zipSync(files, { level: 0 });
-      // Copy into a fresh ArrayBuffer-backed view so it's a valid BlobPart.
-      blob = new Blob([new Uint8Array(zipped)], { type: 'application/zip' });
-    } else {
-      blob = new Blob([await readBytes(outputName)], { type: 'application/octet-stream' });
-      produced.push(outputName);
-    }
+      // Static assets (e.g. fonts) fetched from the site and staged into the FS.
+      for (const asset of assets ?? []) {
+        const res = await fetch(`${import.meta.env.BASE_URL}${asset.url}`);
+        if (!res.ok) throw new Error(`Failed to load asset ${asset.name}`);
+        await ffmpeg.writeFile(asset.name, new Uint8Array(await res.arrayBuffer()));
+        staged.add(asset.name);
+      }
 
-    await ffmpeg.deleteFile(input.name).catch(() => undefined);
-    for (const extra of extraFiles ?? []) {
-      await ffmpeg.deleteFile(extra.name).catch(() => undefined);
-    }
-    for (const name of produced) {
-      await ffmpeg.deleteFile(name).catch(() => undefined);
-    }
+      const code = await ffmpeg.exec(args);
+      if (code !== 0) throw new Error(`ffmpeg exited with code ${code}`);
 
-    return { blob, outputName };
+      let blob: Blob;
+      if (collectPrefix) {
+        // Multi-output: gather every NEW file matching the prefix (excluding our
+        // own staged inputs/assets) and zip them.
+        const entries = await ffmpeg.listDir('/');
+        const outputs = entries
+          .filter((e) => !e.isDir && e.name.startsWith(collectPrefix) && !staged.has(e.name))
+          .map((e) => e.name)
+          .sort();
+        if (outputs.length === 0) throw new Error('No output files were produced.');
+
+        const files: Record<string, Uint8Array> = {};
+        for (const name of outputs) {
+          files[name] = await readBytes(name);
+          produced.push(name);
+        }
+        const { zipSync } = await import('fflate');
+        const zipped = zipSync(files, { level: 0 });
+        // Copy into a fresh ArrayBuffer-backed view so it's a valid BlobPart.
+        blob = new Blob([new Uint8Array(zipped)], { type: 'application/zip' });
+      } else {
+        blob = new Blob([await readBytes(outputName)], { type: 'application/octet-stream' });
+        produced.push(outputName);
+      }
+
+      return { blob, outputName };
+    } finally {
+      // Clean the FS regardless of success/failure so staged files and outputs
+      // don't leak into (or get wrongly collected by) subsequent runs.
+      for (const name of staged) await ffmpeg.deleteFile(name).catch(() => undefined);
+      for (const name of produced) await ffmpeg.deleteFile(name).catch(() => undefined);
+      currentProgress = null;
+    }
   },
 };

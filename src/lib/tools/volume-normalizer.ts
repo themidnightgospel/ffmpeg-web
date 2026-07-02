@@ -68,7 +68,8 @@ export const volumeNormalizer: Tool = {
     const filter =
       values.mode === 'gain'
         ? `volume=${String(values.gain)}dB`
-        : `loudnorm=I=${String(values.lufs)}:TP=-1.5:LRA=11`;
+        : // aresample pins the rate — loudnorm can emit 192 kHz, rejected by lame/vorbis.
+          `loudnorm=I=${String(values.lufs)}:TP=-1.5:LRA=11,aresample=48000`;
 
     const args: string[] = ['-i', input.name, '-vn', '-af', filter, '-c:a', audioEncoder(format)];
     if (!LOSSLESS_AUDIO.has(format)) args.push('-b:a', '192k');

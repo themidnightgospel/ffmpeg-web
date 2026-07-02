@@ -49,7 +49,8 @@ export const podcastPrep: Tool = {
     const outputName = `${baseName(input.name)}.podcast.mp3`;
     const args: string[] = [
       '-i', input.name, '-vn',
-      '-af', `loudnorm=I=${String(values.lufs)}:TP=-1.5:LRA=11`,
+      // aresample pins the rate — loudnorm can emit 192 kHz, which lame rejects.
+      '-af', `loudnorm=I=${String(values.lufs)}:TP=-1.5:LRA=11,aresample=48000`,
       '-c:a', 'libmp3lame', '-b:a', `${String(values.bitrate)}k`,
     ];
     if (values.mono === true) args.push('-ac', '1');

@@ -31,4 +31,27 @@ describe('parseMediaInfo', () => {
     expect(info.duration).toBeUndefined();
     expect(info.streams).toHaveLength(0);
   });
+
+  it('ignores an N/A duration', () => {
+    const info = parseMediaInfo('  Duration: N/A, start: 0.000000, bitrate: N/A');
+    expect(info.duration).toBeUndefined();
+    expect(info.bitrate).toBeUndefined();
+  });
+
+  it('parses Subtitle and Data streams', () => {
+    const log = [
+      '  Stream #0:2(eng): Subtitle: subrip',
+      '  Stream #0:3: Data: bin_data (text)',
+    ].join('\n');
+    const info = parseMediaInfo(log);
+    expect(info.streams.map((s) => s.kind)).toEqual(['Subtitle', 'Data']);
+  });
+
+  it('handles CRLF line endings', () => {
+    const log = 'Duration: 00:00:05.00, bitrate: 800 kb/s\r\n  Stream #0:0: Video: vp9, yuv420p\r\n';
+    const info = parseMediaInfo(log);
+    expect(info.duration).toBe('00:00:05.00');
+    expect(info.streams).toHaveLength(1);
+    expect(info.streams[0]!.detail).toContain('vp9');
+  });
 });

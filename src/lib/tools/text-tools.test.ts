@@ -10,6 +10,17 @@ describe('escapeDrawtext', () => {
     expect(escapeDrawtext('50%')).toBe('50\\%');
     expect(escapeDrawtext('a[b];c')).toBe('a\\[b\\]\\;c');
   });
+
+  it('escapes backslashes first so other escapes are not doubled', () => {
+    // A literal backslash becomes \\, and it must not turn a following ':' escape
+    // into a broken sequence.
+    expect(escapeDrawtext('a\\b')).toBe('a\\\\b');
+    expect(escapeDrawtext('a\\:b')).toBe('a\\\\\\:b');
+  });
+
+  it('leaves plain text untouched', () => {
+    expect(escapeDrawtext('Hello World 123')).toBe('Hello World 123');
+  });
 });
 
 describe('drawtextFilter', () => {

@@ -14,8 +14,8 @@ const RES: Record<string, { w: number; h: number }> = {
  */
 export const imageSequenceToVideo: Tool = {
   slug: 'image-sequence-to-video',
-  name: 'Image Sequence to Video',
-  category: 'Resize & transform',
+  name: 'Image Sequence → Video',
+  category: 'Format conversion',
   status: 'live',
   multi: { label: 'Images', accept: 'image/*', prompt: 'Drop images (in order)', min: 2 },
   desc: 'Turn a set of images into a slideshow video.',

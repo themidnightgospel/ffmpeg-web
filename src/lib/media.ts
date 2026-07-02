@@ -8,10 +8,16 @@ export function getMediaDuration(file: File): Promise<number> {
     const isAudio = file.type.startsWith('audio');
     const el = document.createElement(isAudio ? 'audio' : 'video');
     el.preload = 'metadata';
+    let settled = false;
     const done = (value: number) => {
+      if (settled) return;
+      settled = true;
+      window.clearTimeout(timer);
       URL.revokeObjectURL(url);
       resolve(Number.isFinite(value) && value > 0 ? value : 0);
     };
+    // Guard against files that never fire loadedmetadata/error (decode stalls).
+    const timer = window.setTimeout(() => done(0), 10_000);
     el.onloadedmetadata = () => done(el.duration);
     el.onerror = () => done(0);
     el.src = url;

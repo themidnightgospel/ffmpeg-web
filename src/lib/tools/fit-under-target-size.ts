@@ -41,7 +41,7 @@ export const fitUnderTargetSize: Tool = {
       return {
         args: [
           '-i', input.name,
-          '-c:v', 'libx264', '-crf', '28', '-preset', 'veryfast',
+          '-c:v', 'libx264', '-crf', '28', '-preset', 'veryfast', '-pix_fmt', 'yuv420p',
           '-c:a', 'aac', '-b:a', `${audioKbps}k`,
           '-movflags', '+faststart',
           outputName,
@@ -51,7 +51,9 @@ export const fitUnderTargetSize: Tool = {
     }
 
     // Budget the video bitrate from the target size, reserving audio + ~5% overhead.
-    const totalKbits = targetMB * 8 * 1024 * 0.95;
+    // Use decimal MB (8000 kbit/MB) + the margin so we reliably land UNDER the
+    // target regardless of MB/MiB interpretation.
+    const totalKbits = targetMB * 8 * 1000 * 0.95;
     const videoKbps = Math.max(100, Math.floor(totalKbits / duration) - audioKbps);
 
     return {
@@ -59,7 +61,7 @@ export const fitUnderTargetSize: Tool = {
         '-i', input.name,
         '-c:v', 'libx264', '-b:v', `${videoKbps}k`,
         '-maxrate', `${videoKbps}k`, '-bufsize', `${videoKbps * 2}k`,
-        '-preset', 'veryfast',
+        '-preset', 'veryfast', '-pix_fmt', 'yuv420p',
         '-c:a', 'aac', '-b:a', `${audioKbps}k`,
         '-movflags', '+faststart',
         outputName,

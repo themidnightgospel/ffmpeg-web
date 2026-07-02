@@ -54,7 +54,10 @@ export const ringtoneMaker: Tool = {
     const outputName = `${baseName(input.name)}.${fmt.ext}`;
 
     const filters: string[] = [];
-    if (values.normalize === true) filters.push('loudnorm=I=-16:TP=-1.5:LRA=11');
+    if (values.normalize === true) {
+      // loudnorm can output 192 kHz, which libmp3lame/libvorbis reject — pin it.
+      filters.push('loudnorm=I=-16:TP=-1.5:LRA=11', 'aresample=48000');
+    }
     if (values.fade === true) {
       const outStart = Math.max(0, duration - 1);
       filters.push('afade=t=in:st=0:d=1', `afade=t=out:st=${outStart}:d=1`);
@@ -62,7 +65,10 @@ export const ringtoneMaker: Tool = {
 
     const args: string[] = ['-ss', String(values.start), '-t', String(duration), '-i', input.name, '-vn'];
     if (filters.length > 0) args.push('-af', filters.join(','));
-    args.push('-c:a', fmt.codec, outputName);
+    args.push('-c:a', fmt.codec);
+    // .m4r has no muxer bound to its extension; force the iPod/MP4 muxer.
+    if (fmt.ext === 'm4r') args.push('-f', 'ipod');
+    args.push(outputName);
 
     return { args, outputName };
   },

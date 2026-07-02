@@ -11,8 +11,16 @@ describe('ringtoneMaker.buildCommand', () => {
     expect(args).toEqual([
       '-ss', '00:00:30', '-t', '30', '-i', 'song.mp3', '-vn',
       '-af', 'afade=t=in:st=0:d=1,afade=t=out:st=29:d=1',
-      '-c:a', 'aac', 'song.m4r',
+      '-c:a', 'aac', '-f', 'ipod', 'song.m4r',
     ]);
+  });
+
+  it('does not force the iPod muxer for non-m4r formats', () => {
+    const { args } = ringtoneMaker.buildCommand(
+      { start: '0', duration: 20, format: 'mp3', fade: true, normalize: false },
+      { name: 'song.mp3' },
+    );
+    expect(args).not.toContain('-f');
   });
 
   it('omits the filter chain when nothing is applied', () => {
@@ -30,7 +38,7 @@ describe('ringtoneMaker.buildCommand', () => {
       { name: 'song.wav' },
     );
     const af = args[args.indexOf('-af') + 1];
-    expect(af).toBe('loudnorm=I=-16:TP=-1.5:LRA=11');
+    expect(af).toBe('loudnorm=I=-16:TP=-1.5:LRA=11,aresample=48000');
     expect(args).toEqual(expect.arrayContaining(['-c:a', 'libvorbis']));
   });
 });
