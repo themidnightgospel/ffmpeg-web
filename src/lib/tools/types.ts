@@ -144,6 +144,8 @@ export interface CommandInput {
   secondaryName?: string;
   /** All file names for tools that declare a `multi` input (includes `name`). */
   names?: string[];
+  /** Media duration in seconds, read in-browser. 0/undefined if unavailable. */
+  durationSec?: number;
 }
 
 /** A fully-implemented ("live") tool. */

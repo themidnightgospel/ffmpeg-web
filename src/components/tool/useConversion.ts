@@ -3,6 +3,7 @@ import type { OptionValue, OptionValues, Tool } from '@/lib/tools/types';
 import { defaultValues } from '@/lib/tools/types';
 import type { ConversionRunner, RunProgress } from '@/lib/runner/types';
 import { extension, humanSize } from '@/lib/format';
+import { getMediaDuration } from '@/lib/media';
 
 export type ConversionPhase = 'idle' | 'running' | 'done' | 'error';
 
@@ -42,6 +43,7 @@ export function useConversion(
   const [file, setFile] = useState<File | null>(null);
   const [secondaryFile, setSecondaryFile] = useState<File | null>(null);
   const [multiFiles, setMultiFiles] = useState<File[]>([]);
+  const durationRef = useRef<number>(0);
   const [values, setValues] = useState<OptionValues>(() => {
     const base = defaultValues(tool.options);
     for (const [id, value] of Object.entries(initialValues ?? {})) {
@@ -77,6 +79,11 @@ export function useConversion(
       setPhase('idle');
       setError(null);
       releaseOutput();
+      // Read duration in the background so size-targeting tools can use it.
+      durationRef.current = 0;
+      void getMediaDuration(next).then((d) => {
+        durationRef.current = d;
+      });
     },
     [releaseOutput],
   );
@@ -121,6 +128,7 @@ export function useConversion(
       name: primary.name,
       secondaryName: secondaryFile?.name,
       names: isMulti ? multiFiles.map((f) => f.name) : undefined,
+      durationSec: durationRef.current,
     });
 
     const extras = isMulti ? multiFiles.slice(1) : secondaryFile ? [secondaryFile] : [];
