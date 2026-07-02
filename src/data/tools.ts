@@ -10,7 +10,7 @@ export const TOOLS: readonly ToolMeta[] = [
   { slug: 'video-to-audio-extractor', name: 'Video → Audio Extractor', category: 'Format conversion', desc: 'Pull the audio track out of a video.', status: 'live' },
   { slug: 'video-to-gif', name: 'Video → GIF', category: 'Format conversion', desc: 'Turn a clip into an animated GIF.', status: 'live' },
   { slug: 'gif-to-video', name: 'GIF → Video', category: 'Format conversion', desc: 'Convert animated GIFs to MP4 or WebM.', status: 'live' },
-  { slug: 'image-sequence-to-video', name: 'Image Sequence → Video', category: 'Format conversion', desc: 'Stitch frames into a video file.', status: 'planned' },
+  { slug: 'image-sequence-to-video', name: 'Image Sequence → Video', category: 'Format conversion', desc: 'Stitch frames into a video file.', status: 'live' },
   { slug: 'video-to-image-sequence', name: 'Video → Image Sequence', category: 'Format conversion', desc: 'Export every frame as an image.', status: 'planned' },
   { slug: 'image-format-converter', name: 'Image Format Converter', category: 'Format conversion', desc: 'PNG, JPG, WebP, AVIF, and back.', status: 'live' },
 
