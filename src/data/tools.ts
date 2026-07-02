@@ -55,7 +55,7 @@ export const TOOLS: readonly ToolMeta[] = [
 
   // Extraction & capture
   { slug: 'thumbnail-generator', name: 'Thumbnail Generator', category: 'Extraction & capture', desc: 'Grab a still from any timestamp.', status: 'live' },
-  { slug: 'contact-sheet', name: 'Contact Sheet', category: 'Extraction & capture', desc: 'Build a grid of preview frames.', status: 'planned' },
+  { slug: 'contact-sheet', name: 'Contact Sheet', category: 'Extraction & capture', desc: 'Build a grid of preview frames.', status: 'live' },
   { slug: 'poster-frame-picker', name: 'Poster Frame Picker', category: 'Extraction & capture', desc: 'Choose the perfect cover frame.', status: 'live' },
   { slug: 'metadata-viewer', name: 'Metadata Viewer', category: 'Extraction & capture', desc: 'Inspect codecs, streams, and tags.', status: 'planned' },
   { slug: 'metadata-stripper', name: 'Metadata Stripper', category: 'Extraction & capture', desc: 'Remove hidden metadata for privacy.', status: 'live' },
