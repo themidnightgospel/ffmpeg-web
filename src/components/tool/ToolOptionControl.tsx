@@ -3,6 +3,7 @@ import { Field } from '@/components/ui/Field';
 import { Segmented } from '@/components/ui/Segmented';
 import { Slider } from '@/components/ui/Slider';
 import { Stepper } from '@/components/ui/Stepper';
+import { TimeField } from '@/components/ui/TimeField';
 import { Checkbox } from '@/components/ui/Checkbox';
 
 interface ToolOptionControlProps {
@@ -78,8 +79,16 @@ export function ToolOptionControl({ option, values, disabled, onChange }: ToolOp
       );
 
     case 'time':
-      // TimeField wiring lands with the first trimming tool that needs it.
-      return null;
+      return (
+        <TimeField
+          id={option.id}
+          label={option.label}
+          value={String(values[option.id] ?? option.default ?? '00:00:00.000')}
+          withMs={option.withMs}
+          disabled={disabled}
+          onChange={(v) => onChange(option.id, v)}
+        />
+      );
 
     default:
       return assertNever(option);

@@ -394,6 +394,18 @@ input[type="range"].slider:focus-visible { outline: var(--focus); outline-offset
 .stepper__input:disabled { color: var(--grey-light); }
 
 /* ----------------------------------------------------------------------------
+   10c. TIME FIELD  (timestamp entry, normalized to HH:MM:SS on blur)
+   Markup: .field > .stepper-head + input.timefield__input
+---------------------------------------------------------------------------- */
+.timefield__input {
+  font: inherit; font-size: 16px; font-weight: 600; padding: 10px 14px;
+  border: var(--border); background: var(--paper); color: var(--ink);
+  font-variant-numeric: tabular-nums; letter-spacing: 0.02em; width: 100%; max-width: 200px;
+}
+.timefield__input:focus { outline: none; background: var(--accent-wash); }
+.timefield__input:disabled { color: var(--grey-light); }
+
+/* ----------------------------------------------------------------------------
    11. DROP ZONE
    States: idle · .drag (hovered w/ file) · .has-file
 ---------------------------------------------------------------------------- */

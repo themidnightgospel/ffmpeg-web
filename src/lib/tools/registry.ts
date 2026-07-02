@@ -33,6 +33,8 @@ import { extractSubtitles } from './extract-subtitles';
 import { podcastPrep } from './podcast-prep';
 import { messagingOptimizer } from './messaging-optimizer';
 import { socialMediaPresets } from './social-media-presets';
+import { videoTrimmer } from './video-trimmer';
+import { ringtoneMaker } from './ringtone-maker';
 
 /* Registry of implemented ("live") tools. Add a tool's config here to wire it up.
    The catalogue metadata for all tools (including planned ones) lives in @/data/tools. */
@@ -71,6 +73,8 @@ const LIVE_TOOLS: Tool[] = [
   podcastPrep,
   messagingOptimizer,
   socialMediaPresets,
+  videoTrimmer,
+  ringtoneMaker,
 ];
 
 const bySlug = new Map<string, Tool>(LIVE_TOOLS.map((t) => [t.slug, t]));
