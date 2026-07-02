@@ -43,7 +43,7 @@ export const TOOLS: readonly ToolMeta[] = [
   { slug: 'pitch-tempo-changer', name: 'Pitch / Tempo Changer', category: 'Audio tools', desc: 'Shift pitch or tempo independently.', status: 'live' },
   { slug: 'audio-joiner', name: 'Audio Joiner', category: 'Audio tools', desc: 'Concatenate tracks into one file.', status: 'planned' },
   { slug: 'ringtone-maker', name: 'Ringtone Maker', category: 'Audio tools', desc: 'Cut a short loop for your phone.', status: 'planned' },
-  { slug: 'waveform-generator', name: 'Waveform Generator', category: 'Audio tools', desc: 'Render audio as a waveform image.', status: 'planned' },
+  { slug: 'waveform-generator', name: 'Waveform Generator', category: 'Audio tools', desc: 'Render audio as a waveform image.', status: 'live' },
   { slug: 'replace-audio-track', name: 'Replace Audio Track', category: 'Audio tools', desc: "Swap a video's soundtrack.", status: 'planned' },
 
   // Subtitles & overlays

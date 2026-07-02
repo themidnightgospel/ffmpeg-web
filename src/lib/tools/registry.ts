@@ -23,6 +23,7 @@ import { videoToGif } from './video-to-gif';
 import { gifOptimizer } from './gif-optimizer';
 import { silenceRemover } from './silence-remover';
 import { audioFader } from './audio-fader';
+import { waveformGenerator } from './waveform-generator';
 
 /* Registry of implemented ("live") tools. Add a tool's config here to wire it up.
    The catalogue metadata for all tools (including planned ones) lives in @/data/tools. */
@@ -51,6 +52,7 @@ const LIVE_TOOLS: Tool[] = [
   gifOptimizer,
   silenceRemover,
   audioFader,
+  waveformGenerator,
 ];
 
 const bySlug = new Map<string, Tool>(LIVE_TOOLS.map((t) => [t.slug, t]));
