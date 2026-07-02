@@ -1,5 +1,6 @@
 ---
 import type { ConversionPair } from '@/lib/kb/pairs';
+import { withBase } from '@/lib/url';
 
 interface Props {
   pairs: ConversionPair[];
@@ -15,7 +16,7 @@ const { pairs } = Astro.props;
       <ul class="related-list">
         {pairs.map((p) => (
           <li>
-            <a href={`/convert/${p.slug}`}>
+            <a href={withBase(`/convert/${p.slug}`)}>
               {p.from.name} to {p.to.name}
             </a>
           </li>

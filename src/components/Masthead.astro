@@ -1,5 +1,6 @@
 ---
 import Brand from '@/components/Brand.astro';
+import { withBase } from '@/lib/url';
 
 interface Props {
   back?: boolean;
@@ -7,24 +8,25 @@ interface Props {
 }
 
 const { back = false, meta = '54 Tools · 100% Client-Side' } = Astro.props;
+const home = withBase('/');
 ---
 
 <header class="masthead">
   <div class="wrap masthead-inner">
     {
       back ? (
-        <a class="back" href="/">
+        <a class="back" href={home}>
           <span class="arrow">←</span> All tools
         </a>
       ) : (
-        <a class="brand" href="/">
+        <a class="brand" href={home}>
           <Brand />
         </a>
       )
     }
     {
       back ? (
-        <a class="brand" href="/">
+        <a class="brand" href={home}>
           <Brand />
         </a>
       ) : (

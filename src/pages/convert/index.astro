@@ -4,6 +4,7 @@ import Masthead from '@/components/Masthead.astro';
 import Footer from '@/components/Footer.astro';
 import Breadcrumbs from '@/components/Breadcrumbs.astro';
 import Converter from '@/components/Converter.tsx';
+import { withBase } from '@/lib/url';
 import { PAIRS } from '@/lib/kb/pairs';
 import { webApplicationLd, breadcrumbLd } from '@/lib/seo/jsonld';
 
@@ -37,7 +38,7 @@ const jsonLd = [
   <section class="wrap convert-index">
     <p class="section-label">All conversions</p>
     <ul class="pairs-grid">
-      {PAIRS.map((p) => <li><a href={`/convert/${p.slug}`}>{p.from.name} to {p.to.name}</a></li>)}
+      {PAIRS.map((p) => <li><a href={withBase(`/convert/${p.slug}`)}>{p.from.name} to {p.to.name}</a></li>)}
     </ul>
   </section>
 

@@ -1,5 +1,6 @@
 ---
 import Brand from '@/components/Brand.astro';
+import { withBase } from '@/lib/url';
 
 const REPO_URL = 'https://github.com/';
 ---
@@ -17,7 +18,7 @@ const REPO_URL = 'https://github.com/';
       <p class="eyebrow">Project</p>
       <ul>
         <li><a href={REPO_URL} target="_blank" rel="noreferrer">Source on GitHub</a></li>
-        <li><a href="/convert/">Convert</a></li>
+        <li><a href={withBase('/convert/')}>Convert</a></li>
       </ul>
     </div>
     <div>

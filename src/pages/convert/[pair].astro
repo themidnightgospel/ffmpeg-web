@@ -5,6 +5,7 @@ import Footer from '@/components/Footer.astro';
 import Breadcrumbs from '@/components/Breadcrumbs.astro';
 import RelatedConversions from '@/components/RelatedConversions.astro';
 import Converter from '@/components/Converter.tsx';
+import { withBase } from '@/lib/url';
 import { PAIRS, getPair, relatedPairs } from '@/lib/kb/pairs';
 import { buildPairContent } from '@/lib/kb/content';
 import { howToLd, faqPageLd, breadcrumbLd } from '@/lib/seo/jsonld';
@@ -51,7 +52,7 @@ const jsonLd = [
     <div class="wrap">
       <Breadcrumbs
         crumbs={[
-          { label: 'Convert', href: '/convert/' },
+          { label: 'Convert', href: withBase('/convert/') },
           { label: `${pair.from.name} to ${pair.to.name}` },
         ]}
       />

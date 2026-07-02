@@ -4,6 +4,7 @@ import Masthead from '@/components/Masthead.astro';
 import Footer from '@/components/Footer.astro';
 import Breadcrumbs from '@/components/Breadcrumbs.astro';
 import Converter from '@/components/Converter.tsx';
+import { withBase } from '@/lib/url';
 import { TOOLS, getToolMeta, toolNumber } from '@/data/tools';
 import { getTool } from '@/lib/tools/registry';
 import { breadcrumbLd, webApplicationLd } from '@/lib/seo/jsonld';
@@ -40,7 +41,7 @@ const jsonLd = isLive ? [webApplicationLd(siteUrl), crumb] : [crumb];
 
   <section class="tool-head">
     <div class="wrap">
-      <Breadcrumbs crumbs={[{ label: 'Tools', href: '/' }, { label: meta.name }]} />
+      <Breadcrumbs crumbs={[{ label: 'Tools', href: withBase('/') }, { label: meta.name }]} />
       <p class="idx">{toolNumber(slug)} / {meta.category}</p>
       <h1>{meta.name}</h1>
       {!isLive && <p class="lead">{meta.desc}</p>}

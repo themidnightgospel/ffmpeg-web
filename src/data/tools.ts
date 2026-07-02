@@ -1,4 +1,5 @@
 import type { ToolMeta } from '@/lib/tools/types';
+import { withBase } from '@/lib/url';
 
 /* Catalogue metadata for all 54 tools, in display order (defines the 01..54 numbering).
    `status: 'live'` tools have a config in @/lib/tools/registry and a working page;
@@ -94,5 +95,5 @@ export function toolNumber(slug: string): string {
 /** Hub link for a tool. The video converter is the generic /convert/ landing;
     other tools get their own /tools/{slug} page. */
 export function toolHref(tool: ToolMeta): string {
-  return tool.slug === 'video-converter' ? '/convert/' : `/tools/${tool.slug}`;
+  return withBase(tool.slug === 'video-converter' ? '/convert/' : `/tools/${tool.slug}`);
 }
