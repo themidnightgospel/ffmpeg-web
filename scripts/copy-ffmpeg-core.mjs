@@ -8,10 +8,9 @@ import { fileURLToPath } from 'node:url';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 
-const targets = [
-  ['node_modules/@ffmpeg/core/dist/esm', 'public/ffmpeg/core'],
-  ['node_modules/@ffmpeg/core-mt/dist/esm', 'public/ffmpeg/core-mt'],
-];
+// Single-threaded core only (the multithreaded core is unreliable — see
+// src/lib/runner/ffmpegRunner.ts).
+const targets = [['node_modules/@ffmpeg/core/dist/esm', 'public/ffmpeg/core']];
 
 for (const [src, dest] of targets) {
   const from = resolve(root, src);

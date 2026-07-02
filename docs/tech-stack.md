@@ -15,8 +15,7 @@ ffmpeg.web is a **static, SEO-first, 100% client-side** site: a hub, per-tool pa
 | Interactivity | **React island** (`@astrojs/react`), `client:visible` | Reuses our tested converter; loads only on tool/convert pages, not on the SEO-critical paint. |
 | Language | **TypeScript** (strict) | Type-safe tool + SEO schema across many generated pages. |
 | Styling | **Plain CSS + design tokens** (`design-system/ffmpeg-web.css`) | Single source of truth; framework-agnostic. |
-| Media engine | **@ffmpeg/ffmpeg (ffmpeg.wasm)** — multithreaded, lazy | Fast conversions; loaded on demand. |
-| Isolation | **`coi-serviceworker`** + single-thread fallback | Enables `SharedArrayBuffer` on GitHub Pages; degrades gracefully. |
+| Media engine | **@ffmpeg/ffmpeg (ffmpeg.wasm)** — single-threaded, lazy, cached | Dependable everywhere; loaded on demand, prefetched + Cache-Storage cached. |
 | Sitemap | **@astrojs/sitemap** | Auto `sitemap.xml` from routes. |
 | Hosting | **GitHub Pages, custom domain at root** | Clean canonicals/branding; static matches "no backend". |
 
@@ -37,27 +36,34 @@ ffmpeg.web is a **static, SEO-first, 100% client-side** site: a hub, per-tool pa
 
 Flat `/convert/` namespace across video/audio/image; no media type in the URL. See [`docs/seo.md`](./seo.md) for scope, canonicals, and content rules.
 
-## Cross-origin isolation (ffmpeg threads)
+## ffmpeg engine: single-threaded core (no isolation)
 
-ffmpeg.wasm's multithreaded core needs `SharedArrayBuffer` → the page must be cross-origin isolated (`COOP: same-origin`, `COEP: require-corp`).
+We use the **single-threaded** ffmpeg.wasm core. The multithreaded core needs
+`SharedArrayBuffer` (cross-origin isolation) and proved **unreliable** — `exec()`
+hangs or crashes the tab in several environments, and VP9 encoding OOM-crashed the
+renderer. The single-thread core is dependable everywhere and needs **no**
+cross-origin isolation, so:
 
-- **Dev:** Astro/Vite sets the headers via `server.headers`.
-- **GitHub Pages** can't set headers → ship [`coi-serviceworker`](https://github.com/gzuidhof/coi-serviceworker) in `public/` to isolate client-side (one silent reload on first visit).
-- **Graceful fallback:** `ffmpegRunner` feature-detects `crossOriginIsolated` and loads the **multithreaded** core when isolated, the **single-threaded** core otherwise. Never hard-broken.
-- **Fonts:** under `COEP: require-corp`, cross-origin Google Fonts break once the SW isolates the origin → **Inter is self-hosted** in `public/fonts/`.
-- **SEO is unaffected:** static pages render without isolation; the SW/ffmpeg only matter when a user runs a conversion.
+- **No `COOP`/`COEP` headers and no `coi-serviceworker`** — simpler, and no forced
+  page reload on first visit.
+- The core is **self-hosted** in `public/ffmpeg/core/` (copied from `@ffmpeg/core`
+  by `scripts/copy-ffmpeg-core.mjs`) and **cached** in the Cache Storage API
+  (versioned) so it downloads once. It's **prefetched on tool-page load** so
+  Convert is ready quickly.
+- **WebM uses VP8** (`libvpx`), not VP9 (too heavy for wasm).
+- The whole conversion path is verified by the release **conversion matrix**
+  (docs/testing.md), which runs every conversion for real in a browser.
 
 ## Folder structure
 
 ```
 ffmpeg-web/
-  astro.config.mjs             # Astro + @astrojs/react + @astrojs/sitemap; site/base; dev COOP/COEP headers
+  astro.config.mjs             # Astro + @astrojs/react + @astrojs/sitemap; site/base
   tsconfig.json  package.json
   public/
-    coi-serviceworker.min.js   # cross-origin isolation shim
-    fonts/                     # self-hosted Inter
+    ffmpeg/core/               # self-hosted single-thread ffmpeg core (copied at build)
     og-default.png             # default social image
-    CNAME                      # custom domain
+    robots.txt  CNAME          # robots.txt + custom domain
   design-system/               # canonical stylesheet + living styleguide (imported by the app)
   specs/features/              # one spec per tool
   docs/                        # tech-stack.md, seo.md, decisions
@@ -69,7 +75,7 @@ ffmpeg-web/
         [pair].astro           # /convert/{from}-to-{to} via getStaticPaths()
       tools/[slug].astro       # other tools
     layouts/
-      BaseLayout.astro         # <head>, <Seo>, design-system import, coi-serviceworker
+      BaseLayout.astro         # <head>, <Seo>, design-system import
     components/
       seo/Seo.astro            # title, meta, canonical, OG, JSON-LD slot
       astro/                   # static components: Masthead, Footer, Breadcrumbs, RelatedConversions, CatalogueItem
@@ -79,7 +85,7 @@ ffmpeg-web/
         ui/                    # Button, Segmented, Slider, Checkbox, DropZone, ProgressBar
     lib/
       tools/                   # types, registry, video-converter, … (pure, framework-agnostic)
-      runner/                  # types, mockRunner, ffmpegRunner (MT + ST fallback)
+      runner/                  # types, mockRunner, ffmpegRunner (single-thread + caching)
       seo/                     # JSON-LD builders: webApplication, howTo, faqPage, breadcrumb
       kb/                      # formats knowledge base + pair generation
       format.ts  cx.ts
@@ -98,7 +104,7 @@ ffmpeg-web/
 
 ```bash
 npm install
-npm run dev        # astro dev (with COOP/COEP headers)
+npm run dev        # astro dev
 npm run typecheck  # astro check + tsc --noEmit
 npm run lint       # eslint (type-aware) + jsx-a11y
 npm run test       # vitest (pure core: buildCommand, kb, seo builders)
