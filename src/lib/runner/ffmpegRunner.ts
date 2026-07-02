@@ -99,6 +99,7 @@ interface FFmpegLike {
   readFile(name: string): Promise<Uint8Array | string>;
   exec(args: string[]): Promise<number>;
   deleteFile(name: string): Promise<boolean>;
+  listDir(path: string): Promise<{ name: string; isDir: boolean }[]>;
 }
 
 let instance: FFmpegLike | null = null;
@@ -139,7 +140,7 @@ export const ffmpegRunner: ConversionRunner = {
   },
 
   async run(input, args, outputName, options): Promise<RunResult> {
-    const { onProgress, signal, extraFiles, assets } = options ?? {};
+    const { onProgress, signal, extraFiles, assets, collectPrefix } = options ?? {};
     if (signal?.aborted) throw new DOMException('Aborted', 'AbortError');
 
     onProgress?.({ ratio: 0, stage: 'Loading engine…' });
@@ -162,17 +163,46 @@ export const ffmpegRunner: ConversionRunner = {
     const code = await ffmpeg.exec(args);
     if (code !== 0) throw new Error(`ffmpeg exited with code ${code}`);
 
-    const data = await ffmpeg.readFile(outputName);
-    // Copy into a fresh ArrayBuffer-backed view (the MT core may return a
-    // SharedArrayBuffer-backed Uint8Array, which isn't a valid BlobPart).
-    const bytes = typeof data === 'string' ? new TextEncoder().encode(data) : new Uint8Array(data);
-    const blob = new Blob([bytes], { type: 'application/octet-stream' });
+    const readBytes = async (name: string): Promise<Uint8Array<ArrayBuffer>> => {
+      const data = await ffmpeg.readFile(name);
+      // Copy into a fresh ArrayBuffer-backed view (the MT core may return a
+      // SharedArrayBuffer-backed Uint8Array, which isn't a valid BlobPart).
+      return typeof data === 'string' ? new TextEncoder().encode(data) : new Uint8Array(data);
+    };
+
+    let blob: Blob;
+    const produced: string[] = [];
+
+    if (collectPrefix) {
+      // Multi-output: gather every file matching the prefix and zip them.
+      const entries = await ffmpeg.listDir('/');
+      const outputs = entries
+        .filter((e) => !e.isDir && e.name.startsWith(collectPrefix))
+        .map((e) => e.name)
+        .sort();
+      if (outputs.length === 0) throw new Error('No output files were produced.');
+
+      const files: Record<string, Uint8Array> = {};
+      for (const name of outputs) {
+        files[name] = await readBytes(name);
+        produced.push(name);
+      }
+      const { zipSync } = await import('fflate');
+      const zipped = zipSync(files, { level: 0 });
+      // Copy into a fresh ArrayBuffer-backed view so it's a valid BlobPart.
+      blob = new Blob([new Uint8Array(zipped)], { type: 'application/zip' });
+    } else {
+      blob = new Blob([await readBytes(outputName)], { type: 'application/octet-stream' });
+      produced.push(outputName);
+    }
 
     await ffmpeg.deleteFile(input.name).catch(() => undefined);
     for (const extra of extraFiles ?? []) {
       await ffmpeg.deleteFile(extra.name).catch(() => undefined);
     }
-    await ffmpeg.deleteFile(outputName).catch(() => undefined);
+    for (const name of produced) {
+      await ffmpeg.deleteFile(name).catch(() => undefined);
+    }
 
     return { blob, outputName };
   },

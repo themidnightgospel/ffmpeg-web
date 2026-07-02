@@ -103,7 +103,11 @@ export type ToolOption =
 
 export interface BuiltCommand {
   args: string[];
+  /** Download filename. For multi-output tools this is the .zip name. */
   outputName: string;
+  /** When set, the tool writes many files whose names start with this prefix;
+      the runner collects them all and returns a ZIP named `outputName`. */
+  collectPrefix?: string;
 }
 
 /** A static asset staged into the WASM FS before exec (e.g. a bundled font).

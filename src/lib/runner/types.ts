@@ -22,6 +22,9 @@ export interface RunOptions {
   /** Static assets fetched from a URL and staged into the FS as `name` (e.g. a
       bundled font referenced by drawtext). */
   assets?: { url: string; name: string }[];
+  /** When set, collect every output file whose name starts with this prefix and
+      return them zipped (under `outputName`) instead of a single file. */
+  collectPrefix?: string;
 }
 
 export interface ConversionRunner {

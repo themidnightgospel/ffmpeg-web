@@ -11,7 +11,7 @@ export const TOOLS: readonly ToolMeta[] = [
   { slug: 'video-to-gif', name: 'Video → GIF', category: 'Format conversion', desc: 'Turn a clip into an animated GIF.', status: 'live' },
   { slug: 'gif-to-video', name: 'GIF → Video', category: 'Format conversion', desc: 'Convert animated GIFs to MP4 or WebM.', status: 'live' },
   { slug: 'image-sequence-to-video', name: 'Image Sequence → Video', category: 'Format conversion', desc: 'Stitch frames into a video file.', status: 'live' },
-  { slug: 'video-to-image-sequence', name: 'Video → Image Sequence', category: 'Format conversion', desc: 'Export every frame as an image.', status: 'planned' },
+  { slug: 'video-to-image-sequence', name: 'Video → Image Sequence', category: 'Format conversion', desc: 'Export every frame as an image.', status: 'live' },
   { slug: 'image-format-converter', name: 'Image Format Converter', category: 'Format conversion', desc: 'PNG, JPG, WebP, AVIF, and back.', status: 'live' },
 
   // Compression
@@ -22,7 +22,7 @@ export const TOOLS: readonly ToolMeta[] = [
 
   // Trimming & cutting
   { slug: 'video-trimmer', name: 'Video/Audio Trimmer', category: 'Trimming & cutting', desc: 'Cut a clean start and end.', status: 'live' },
-  { slug: 'media-splitter', name: 'Media Splitter', category: 'Trimming & cutting', desc: 'Slice one file into many parts.', status: 'planned' },
+  { slug: 'media-splitter', name: 'Media Splitter', category: 'Trimming & cutting', desc: 'Slice one file into many parts.', status: 'live' },
   { slug: 'media-merger', name: 'Media Merger', category: 'Trimming & cutting', desc: 'Join multiple clips end to end.', status: 'live' },
   { slug: 'silence-remover', name: 'Silence Remover', category: 'Trimming & cutting', desc: 'Strip out dead air automatically.', status: 'live' },
   { slug: 'loop-maker', name: 'Loop Maker', category: 'Trimming & cutting', desc: 'Repeat a clip a set number of times.', status: 'live' },

@@ -117,7 +117,7 @@ export function useConversion(
     setPhase('running');
     setProgress({ ratio: 0, stage: 'Starting' });
 
-    const { args, outputName } = tool.buildCommand(values, {
+    const { args, outputName, collectPrefix } = tool.buildCommand(values, {
       name: primary.name,
       secondaryName: secondaryFile?.name,
       names: isMulti ? multiFiles.map((f) => f.name) : undefined,
@@ -130,6 +130,7 @@ export function useConversion(
         onProgress: setProgress,
         ...(extras.length > 0 ? { extraFiles: extras } : {}),
         ...(tool.assets ? { assets: tool.assets } : {}),
+        ...(collectPrefix ? { collectPrefix } : {}),
       })
       .then((result) => {
         const url = URL.createObjectURL(result.blob);

@@ -49,6 +49,8 @@ import { gifMaker } from './gif-maker';
 import { mediaMerger } from './media-merger';
 import { audioJoiner } from './audio-joiner';
 import { imageSequenceToVideo } from './image-sequence-to-video';
+import { videoToImageSequence } from './video-to-image-sequence';
+import { mediaSplitter } from './media-splitter';
 
 /* Registry of implemented ("live") tools. Add a tool's config here to wire it up.
    The catalogue metadata for all tools (including planned ones) lives in @/data/tools. */
@@ -103,6 +105,8 @@ const LIVE_TOOLS: Tool[] = [
   mediaMerger,
   audioJoiner,
   imageSequenceToVideo,
+  videoToImageSequence,
+  mediaSplitter,
 ];
 
 const bySlug = new Map<string, Tool>(LIVE_TOOLS.map((t) => [t.slug, t]));
