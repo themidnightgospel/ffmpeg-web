@@ -76,7 +76,7 @@ export const TOOLS: readonly ToolMeta[] = [
   { slug: 'video-stabilization', name: 'Video Stabilization', category: 'Advanced', desc: 'Smooth out shaky handheld footage.', status: 'planned' },
   { slug: 'chroma-key', name: 'Chroma Key', category: 'Advanced', desc: 'Remove a green or blue background.', status: 'planned' },
   { slug: 'video-comparison', name: 'Video Comparison', category: 'Advanced', desc: 'Side-by-side before/after view.', status: 'planned' },
-  { slug: 'audio-spectrogram', name: 'Audio Spectrogram', category: 'Advanced', desc: 'Visualize frequency over time.', status: 'planned' },
+  { slug: 'audio-spectrogram', name: 'Audio Spectrogram', category: 'Advanced', desc: 'Visualize frequency over time.', status: 'live' },
 ];
 
 const bySlug = new Map<string, ToolMeta>(TOOLS.map((t) => [t.slug, t]));
