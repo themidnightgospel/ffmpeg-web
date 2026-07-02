@@ -42,6 +42,7 @@ import { burnSubtitles } from './burn-subtitles';
 import { pictureInPicture } from './picture-in-picture';
 import { chromaKey } from './chroma-key';
 import { videoComparison } from './video-comparison';
+import { videoStabilization } from './video-stabilization';
 
 /* Registry of implemented ("live") tools. Add a tool's config here to wire it up.
    The catalogue metadata for all tools (including planned ones) lives in @/data/tools. */
@@ -89,6 +90,7 @@ const LIVE_TOOLS: Tool[] = [
   pictureInPicture,
   chromaKey,
   videoComparison,
+  videoStabilization,
 ];
 
 const bySlug = new Map<string, Tool>(LIVE_TOOLS.map((t) => [t.slug, t]));
