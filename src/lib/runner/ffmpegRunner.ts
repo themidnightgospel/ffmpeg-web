@@ -14,8 +14,10 @@ import type { ConversionRunner, RunResult } from './types';
 const CORE_VERSION = '0.12.6';
 const CACHE_NAME = `ffmpeg-core-${CORE_VERSION}`;
 
-const isolated = (): boolean =>
-  typeof crossOriginIsolated !== 'undefined' && crossOriginIsolated === true;
+// Single-threaded core only. The multithreaded core (SharedArrayBuffer + pthreads)
+// is unreliable in ffmpeg.wasm across environments — exec() hangs or crashes the
+// tab — so we use the dependable single-thread build. See docs/testing.md.
+const MULTITHREAD = false;
 
 // Self-hosted core (copied into public/ffmpeg by scripts/copy-ffmpeg-core.mjs).
 const coreBase = (multithread: boolean): string =>
@@ -57,7 +59,7 @@ export async function prefetchCore(): Promise<void> {
     void cleanupOldCaches();
     const cache = await caches.open(CACHE_NAME);
     await Promise.all(
-      coreFiles(isolated()).map(async (url) => {
+      coreFiles(MULTITHREAD).map(async (url) => {
         if (await cache.match(url)) return;
         const res = await fetch(url);
         if (res.ok) await cache.put(url, res);
@@ -107,20 +109,19 @@ let currentProgress: ((ratio: number) => void) | null = null;
 async function loadFFmpeg(): Promise<FFmpegLike> {
   const { FFmpeg } = await import('@ffmpeg/ffmpeg');
   const ffmpeg = new FFmpeg() as unknown as FFmpegLike;
-  const multithread = isolated();
 
   ffmpeg.on('progress', ({ progress }) => {
     currentProgress?.(Math.min(Math.max(progress, 0), 1));
   });
 
-  const files = coreFiles(multithread);
+  const files = coreFiles(MULTITHREAD);
   const [coreURL, wasmURL, workerURL] = await Promise.all([
     assetBlobURL(files[0]!, 'text/javascript'),
     assetBlobURL(files[1]!, 'application/wasm'),
-    multithread ? assetBlobURL(files[2]!, 'text/javascript') : Promise.resolve(''),
+    MULTITHREAD ? assetBlobURL(files[2]!, 'text/javascript') : Promise.resolve(''),
   ]);
 
-  await ffmpeg.load({ coreURL, wasmURL, ...(multithread ? { workerURL } : {}) });
+  await ffmpeg.load({ coreURL, wasmURL, ...(MULTITHREAD ? { workerURL } : {}) });
   return ffmpeg;
 }
 

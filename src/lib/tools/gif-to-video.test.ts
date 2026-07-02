@@ -16,9 +16,9 @@ describe('gifToVideo.buildCommand', () => {
     ]);
   });
 
-  it('converts to WebM with VP9', () => {
+  it('converts to WebM with VP8', () => {
     const { args, outputName } = gifToVideo.buildCommand({ format: 'webm' }, input);
     expect(outputName).toBe('meme.webm');
-    expect(args).toEqual(expect.arrayContaining(['-c:v', 'libvpx-vp9']));
+    expect(args).toEqual(expect.arrayContaining(['-c:v', 'libvpx']));
   });
 });

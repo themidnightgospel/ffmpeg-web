@@ -36,7 +36,7 @@ describe('videoConverter.buildCommand', () => {
     expect(args).toEqual(['-i', 'clip.mov', '-c:v', 'copy', '-c:a', 'libopus', 'clip.mkv']);
   });
 
-  it('forces VP9 + Opus (+ -b:v 0) for WebM, overriding incompatible codec choices', () => {
+  it('forces VP8 + Opus for WebM, overriding incompatible codec choices', () => {
     const { args, outputName } = videoConverter.buildCommand(
       { format: 'webm', vcodec: 'h264', acodec: 'aac', remux: false, crf: 30 },
       input,
@@ -44,22 +44,9 @@ describe('videoConverter.buildCommand', () => {
     expect(outputName).toBe('clip.webm');
     expect(args).toEqual([
       '-i', 'clip.mov',
-      '-c:v', 'libvpx-vp9', '-crf', '30', '-b:v', '0',
+      '-c:v', 'libvpx', '-crf', '10', '-b:v', '1M',
       '-c:a', 'libopus',
       'clip.webm',
-    ]);
-  });
-
-  it('adds -b:v 0 when VP9 is chosen for a non-WebM container', () => {
-    const { args } = videoConverter.buildCommand(
-      { format: 'mkv', vcodec: 'vp9', acodec: 'opus', remux: false, crf: 28 },
-      input,
-    );
-    expect(args).toEqual([
-      '-i', 'clip.mov',
-      '-c:v', 'libvpx-vp9', '-crf', '28', '-b:v', '0',
-      '-c:a', 'libopus',
-      'clip.mkv',
     ]);
   });
 });

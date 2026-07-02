@@ -2,9 +2,10 @@ import type { Tool } from './types';
 import { baseName } from '@/lib/format';
 
 // Map UI codec choices to ffmpeg encoder names.
+// (VP9 is intentionally omitted — its encoder is too memory-heavy for ffmpeg.wasm
+// and crashes the tab; WebM uses VP8 below.)
 const VIDEO_ENCODERS: Record<string, string> = {
   h264: 'libx264',
-  vp9: 'libvpx-vp9',
   copy: 'copy',
 };
 const AUDIO_ENCODERS: Record<string, string> = {
@@ -54,7 +55,6 @@ export const videoConverter: Tool = {
       disabledWhen: codecFixed,
       choices: [
         { value: 'h264', label: 'H.264' },
-        { value: 'vp9', label: 'VP9' },
         { value: 'copy', label: 'Keep original' },
       ],
     },
@@ -99,18 +99,14 @@ export const videoConverter: Tool = {
 
     if (values.remux === true) {
       args.push('-c', 'copy');
+    } else if (format === 'webm') {
+      // WebM forces VP8 (libvpx) + Opus. VP8 is far lighter than VP9 in wasm.
+      args.push('-c:v', 'libvpx', '-crf', '10', '-b:v', '1M', '-c:a', 'libopus');
     } else {
-      const webm = format === 'webm';
-      // WebM forces VP9/Opus; other containers respect the chosen codecs.
-      const vEnc = webm ? 'libvpx-vp9' : (VIDEO_ENCODERS[String(values.vcodec)] ?? 'libx264');
-      const aEnc = webm ? 'libopus' : (AUDIO_ENCODERS[String(values.acodec)] ?? 'aac');
-
+      const vEnc = VIDEO_ENCODERS[String(values.vcodec)] ?? 'libx264';
       args.push('-c:v', vEnc);
-      if (vEnc !== 'copy') {
-        args.push('-crf', String(values.crf));
-        if (vEnc === 'libvpx-vp9') args.push('-b:v', '0'); // constant-quality VP9
-      }
-      args.push('-c:a', aEnc);
+      if (vEnc !== 'copy') args.push('-crf', String(values.crf));
+      args.push('-c:a', AUDIO_ENCODERS[String(values.acodec)] ?? 'aac');
     }
 
     args.push(outputName);

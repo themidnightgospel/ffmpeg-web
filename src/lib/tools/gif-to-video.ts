@@ -24,7 +24,7 @@ export const gifToVideo: Tool = {
       default: 'mp4',
       choices: [
         { value: 'mp4', label: 'MP4 (H.264)' },
-        { value: 'webm', label: 'WebM (VP9)' },
+        { value: 'webm', label: 'WebM (VP8)' },
       ],
     },
   ],
@@ -34,11 +34,12 @@ export const gifToVideo: Tool = {
     const outputName = `${baseName(input.name)}.${format}`;
 
     if (format === 'webm') {
+      // VP8 (libvpx) — lighter than VP9 in wasm.
       const args: string[] = [
         '-i', input.name,
         '-vf', EVEN,
         '-pix_fmt', 'yuv420p',
-        '-c:v', 'libvpx-vp9', '-b:v', '0', '-crf', '32',
+        '-c:v', 'libvpx', '-crf', '10', '-b:v', '1M',
         outputName,
       ];
       return { args, outputName };
