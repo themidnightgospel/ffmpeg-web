@@ -14,6 +14,7 @@ export interface ConversionOutput {
 
 export interface Conversion {
   file: File | null;
+  secondaryFile: File | null;
   values: OptionValues;
   phase: ConversionPhase;
   progress: RunProgress;
@@ -22,6 +23,7 @@ export interface Conversion {
   canStart: boolean;
   setValue: (id: string, value: OptionValue) => void;
   selectFile: (file: File) => void;
+  selectSecondaryFile: (file: File) => void;
   start: () => void;
 }
 
@@ -36,6 +38,7 @@ export function useConversion(
   initialValues?: Partial<OptionValues>,
 ): Conversion {
   const [file, setFile] = useState<File | null>(null);
+  const [secondaryFile, setSecondaryFile] = useState<File | null>(null);
   const [values, setValues] = useState<OptionValues>(() => {
     const base = defaultValues(tool.options);
     for (const [id, value] of Object.entries(initialValues ?? {})) {
@@ -75,18 +78,37 @@ export function useConversion(
     [releaseOutput],
   );
 
+  const selectSecondaryFile = useCallback(
+    (next: File) => {
+      setSecondaryFile(next);
+      setPhase('idle');
+      setError(null);
+      releaseOutput();
+    },
+    [releaseOutput],
+  );
+
+  const needsSecondary = tool.secondary != null;
+
   const start = useCallback(() => {
     if (!file) return;
+    if (needsSecondary && !secondaryFile) return;
 
     releaseOutput();
     setError(null);
     setPhase('running');
     setProgress({ ratio: 0, stage: 'Starting' });
 
-    const { args, outputName } = tool.buildCommand(values, { name: file.name });
+    const { args, outputName } = tool.buildCommand(values, {
+      name: file.name,
+      secondaryName: secondaryFile?.name,
+    });
 
     runner
-      .run(file, args, outputName, { onProgress: setProgress })
+      .run(file, args, outputName, {
+        onProgress: setProgress,
+        ...(secondaryFile ? { extraFiles: [secondaryFile] } : {}),
+      })
       .then((result) => {
         const url = URL.createObjectURL(result.blob);
         outputUrl.current = url;
@@ -106,18 +128,20 @@ export function useConversion(
         setError(err instanceof Error ? err.message : 'Conversion failed. Please try again.');
         setPhase('error');
       });
-  }, [file, values, tool, runner, releaseOutput]);
+  }, [file, secondaryFile, needsSecondary, values, tool, runner, releaseOutput]);
 
   return {
     file,
+    secondaryFile,
     values,
     phase,
     progress,
     output,
     error,
-    canStart: file !== null && phase !== 'running',
+    canStart: file !== null && (!needsSecondary || secondaryFile !== null) && phase !== 'running',
     setValue,
     selectFile,
+    selectSecondaryFile,
     start,
   };
 }

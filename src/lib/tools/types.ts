@@ -98,14 +98,34 @@ export interface BuiltCommand {
   outputName: string;
 }
 
+/** A second required file (e.g. a watermark image, replacement audio, subtitle). */
+export interface SecondaryInput {
+  /** Logical id (unused by ffmpeg; for keys/labels). */
+  id: string;
+  label: string;
+  /** File input `accept` attribute for the second file, e.g. "image/*". */
+  accept?: string;
+  /** Prompt shown inside the drop zone. */
+  prompt?: string;
+}
+
+/** The input the command builder sees: primary file name + optional second file. */
+export interface CommandInput {
+  name: string;
+  /** Present only for tools that declare a `secondary` input. */
+  secondaryName?: string;
+}
+
 /** A fully-implemented ("live") tool. */
 export interface Tool extends ToolMeta {
   status: 'live';
   /** File input `accept` attribute, e.g. "video/*". */
   accept?: string;
+  /** When set, the tool requires a second file (rendered as a second drop zone). */
+  secondary?: SecondaryInput;
   options: ToolOption[];
   /** Pure: option values + input -> ffmpeg argv + output filename. Unit-testable. */
-  buildCommand: (values: OptionValues, input: { name: string }) => BuiltCommand;
+  buildCommand: (values: OptionValues, input: CommandInput) => BuiltCommand;
 }
 
 /** Initial values derived from each option's default. */

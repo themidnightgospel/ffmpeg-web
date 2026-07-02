@@ -36,6 +36,12 @@ import { socialMediaPresets } from './social-media-presets';
 import { videoTrimmer } from './video-trimmer';
 import { ringtoneMaker } from './ringtone-maker';
 import { cropTool } from './crop-tool';
+import { replaceAudioTrack } from './replace-audio-track';
+import { addWatermark } from './add-watermark';
+import { burnSubtitles } from './burn-subtitles';
+import { pictureInPicture } from './picture-in-picture';
+import { chromaKey } from './chroma-key';
+import { videoComparison } from './video-comparison';
 
 /* Registry of implemented ("live") tools. Add a tool's config here to wire it up.
    The catalogue metadata for all tools (including planned ones) lives in @/data/tools. */
@@ -77,6 +83,12 @@ const LIVE_TOOLS: Tool[] = [
   videoTrimmer,
   ringtoneMaker,
   cropTool,
+  replaceAudioTrack,
+  addWatermark,
+  burnSubtitles,
+  pictureInPicture,
+  chromaKey,
+  videoComparison,
 ];
 
 const bySlug = new Map<string, Tool>(LIVE_TOOLS.map((t) => [t.slug, t]));

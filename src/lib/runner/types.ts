@@ -16,6 +16,9 @@ export interface RunResult {
 export interface RunOptions {
   onProgress?: (progress: RunProgress) => void;
   signal?: AbortSignal;
+  /** Extra files staged into the FS (by their `.name`) before exec, e.g. a
+      watermark image or replacement audio referenced in the args. */
+  extraFiles?: File[];
 }
 
 export interface ConversionRunner {

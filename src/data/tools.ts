@@ -44,14 +44,14 @@ export const TOOLS: readonly ToolMeta[] = [
   { slug: 'audio-joiner', name: 'Audio Joiner', category: 'Audio tools', desc: 'Concatenate tracks into one file.', status: 'planned' },
   { slug: 'ringtone-maker', name: 'Ringtone Maker', category: 'Audio tools', desc: 'Cut a short loop for your phone.', status: 'live' },
   { slug: 'waveform-generator', name: 'Waveform Generator', category: 'Audio tools', desc: 'Render audio as a waveform image.', status: 'live' },
-  { slug: 'replace-audio-track', name: 'Replace Audio Track', category: 'Audio tools', desc: "Swap a video's soundtrack.", status: 'planned' },
+  { slug: 'replace-audio-track', name: 'Replace Audio Track', category: 'Audio tools', desc: "Swap a video's soundtrack.", status: 'live' },
 
   // Subtitles & overlays
-  { slug: 'burn-subtitles', name: 'Burn Subtitles', category: 'Subtitles & overlays', desc: 'Hard-code captions into the video.', status: 'planned' },
+  { slug: 'burn-subtitles', name: 'Burn Subtitles', category: 'Subtitles & overlays', desc: 'Hard-code captions into the video.', status: 'live' },
   { slug: 'extract-subtitles', name: 'Extract Subtitles', category: 'Subtitles & overlays', desc: 'Pull embedded subtitle tracks out.', status: 'live' },
-  { slug: 'add-watermark', name: 'Add Watermark', category: 'Subtitles & overlays', desc: 'Overlay a logo or image mark.', status: 'planned' },
+  { slug: 'add-watermark', name: 'Add Watermark', category: 'Subtitles & overlays', desc: 'Overlay a logo or image mark.', status: 'live' },
   { slug: 'add-text-overlay', name: 'Add Text Overlay', category: 'Subtitles & overlays', desc: 'Place titles and captions on video.', status: 'planned' },
-  { slug: 'picture-in-picture', name: 'Picture-in-Picture', category: 'Subtitles & overlays', desc: 'Composite one video over another.', status: 'planned' },
+  { slug: 'picture-in-picture', name: 'Picture-in-Picture', category: 'Subtitles & overlays', desc: 'Composite one video over another.', status: 'live' },
 
   // Extraction & capture
   { slug: 'thumbnail-generator', name: 'Thumbnail Generator', category: 'Extraction & capture', desc: 'Grab a still from any timestamp.', status: 'live' },
@@ -74,8 +74,8 @@ export const TOOLS: readonly ToolMeta[] = [
   { slug: 'color-adjuster', name: 'Color Adjuster', category: 'Advanced', desc: 'Tune brightness, contrast, saturation.', status: 'live' },
   { slug: 'deinterlacer', name: 'Deinterlacer', category: 'Advanced', desc: 'Remove combing from interlaced video.', status: 'live' },
   { slug: 'video-stabilization', name: 'Video Stabilization', category: 'Advanced', desc: 'Smooth out shaky handheld footage.', status: 'planned' },
-  { slug: 'chroma-key', name: 'Chroma Key', category: 'Advanced', desc: 'Remove a green or blue background.', status: 'planned' },
-  { slug: 'video-comparison', name: 'Video Comparison', category: 'Advanced', desc: 'Side-by-side before/after view.', status: 'planned' },
+  { slug: 'chroma-key', name: 'Chroma Key', category: 'Advanced', desc: 'Remove a green or blue background.', status: 'live' },
+  { slug: 'video-comparison', name: 'Video Comparison', category: 'Advanced', desc: 'Side-by-side before/after view.', status: 'live' },
   { slug: 'audio-spectrogram', name: 'Audio Spectrogram', category: 'Advanced', desc: 'Visualize frequency over time.', status: 'live' },
 ];
 

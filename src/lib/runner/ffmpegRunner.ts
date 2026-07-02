@@ -139,7 +139,7 @@ export const ffmpegRunner: ConversionRunner = {
   },
 
   async run(input, args, outputName, options): Promise<RunResult> {
-    const { onProgress, signal } = options ?? {};
+    const { onProgress, signal, extraFiles } = options ?? {};
     if (signal?.aborted) throw new DOMException('Aborted', 'AbortError');
 
     onProgress?.({ ratio: 0, stage: 'Loading engine…' });
@@ -149,6 +149,9 @@ export const ffmpegRunner: ConversionRunner = {
 
     const { fetchFile } = await import('@ffmpeg/util');
     await ffmpeg.writeFile(input.name, await fetchFile(input));
+    for (const extra of extraFiles ?? []) {
+      await ffmpeg.writeFile(extra.name, await fetchFile(extra));
+    }
 
     const code = await ffmpeg.exec(args);
     if (code !== 0) throw new Error(`ffmpeg exited with code ${code}`);
@@ -160,6 +163,9 @@ export const ffmpegRunner: ConversionRunner = {
     const blob = new Blob([bytes], { type: 'application/octet-stream' });
 
     await ffmpeg.deleteFile(input.name).catch(() => undefined);
+    for (const extra of extraFiles ?? []) {
+      await ffmpeg.deleteFile(extra.name).catch(() => undefined);
+    }
     await ffmpeg.deleteFile(outputName).catch(() => undefined);
 
     return { blob, outputName };

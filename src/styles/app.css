@@ -1,6 +1,11 @@
 /* App-only layout that is not part of the reusable design system.
    Reusable component styles live in design-system/ffmpeg-web.css. */
 
+/* Second file input (watermark, replacement audio, subtitle, etc.) */
+.secondary-input {
+  margin-top: 20px;
+}
+
 /* Hero (hub) */
 .hero {
   border-bottom: 1px solid var(--hairline);

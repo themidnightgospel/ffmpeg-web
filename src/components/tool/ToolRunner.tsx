@@ -25,7 +25,7 @@ export function ToolRunner({
   runner = ffmpegRunner,
 }: ToolRunnerProps) {
   const conversion = useConversion(tool, runner, initialValues);
-  const { file, values, phase, progress, output, error } = conversion;
+  const { file, secondaryFile, values, phase, progress, output, error } = conversion;
 
   // Warm the engine on load (download + cache the core) so Convert is instant.
   // Deferred slightly so it doesn't compete with first paint/hydration.
@@ -62,6 +62,18 @@ export function ToolRunner({
             onFile={conversion.selectFile}
             prompt={dropPrompt}
           />
+
+          {tool.secondary && (
+            <div className="secondary-input">
+              <p className="section-label">{tool.secondary.label}</p>
+              <DropZone
+                accept={tool.secondary.accept}
+                file={secondaryFile}
+                onFile={conversion.selectSecondaryFile}
+                prompt={tool.secondary.prompt}
+              />
+            </div>
+          )}
         </div>
 
         <div className="col-b">
@@ -94,7 +106,15 @@ export function ToolRunner({
           >
             {phase === 'running' ? 'Converting…' : 'Convert'}
           </Button>
-          {!file && <p className="action__hint">Add a file to get started</p>}
+          {!conversion.canStart && phase !== 'running' && (
+            <p className="action__hint">
+              {!file
+                ? 'Add a file to get started'
+                : tool.secondary && !secondaryFile
+                  ? `Add ${tool.secondary.label.toLowerCase()} to continue`
+                  : 'Add a file to get started'}
+            </p>
+          )}
         </div>
 
         {phase === 'running' && (
