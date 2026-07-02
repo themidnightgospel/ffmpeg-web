@@ -54,7 +54,7 @@ export const TOOLS: readonly ToolMeta[] = [
   { slug: 'picture-in-picture', name: 'Picture-in-Picture', category: 'Subtitles & overlays', desc: 'Composite one video over another.', status: 'planned' },
 
   // Extraction & capture
-  { slug: 'thumbnail-generator', name: 'Thumbnail Generator', category: 'Extraction & capture', desc: 'Grab a still from any timestamp.', status: 'planned' },
+  { slug: 'thumbnail-generator', name: 'Thumbnail Generator', category: 'Extraction & capture', desc: 'Grab a still from any timestamp.', status: 'live' },
   { slug: 'contact-sheet', name: 'Contact Sheet', category: 'Extraction & capture', desc: 'Build a grid of preview frames.', status: 'planned' },
   { slug: 'poster-frame-picker', name: 'Poster Frame Picker', category: 'Extraction & capture', desc: 'Choose the perfect cover frame.', status: 'planned' },
   { slug: 'metadata-viewer', name: 'Metadata Viewer', category: 'Extraction & capture', desc: 'Inspect codecs, streams, and tags.', status: 'planned' },
