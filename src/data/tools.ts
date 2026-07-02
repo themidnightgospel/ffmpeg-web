@@ -63,7 +63,7 @@ export const TOOLS: readonly ToolMeta[] = [
   // Social & platform
   { slug: 'social-media-presets', name: 'Social-Media Presets', category: 'Social & platform', desc: 'One-tap exports for every platform.', status: 'planned' },
   { slug: 'messaging-optimizer', name: 'Messaging Optimizer', category: 'Social & platform', desc: 'Right size for chat apps and DMs.', status: 'planned' },
-  { slug: 'podcast-prep', name: 'Podcast Prep', category: 'Social & platform', desc: 'Clean, level, and export episodes.', status: 'planned' },
+  { slug: 'podcast-prep', name: 'Podcast Prep', category: 'Social & platform', desc: 'Clean, level, and export episodes.', status: 'live' },
 
   // GIF & meme
   { slug: 'gif-maker', name: 'GIF Maker', category: 'GIF & meme', desc: 'Craft a GIF with fine control.', status: 'planned' },

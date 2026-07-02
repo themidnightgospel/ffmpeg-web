@@ -30,6 +30,7 @@ import { posterFramePicker } from './poster-frame-picker';
 import { contactSheet } from './contact-sheet';
 import { boomerangMaker } from './boomerang-maker';
 import { extractSubtitles } from './extract-subtitles';
+import { podcastPrep } from './podcast-prep';
 
 /* Registry of implemented ("live") tools. Add a tool's config here to wire it up.
    The catalogue metadata for all tools (including planned ones) lives in @/data/tools. */
@@ -65,6 +66,7 @@ const LIVE_TOOLS: Tool[] = [
   contactSheet,
   boomerangMaker,
   extractSubtitles,
+  podcastPrep,
 ];
 
 const bySlug = new Map<string, Tool>(LIVE_TOOLS.map((t) => [t.slug, t]));
