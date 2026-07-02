@@ -68,7 +68,7 @@ export const TOOLS: readonly ToolMeta[] = [
   // GIF & meme
   { slug: 'gif-maker', name: 'GIF Maker', category: 'GIF & meme', desc: 'Craft a GIF with fine control.', status: 'planned' },
   { slug: 'meme-caption', name: 'Meme Caption', category: 'GIF & meme', desc: 'Add top and bottom meme text.', status: 'planned' },
-  { slug: 'boomerang-maker', name: 'Boomerang Maker', category: 'GIF & meme', desc: 'Loop forward then reverse.', status: 'planned' },
+  { slug: 'boomerang-maker', name: 'Boomerang Maker', category: 'GIF & meme', desc: 'Loop forward then reverse.', status: 'live' },
 
   // Advanced
   { slug: 'color-adjuster', name: 'Color Adjuster', category: 'Advanced', desc: 'Tune brightness, contrast, saturation.', status: 'live' },
