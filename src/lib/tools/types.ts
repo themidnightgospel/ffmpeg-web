@@ -85,17 +85,32 @@ export interface TimeOption extends OptionBase {
   withMs?: boolean;
 }
 
+export interface TextOption extends OptionBase {
+  type: 'text';
+  default?: string;
+  placeholder?: string;
+  maxLength?: number;
+}
+
 /** Discriminated union — extend here + in ToolOptionControl to add a control. */
 export type ToolOption =
   | SegmentedOption
   | SliderOption
   | StepperOption
   | ToggleOption
-  | TimeOption;
+  | TimeOption
+  | TextOption;
 
 export interface BuiltCommand {
   args: string[];
   outputName: string;
+}
+
+/** A static asset staged into the WASM FS before exec (e.g. a bundled font).
+    `url` is relative to the site base; `name` is the in-FS filename to reference. */
+export interface ToolAsset {
+  url: string;
+  name: string;
 }
 
 /** A second required file (e.g. a watermark image, replacement audio, subtitle). */
@@ -123,6 +138,8 @@ export interface Tool extends ToolMeta {
   accept?: string;
   /** When set, the tool requires a second file (rendered as a second drop zone). */
   secondary?: SecondaryInput;
+  /** Static assets staged into the FS before exec (e.g. a bundled font). */
+  assets?: ToolAsset[];
   options: ToolOption[];
   /** Pure: option values + input -> ffmpeg argv + output filename. Unit-testable. */
   buildCommand: (values: OptionValues, input: CommandInput) => BuiltCommand;
@@ -147,6 +164,9 @@ export function defaultValues(options: ToolOption[]): OptionValues {
         break;
       case 'time':
         values[o.id] = o.default ?? '00:00:00.000';
+        break;
+      case 'text':
+        values[o.id] = o.default ?? '';
         break;
     }
   }

@@ -50,7 +50,7 @@ export const TOOLS: readonly ToolMeta[] = [
   { slug: 'burn-subtitles', name: 'Burn Subtitles', category: 'Subtitles & overlays', desc: 'Hard-code captions into the video.', status: 'live' },
   { slug: 'extract-subtitles', name: 'Extract Subtitles', category: 'Subtitles & overlays', desc: 'Pull embedded subtitle tracks out.', status: 'live' },
   { slug: 'add-watermark', name: 'Add Watermark', category: 'Subtitles & overlays', desc: 'Overlay a logo or image mark.', status: 'live' },
-  { slug: 'add-text-overlay', name: 'Add Text Overlay', category: 'Subtitles & overlays', desc: 'Place titles and captions on video.', status: 'planned' },
+  { slug: 'add-text-overlay', name: 'Add Text Overlay', category: 'Subtitles & overlays', desc: 'Place titles and captions on video.', status: 'live' },
   { slug: 'picture-in-picture', name: 'Picture-in-Picture', category: 'Subtitles & overlays', desc: 'Composite one video over another.', status: 'live' },
 
   // Extraction & capture
@@ -66,8 +66,8 @@ export const TOOLS: readonly ToolMeta[] = [
   { slug: 'podcast-prep', name: 'Podcast Prep', category: 'Social & platform', desc: 'Clean, level, and export episodes.', status: 'live' },
 
   // GIF & meme
-  { slug: 'gif-maker', name: 'GIF Maker', category: 'GIF & meme', desc: 'Craft a GIF with fine control.', status: 'planned' },
-  { slug: 'meme-caption', name: 'Meme Caption', category: 'GIF & meme', desc: 'Add top and bottom meme text.', status: 'planned' },
+  { slug: 'gif-maker', name: 'GIF Maker', category: 'GIF & meme', desc: 'Craft a GIF with fine control.', status: 'live' },
+  { slug: 'meme-caption', name: 'Meme Caption', category: 'GIF & meme', desc: 'Add top and bottom meme text.', status: 'live' },
   { slug: 'boomerang-maker', name: 'Boomerang Maker', category: 'GIF & meme', desc: 'Loop forward then reverse.', status: 'live' },
 
   // Advanced

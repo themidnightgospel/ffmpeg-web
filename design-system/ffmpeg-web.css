@@ -406,6 +406,17 @@ input[type="range"].slider:focus-visible { outline: var(--focus); outline-offset
 .timefield__input:disabled { color: var(--grey-light); }
 
 /* ----------------------------------------------------------------------------
+   10d. TEXT FIELD  (single-line text entry, e.g. caption / overlay text)
+   Markup: .field > label + input.textfield__input
+---------------------------------------------------------------------------- */
+.textfield__input {
+  font: inherit; font-size: 16px; padding: 10px 14px;
+  border: var(--border); background: var(--paper); color: var(--ink); width: 100%;
+}
+.textfield__input:focus { outline: none; background: var(--accent-wash); }
+.textfield__input:disabled { color: var(--grey-light); }
+
+/* ----------------------------------------------------------------------------
    11. DROP ZONE
    States: idle · .drag (hovered w/ file) · .has-file
 ---------------------------------------------------------------------------- */

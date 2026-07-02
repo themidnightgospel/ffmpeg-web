@@ -108,6 +108,7 @@ export function useConversion(
       .run(file, args, outputName, {
         onProgress: setProgress,
         ...(secondaryFile ? { extraFiles: [secondaryFile] } : {}),
+        ...(tool.assets ? { assets: tool.assets } : {}),
       })
       .then((result) => {
         const url = URL.createObjectURL(result.blob);

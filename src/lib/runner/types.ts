@@ -19,6 +19,9 @@ export interface RunOptions {
   /** Extra files staged into the FS (by their `.name`) before exec, e.g. a
       watermark image or replacement audio referenced in the args. */
   extraFiles?: File[];
+  /** Static assets fetched from a URL and staged into the FS as `name` (e.g. a
+      bundled font referenced by drawtext). */
+  assets?: { url: string; name: string }[];
 }
 
 export interface ConversionRunner {

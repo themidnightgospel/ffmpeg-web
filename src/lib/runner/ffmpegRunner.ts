@@ -139,7 +139,7 @@ export const ffmpegRunner: ConversionRunner = {
   },
 
   async run(input, args, outputName, options): Promise<RunResult> {
-    const { onProgress, signal, extraFiles } = options ?? {};
+    const { onProgress, signal, extraFiles, assets } = options ?? {};
     if (signal?.aborted) throw new DOMException('Aborted', 'AbortError');
 
     onProgress?.({ ratio: 0, stage: 'Loading engine…' });
@@ -151,6 +151,12 @@ export const ffmpegRunner: ConversionRunner = {
     await ffmpeg.writeFile(input.name, await fetchFile(input));
     for (const extra of extraFiles ?? []) {
       await ffmpeg.writeFile(extra.name, await fetchFile(extra));
+    }
+    // Static assets (e.g. fonts) fetched from the site and staged into the FS.
+    for (const asset of assets ?? []) {
+      const res = await fetch(`${import.meta.env.BASE_URL}${asset.url}`);
+      if (!res.ok) throw new Error(`Failed to load asset ${asset.name}`);
+      await ffmpeg.writeFile(asset.name, new Uint8Array(await res.arrayBuffer()));
     }
 
     const code = await ffmpeg.exec(args);
