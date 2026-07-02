@@ -42,7 +42,7 @@ export const boomerangMaker: Tool = {
       '-i', input.name,
       '-filter_complex', graph,
       '-map', '[v]', '-an',
-      '-c:v', 'libx264', '-crf', '23', '-pix_fmt', 'yuv420p',
+      '-c:v', 'libx264', '-crf', '23', '-preset', 'veryfast', '-pix_fmt', 'yuv420p',
       '-movflags', '+faststart',
       outputName,
     ];

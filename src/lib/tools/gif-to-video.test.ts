@@ -11,7 +11,7 @@ describe('gifToVideo.buildCommand', () => {
       '-i', 'meme.gif',
       '-vf', 'scale=trunc(iw/2)*2:trunc(ih/2)*2',
       '-pix_fmt', 'yuv420p',
-      '-c:v', 'libx264', '-crf', '23',
+      '-c:v', 'libx264', '-crf', '23', '-preset', 'veryfast',
       '-movflags', '+faststart', 'meme.mp4',
     ]);
   });

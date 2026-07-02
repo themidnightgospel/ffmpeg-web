@@ -34,12 +34,12 @@ export const gifToVideo: Tool = {
     const outputName = `${baseName(input.name)}.${format}`;
 
     if (format === 'webm') {
-      // VP8 (libvpx) — lighter than VP9 in wasm.
+      // VP8 (libvpx) — lighter than VP9 in wasm. -cpu-used 5 for a big speedup.
       const args: string[] = [
         '-i', input.name,
         '-vf', EVEN,
         '-pix_fmt', 'yuv420p',
-        '-c:v', 'libvpx', '-crf', '10', '-b:v', '1M',
+        '-c:v', 'libvpx', '-cpu-used', '5', '-crf', '10', '-b:v', '1M',
         outputName,
       ];
       return { args, outputName };
@@ -49,7 +49,7 @@ export const gifToVideo: Tool = {
       '-i', input.name,
       '-vf', EVEN,
       '-pix_fmt', 'yuv420p',
-      '-c:v', 'libx264', '-crf', '23',
+      '-c:v', 'libx264', '-crf', '23', '-preset', 'veryfast',
       '-movflags', '+faststart',
       outputName,
     ];

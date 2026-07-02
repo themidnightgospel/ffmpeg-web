@@ -14,6 +14,7 @@ describe('videoConverter.buildCommand', () => {
       '-i', 'clip.mov',
       '-c:v', 'libx264',
       '-crf', '23',
+      '-preset', 'veryfast',
       '-c:a', 'aac',
       'clip.mp4',
     ]);
@@ -44,7 +45,7 @@ describe('videoConverter.buildCommand', () => {
     expect(outputName).toBe('clip.webm');
     expect(args).toEqual([
       '-i', 'clip.mov',
-      '-c:v', 'libvpx', '-crf', '10', '-b:v', '1M',
+      '-c:v', 'libvpx', '-cpu-used', '5', '-crf', '10', '-b:v', '1M',
       '-c:a', 'libopus',
       'clip.webm',
     ]);

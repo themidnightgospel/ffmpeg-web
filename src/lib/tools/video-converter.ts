@@ -101,11 +101,14 @@ export const videoConverter: Tool = {
       args.push('-c', 'copy');
     } else if (format === 'webm') {
       // WebM forces VP8 (libvpx) + Opus. VP8 is far lighter than VP9 in wasm.
-      args.push('-c:v', 'libvpx', '-crf', '10', '-b:v', '1M', '-c:a', 'libopus');
+      // -cpu-used 5 speeds VP8 up a lot (default is the slowest quality setting).
+      args.push('-c:v', 'libvpx', '-cpu-used', '5', '-crf', '10', '-b:v', '1M', '-c:a', 'libopus');
     } else {
       const vEnc = VIDEO_ENCODERS[String(values.vcodec)] ?? 'libx264';
       args.push('-c:v', vEnc);
-      if (vEnc !== 'copy') args.push('-crf', String(values.crf));
+      // -preset veryfast: libx264 otherwise defaults to "medium", several times
+      // slower in wasm for little size benefit.
+      if (vEnc !== 'copy') args.push('-crf', String(values.crf), '-preset', 'veryfast');
       args.push('-c:a', AUDIO_ENCODERS[String(values.acodec)] ?? 'aac');
     }
 
