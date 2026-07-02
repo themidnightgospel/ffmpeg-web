@@ -30,9 +30,20 @@ const ISOLATION_HEADERS = {
   'Cross-Origin-Resource-Policy': 'cross-origin',
 };
 
+// The site builds with base '/ffmpeg-web/' (GitHub project page), so its HTML
+// references assets under that prefix. Strip it here so dist/ is served whether
+// requested at the root (test navigation) or under the base (asset URLs) —
+// mirroring how GitHub Pages mounts the artifact at the project path.
+const BASE = '/ffmpeg-web';
+function stripBase(p) {
+  if (p === BASE) return '/';
+  if (p.startsWith(`${BASE}/`)) return p.slice(BASE.length);
+  return p;
+}
+
 const server = http.createServer(async (req, res) => {
   try {
-    const urlPath = decodeURIComponent((req.url ?? '/').split('?')[0]);
+    const urlPath = stripBase(decodeURIComponent((req.url ?? '/').split('?')[0]));
     let filePath = join(distDir, normalize(urlPath));
     let info = await stat(filePath).catch(() => null);
     if (info?.isDirectory()) {

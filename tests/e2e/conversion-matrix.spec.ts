@@ -107,8 +107,12 @@ async function openConverter(context: BrowserContext): Promise<Page> {
 async function convert(page: Page, from: string, to: string, firstRun: boolean): Promise<Buffer> {
   const download = page.locator('a[download]');
 
-  // Pick the target format (value-based; independent of label text).
+  // Pick the target format (value-based; independent of label text) and confirm
+  // it actually took effect — otherwise a racing click can leave the previous
+  // target selected, producing the wrong container.
+  const formatRadio = page.locator(`input[name="format"][value="${to}"]`);
   await page.locator(`label.seg:has(input[name="format"][value="${to}"])`).click();
+  await expect(formatRadio).toBeChecked();
   // Clear then set so a `change` always fires (even when consecutive conversions
   // use the same source file) — that resets any previous result/error…
   const input = page.locator('input[type="file"]');
@@ -126,6 +130,10 @@ async function convert(page: Page, from: string, to: string, firstRun: boolean):
   if (await error.isVisible()) {
     throw new Error((await error.textContent())?.trim() || 'conversion failed');
   }
+
+  // The output filename is `sample.<to>`; assert the visible download is for THIS
+  // target so we never validate a stale result from the previous conversion.
+  await expect(download).toHaveAttribute('download', new RegExp(`\\.${to}$`));
 
   const href = await download.getAttribute('href');
   if (!href) throw new Error('download link has no href');
