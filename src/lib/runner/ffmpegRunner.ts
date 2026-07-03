@@ -182,6 +182,14 @@ export const ffmpegRunner: ConversionRunner = {
 
     currentProgress = onProgress ? (ratio) => onProgress({ ratio, stage: 'Transcoding' }) : null;
 
+    // Capture the ffmpeg log so a non-zero exit can report the real reason
+    // (unsupported codec, bad stream, etc.) instead of a bare exit code.
+    const logLines: string[] = [];
+    currentLog = (message) => {
+      logLines.push(message);
+      if (logLines.length > 80) logLines.shift();
+    };
+
     const { fetchFile } = await import('@ffmpeg/util');
     // Every filename we stage — never collect these as "output", and always
     // clean them up afterwards (even on failure).
@@ -211,7 +219,15 @@ export const ffmpegRunner: ConversionRunner = {
       }
 
       const code = await ffmpeg.exec(args);
-      if (code !== 0) throw new Error(`ffmpeg exited with code ${code}`);
+      if (code !== 0) {
+        // Surface the most useful trailing log lines (the actual ffmpeg error).
+        const tail = logLines
+          .map((l) => l.trim())
+          .filter((l) => l && !/^\s*(frame|size|video:|Press)/i.test(l))
+          .slice(-4)
+          .join(' · ');
+        throw new Error(tail ? `Conversion failed — ${tail}` : `ffmpeg exited with code ${code}`);
+      }
 
       let blob: Blob;
       if (collectPrefix) {
@@ -245,6 +261,7 @@ export const ffmpegRunner: ConversionRunner = {
       for (const name of staged) await ffmpeg.deleteFile(name).catch(() => undefined);
       for (const name of produced) await ffmpeg.deleteFile(name).catch(() => undefined);
       currentProgress = null;
+      currentLog = null;
     }
   },
 };
